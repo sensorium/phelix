@@ -1,0 +1,690 @@
+{
+  "data" : {
+    "meta" : {
+      "name" : "LuckyCountry",
+      "application" : "HX Edit",
+      "build_sha" : "ec7605f",
+      "modifieddate" : 1686662769,
+      "appversion" : 56688640
+    },
+    "device" : 2162692,
+    "tone" : {
+      "variax" : {
+        "@model" : "@variax",
+        "@variax_model" : 15,
+        "@variax_str4tuning" : 0,
+        "@variax_str1level" : 1,
+        "@variax_str5level" : 1,
+        "@variax_str1tuning" : 0,
+        "@variax_lockctrls" : 0,
+        "@variax_str2tuning" : 0,
+        "@variax_customtuning" : true,
+        "@variax_magmode" : true,
+        "@variax_str2level" : 1,
+        "@variax_str5tuning" : 0,
+        "@variax_str6level" : 1,
+        "@variax_toneknob" : -0.10000002384185791,
+        "@variax_str3level" : 1,
+        "@variax_str3tuning" : 0,
+        "@variax_str6tuning" : -2,
+        "@variax_volumeknob" : -0.10000002384185791,
+        "@variax_str4level" : 1
+      },
+      "dtdual" : {
+        "@dt_topology" : 0,
+        "@dt_tubeconfig" : 0,
+        "@model" : "@dt",
+        "@dt_channel" : 0,
+        "@dt_reverb" : true,
+        "@dt_poweramp" : 1,
+        "@dt_12ax7boost" : 0,
+        "@dt_bplusvoltage" : 0,
+        "@dt_feedbackcap" : 0,
+        "@dt_revmix" : 0.25
+      },
+      "global" : {
+        "@PowercabVoicing" : 0,
+        "@model" : "@global_params",
+        "@topology0" : "A",
+        "@cursor_dsp" : 0,
+        "@PowercabMode" : 0,
+        "@guitarpad" : 0,
+        "@pedalstate" : 2,
+        "@cursor_group" : "block1",
+        "@DtSelect" : 2,
+        "@cursor_path" : 0,
+        "@current_snapshot" : 0,
+        "@tempo" : 120,
+        "@cursor_position" : 5,
+        "@topology1" : "A",
+        "@PowercabSelect" : 2,
+        "@guitarinputZ" : 0
+      },
+      "commandInst2" : {
+        "@waittime" : 2,
+        "@command" : 19,
+        "@channel" : 2,
+        "@bank32" : 0,
+        "@bank0" : 0,
+        "@program" : 31
+      },
+      "dt0" : {
+        "@dt_topology" : 0,
+        "@dt_tubeconfig" : 0,
+        "@model" : "@dt",
+        "@dt_channel" : 0,
+        "@dt_reverb" : true,
+        "@dt_poweramp" : 1,
+        "@dt_12ax7boost" : 0,
+        "@dt_bplusvoltage" : 0,
+        "@dt_feedbackcap" : 0,
+        "@dt_revmix" : 0.25
+      },
+      "powercabdual" : {
+        "@model" : "@powercab",
+        "@powercab_color" : 0,
+        "@powercab_mic" : 0,
+        "@powercab_flatlevel" : 0,
+        "@powercab_irlevel" : -18,
+        "@powercab_hicut" : 20100,
+        "@powercab_lowcut" : 19.899999618530273,
+        "@powercab_distance" : 3.5,
+        "@powercab_speakerlevel" : -15,
+        "@powercab_userir" : 0,
+        "@powercab_speaker" : 0
+      },
+      "commandInst1" : {
+        "@waittime" : 4,
+        "@command" : 19,
+        "@channel" : 1,
+        "@bank32" : 27,
+        "@bank0" : 0,
+        "@program" : 2
+      },
+      "snapshot0" : {
+        "@name" : "Low Gain",
+        "@tempo" : 120,
+        "@valid" : true,
+        "blocks" : {
+          "dsp0" : {
+            "block1" : true,
+            "block0" : false,
+            "block2" : false
+          }
+        },
+        "commands" : {
+          "commandInst2" : {
+            "@waittime" : 2,
+            "@fs_enabled" : false,
+            "@channel" : 2,
+            "@bank32" : 0,
+            "@bank0" : 0,
+            "@program" : 31
+          },
+          "commandInst1" : {
+            "@waittime" : 4,
+            "@fs_enabled" : false,
+            "@channel" : 1,
+            "@bank32" : 27,
+            "@bank0" : 0,
+            "@program" : 2
+          }
+        },
+        "@pedalstate" : 2,
+        "@ledcolor" : 1,
+        "controllers" : {
+          "dsp1" : {
+            "outputA" : {
+              "gain" : {
+                "@fs_enabled" : false,
+                "@value" : 4.5000100135803223
+              }
+            }
+          }
+        },
+        "@custom_name" : false
+      },
+      "snapshot2" : {
+        "@name" : "LG FX 2",
+        "@tempo" : 120,
+        "@valid" : true,
+        "blocks" : {
+          "dsp0" : {
+            "block1" : true,
+            "block0" : false,
+            "block2" : false
+          }
+        },
+        "commands" : {
+          "commandInst2" : {
+            "@waittime" : 0,
+            "@fs_enabled" : false,
+            "@channel" : 0,
+            "@bank32" : 0,
+            "@bank0" : 0,
+            "@program" : 0
+          },
+          "commandInst1" : {
+            "@waittime" : 0,
+            "@fs_enabled" : false,
+            "@channel" : 1,
+            "@bank32" : 27,
+            "@bank0" : 0,
+            "@program" : 3
+          }
+        },
+        "@pedalstate" : 0,
+        "@ledcolor" : 8,
+        "controllers" : {
+          "dsp1" : {
+            "outputA" : {
+              "gain" : {
+                "@fs_enabled" : false,
+                "@value" : 4.5000100135803223
+              }
+            }
+          }
+        },
+        "@custom_name" : false
+      },
+      "snapshot4" : {
+        "@name" : "MG FX",
+        "@tempo" : 120,
+        "@valid" : true,
+        "blocks" : {
+          "dsp0" : {
+            "block1" : true,
+            "block0" : false,
+            "block2" : false
+          }
+        },
+        "commands" : {
+          "commandInst2" : {
+            "@waittime" : 0,
+            "@fs_enabled" : false,
+            "@channel" : 0,
+            "@bank32" : 0,
+            "@bank0" : 0,
+            "@program" : 0
+          },
+          "commandInst1" : {
+            "@waittime" : 0,
+            "@fs_enabled" : false,
+            "@channel" : 1,
+            "@bank32" : 27,
+            "@bank0" : 0,
+            "@program" : 3
+          }
+        },
+        "@pedalstate" : 0,
+        "@ledcolor" : 8,
+        "controllers" : {
+          "dsp1" : {
+            "outputA" : {
+              "gain" : {
+                "@fs_enabled" : false,
+                "@value" : 0.10000598430633545
+              }
+            }
+          }
+        },
+        "@custom_name" : false
+      },
+      "powercab1" : {
+        "@model" : "@powercab",
+        "@powercab_color" : 0,
+        "@powercab_mic" : 0,
+        "@powercab_flatlevel" : 0,
+        "@powercab_irlevel" : -18,
+        "@powercab_hicut" : 20100,
+        "@powercab_lowcut" : 19.899999618530273,
+        "@powercab_distance" : 3.5,
+        "@powercab_speakerlevel" : -15,
+        "@powercab_userir" : 0,
+        "@powercab_speaker" : 0
+      },
+      "dsp0" : {
+        "block0" : {
+          "@model" : "HD2_DistScream808",
+          "@no_snapshot_bypass" : false,
+          "@path" : 0,
+          "@stereo" : false,
+          "@type" : 0,
+          "Gain" : 0.0099999904632568359,
+          "@position" : 4,
+          "Level" : 0.46000003814697266,
+          "Tone" : 0.5,
+          "@enabled" : false
+        },
+        "block1" : {
+          "@enabled" : true,
+          "@bypassvolume" : 1,
+          "Mid" : 0.19000005722045898,
+          "BiasX" : 0.15999996662139893,
+          "Bias" : 0.78999996185302734,
+          "@type" : 3,
+          "Hum" : 0,
+          "Treble" : 0.76999998092651367,
+          "@cab" : "cab0",
+          "@model" : "HD2_AmpBrit2204",
+          "Drive" : 0.14999997615814209,
+          "Master" : 0.25999999046325684,
+          "ChVol" : 1,
+          "@path" : 0,
+          "Presence" : 0.5,
+          "Ripple" : 0,
+          "@position" : 5,
+          "@no_snapshot_bypass" : false,
+          "Sag" : 0.5,
+          "Bass" : 0.37000000476837158
+        },
+        "block2" : {
+          "@model" : "HD2_VibratoBubbleVibrato",
+          "RiseTime" : 0.66000008583068848,
+          "@position" : 6,
+          "@no_snapshot_bypass" : false,
+          "SyncSelect1" : 6,
+          "Speed" : 0.63199996948242188,
+          "TempoSync1" : false,
+          "@enabled" : false,
+          "@path" : 0,
+          "@type" : 0,
+          "Mix" : 1,
+          "Headroom" : 3,
+          "RiseTimeSwitch" : true,
+          "Level" : 0,
+          "@stereo" : false,
+          "Spread" : 0.55400002002716064,
+          "Depth" : 1
+        },
+        "cab0" : {
+          "@model" : "HD2_Cab4x121960T75",
+          "LowCut" : 80,
+          "@mic" : 1,
+          "EarlyReflections" : 0,
+          "Distance" : 3,
+          "Level" : 6,
+          "@enabled" : true,
+          "HighCut" : 8000
+        },
+        "inputA" : {
+          "@input" : 1,
+          "@model" : "HD2_AppDSPFlow1Input",
+          "noiseGate" : true,
+          "decay" : 0.10000002384185791,
+          "threshold" : -68
+        },
+        "inputB" : {
+          "@input" : 0,
+          "@model" : "HD2_AppDSPFlow2Input",
+          "noiseGate" : false,
+          "decay" : 0.5,
+          "threshold" : -48
+        },
+        "join" : {
+          "@model" : "HD2_AppDSPFlowJoin",
+          "B Pan" : 0.5,
+          "@no_snapshot_bypass" : false,
+          "B Level" : 0,
+          "A Level" : -60,
+          "A Pan" : 0.5,
+          "@position" : 8,
+          "Level" : 3,
+          "@enabled" : true,
+          "B Polarity" : false
+        },
+        "split" : {
+          "@no_snapshot_bypass" : false,
+          "@model" : "HD2_AppDSPFlowSplitAB",
+          "@enabled" : true,
+          "RouteTo" : 1,
+          "@position" : 0,
+          "bypass" : false
+        },
+        "outputB" : {
+          "@model" : "HD2_AppDSPFlowOutput",
+          "@output" : 0,
+          "pan" : 0.5,
+          "gain" : 0
+        },
+        "outputA" : {
+          "@model" : "HD2_AppDSPFlowOutput",
+          "@output" : 1,
+          "pan" : 0.5,
+          "gain" : 0
+        }
+      },
+      "dt1" : {
+        "@dt_topology" : 0,
+        "@dt_tubeconfig" : 0,
+        "@model" : "@dt",
+        "@dt_channel" : 0,
+        "@dt_reverb" : true,
+        "@dt_poweramp" : 1,
+        "@dt_12ax7boost" : 0,
+        "@dt_bplusvoltage" : 0,
+        "@dt_feedbackcap" : 0,
+        "@dt_revmix" : 0.25
+      },
+      "snapshot6" : {
+        "@name" : "HG FX 1",
+        "@tempo" : 120,
+        "@valid" : true,
+        "blocks" : {
+          "dsp0" : {
+            "block1" : true,
+            "block0" : false,
+            "block2" : false
+          }
+        },
+        "commands" : {
+          "commandInst2" : {
+            "@waittime" : 0,
+            "@fs_enabled" : false,
+            "@channel" : 0,
+            "@bank32" : 0,
+            "@bank0" : 0,
+            "@program" : 0
+          },
+          "commandInst1" : {
+            "@waittime" : 0,
+            "@fs_enabled" : false,
+            "@channel" : 1,
+            "@bank32" : 27,
+            "@bank0" : 0,
+            "@program" : 3
+          }
+        },
+        "@pedalstate" : 0,
+        "@ledcolor" : 7,
+        "controllers" : {
+          "dsp1" : {
+            "outputA" : {
+              "gain" : {
+                "@fs_enabled" : false,
+                "@value" : -0.09999847412109375
+              }
+            }
+          }
+        },
+        "@custom_name" : false
+      },
+      "controller" : {
+        "dsp1" : {
+          "outputA" : {
+            "gain" : {
+              "@min" : -120,
+              "@max" : 20,
+              "@controller" : 19,
+              "@snapshot_disable" : false
+            }
+          }
+        }
+      },
+      "footswitch" : {
+        "dsp0" : {
+          "block0" : {
+            "@fs_momentary" : false,
+            "@fs_primary" : true,
+            "@fs_index" : 2,
+            "@fs_enabled" : false,
+            "@fs_ledcolor" : 525824,
+            "@fs_customlabel" : "TS808",
+            "@fs_label" : "Scream 808"
+          },
+          "block2" : {
+            "@fs_momentary" : false,
+            "@fs_primary" : true,
+            "@fs_index" : 4,
+            "@fs_enabled" : false,
+            "@fs_ledcolor" : 1037,
+            "@fs_customlabel" : "CHORUS",
+            "@fs_label" : "Bubble Vibrato"
+          }
+        }
+      },
+      "dsp1" : {
+        "split" : {
+          "@model" : "HD2_AppDSPFlowSplitY",
+          "BalanceA" : 0.5,
+          "@no_snapshot_bypass" : false,
+          "bypass" : false,
+          "@position" : 0,
+          "@enabled" : true,
+          "BalanceB" : 0.5
+        },
+        "inputA" : {
+          "@input" : 0,
+          "@model" : "HD2_AppDSPFlow1Input",
+          "noiseGate" : false,
+          "decay" : 0.5,
+          "threshold" : -48
+        },
+        "inputB" : {
+          "@input" : 0,
+          "@model" : "HD2_AppDSPFlow2Input",
+          "noiseGate" : false,
+          "decay" : 0.5,
+          "threshold" : -48
+        },
+        "join" : {
+          "@model" : "HD2_AppDSPFlowJoin",
+          "B Pan" : 0.5,
+          "@no_snapshot_bypass" : false,
+          "B Level" : 0,
+          "A Level" : 0,
+          "A Pan" : 0.5,
+          "@position" : 8,
+          "Level" : 0,
+          "@enabled" : true,
+          "B Polarity" : false
+        },
+        "outputA" : {
+          "@model" : "HD2_AppDSPFlowOutput",
+          "@output" : 1,
+          "pan" : 0.5,
+          "gain" : 4.5000100135803223
+        },
+        "outputB" : {
+          "@model" : "HD2_AppDSPFlowOutput",
+          "@output" : 0,
+          "pan" : 0.5,
+          "gain" : 0
+        }
+      },
+      "snapshot1" : {
+        "@name" : "LG FX 1",
+        "@tempo" : 120,
+        "@valid" : true,
+        "blocks" : {
+          "dsp0" : {
+            "block1" : true,
+            "block0" : false,
+            "block2" : false
+          }
+        },
+        "commands" : {
+          "commandInst2" : {
+            "@waittime" : 0,
+            "@fs_enabled" : false,
+            "@channel" : 0,
+            "@bank32" : 0,
+            "@bank0" : 0,
+            "@program" : 0
+          },
+          "commandInst1" : {
+            "@waittime" : 0,
+            "@fs_enabled" : false,
+            "@channel" : 1,
+            "@bank32" : 27,
+            "@bank0" : 0,
+            "@program" : 3
+          }
+        },
+        "@pedalstate" : 0,
+        "@ledcolor" : 7,
+        "controllers" : {
+          "dsp1" : {
+            "outputA" : {
+              "gain" : {
+                "@fs_enabled" : false,
+                "@value" : 4.5000100135803223
+              }
+            }
+          }
+        },
+        "@custom_name" : false
+      },
+      "powercab0" : {
+        "@model" : "@powercab",
+        "@powercab_color" : 0,
+        "@powercab_mic" : 0,
+        "@powercab_flatlevel" : 0,
+        "@powercab_irlevel" : -18,
+        "@powercab_hicut" : 20100,
+        "@powercab_lowcut" : 19.899999618530273,
+        "@powercab_distance" : 3.5,
+        "@powercab_speakerlevel" : -15,
+        "@powercab_userir" : 0,
+        "@powercab_speaker" : 0
+      },
+      "snapshot3" : {
+        "@name" : "Mid Gain",
+        "@tempo" : 120,
+        "@valid" : true,
+        "blocks" : {
+          "dsp0" : {
+            "block1" : true,
+            "block0" : false,
+            "block2" : false
+          }
+        },
+        "commands" : {
+          "commandInst2" : {
+            "@waittime" : 0,
+            "@fs_enabled" : false,
+            "@channel" : 0,
+            "@bank32" : 0,
+            "@bank0" : 0,
+            "@program" : 0
+          },
+          "commandInst1" : {
+            "@waittime" : 0,
+            "@fs_enabled" : false,
+            "@channel" : 1,
+            "@bank32" : 27,
+            "@bank0" : 0,
+            "@program" : 3
+          }
+        },
+        "@pedalstate" : 0,
+        "@ledcolor" : 10,
+        "controllers" : {
+          "dsp1" : {
+            "outputA" : {
+              "gain" : {
+                "@fs_enabled" : false,
+                "@value" : 0.10000598430633545
+              }
+            }
+          }
+        },
+        "@custom_name" : false
+      },
+      "snapshot5" : {
+        "@name" : "High Gain",
+        "@tempo" : 120,
+        "@valid" : true,
+        "blocks" : {
+          "dsp0" : {
+            "block1" : true,
+            "block0" : false,
+            "block2" : false
+          }
+        },
+        "commands" : {
+          "commandInst2" : {
+            "@waittime" : 0,
+            "@fs_enabled" : false,
+            "@channel" : 0,
+            "@bank32" : 0,
+            "@bank0" : 0,
+            "@program" : 0
+          },
+          "commandInst1" : {
+            "@waittime" : 0,
+            "@fs_enabled" : false,
+            "@channel" : 1,
+            "@bank32" : 27,
+            "@bank0" : 0,
+            "@program" : 3
+          }
+        },
+        "@pedalstate" : 0,
+        "@ledcolor" : 2,
+        "controllers" : {
+          "dsp1" : {
+            "outputA" : {
+              "gain" : {
+                "@fs_enabled" : false,
+                "@value" : -0.09999847412109375
+              }
+            }
+          }
+        },
+        "@custom_name" : false
+      },
+      "snapshot7" : {
+        "@name" : "HG FX 2",
+        "@tempo" : 120,
+        "@valid" : true,
+        "blocks" : {
+          "dsp0" : {
+            "block1" : true,
+            "block0" : false,
+            "block2" : false
+          }
+        },
+        "commands" : {
+          "commandInst2" : {
+            "@waittime" : 0,
+            "@fs_enabled" : false,
+            "@channel" : 0,
+            "@bank32" : 0,
+            "@bank0" : 0,
+            "@program" : 0
+          },
+          "commandInst1" : {
+            "@waittime" : 0,
+            "@fs_enabled" : false,
+            "@channel" : 1,
+            "@bank32" : 27,
+            "@bank0" : 0,
+            "@program" : 3
+          }
+        },
+        "@pedalstate" : 0,
+        "@ledcolor" : 8,
+        "controllers" : {
+          "dsp1" : {
+            "outputA" : {
+              "gain" : {
+                "@fs_enabled" : false,
+                "@value" : -0.09999847412109375
+              }
+            }
+          }
+        },
+        "@custom_name" : false
+      }
+    },
+    "device_version" : 56623104
+  },
+  "meta" : {
+    "original" : 0,
+    "pbn" : 0,
+    "premium" : 0
+  },
+  "schema" : "L6Preset",
+  "version" : 6
+}
