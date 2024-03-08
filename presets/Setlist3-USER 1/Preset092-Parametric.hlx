@@ -1,0 +1,825 @@
+{
+  "data" : {
+    "meta" : {
+      "name" : "Parametric",
+      "build_sha" : "e171dae"
+    },
+    "device" : 2162692,
+    "tone" : {
+      "powercab1" : {
+        "@model" : "@powercab",
+        "@powercab_color" : 0,
+        "@powercab_mic" : 0,
+        "@powercab_flatlevel" : 0,
+        "@powercab_irlevel" : -18,
+        "@powercab_hicut" : 20100,
+        "@powercab_lowcut" : 19.899999618530273,
+        "@powercab_distance" : 3,
+        "@powercab_speakerlevel" : -15,
+        "@powercab_userir" : 0,
+        "@powercab_speaker" : 0
+      },
+      "snapshot7" : {
+        "@name" : "SNAPSHOT 8",
+        "@tempo" : 120,
+        "@valid" : true,
+        "blocks" : {
+          "dsp0" : {
+            "block0" : true
+          }
+        },
+        "@pedalstate" : 2,
+        "@ledcolor" : 0,
+        "controllers" : {
+          "dsp0" : {
+            "block0" : {
+              "HighQ" : {
+                "@fs_enabled" : false,
+                "@value" : 3.9579863548278809
+              },
+              "LowCut" : {
+                "@fs_enabled" : false,
+                "@value" : 901.16802978515625
+              },
+              "MidQ" : {
+                "@fs_enabled" : false,
+                "@value" : 6.588841438293457
+              },
+              "LowFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 122.0836181640625
+              },
+              "HighFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 10721.609375
+              },
+              "HighGain" : {
+                "@fs_enabled" : false,
+                "@value" : -8.0678348541259766
+              },
+              "LowGain" : {
+                "@fs_enabled" : false,
+                "@value" : -11.621198654174805
+              },
+              "LowQ" : {
+                "@fs_enabled" : false,
+                "@value" : 8.813298225402832
+              },
+              "MidFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 2566.83203125
+              },
+              "HighCut" : {
+                "@fs_enabled" : false,
+                "@value" : 14794.4052734375
+              },
+              "MidGain" : {
+                "@fs_enabled" : false,
+                "@value" : 6.7825803756713867
+              }
+            }
+          }
+        },
+        "@custom_name" : false
+      },
+      "snapshot4" : {
+        "@name" : "SNAPSHOT 5",
+        "@tempo" : 120,
+        "@valid" : true,
+        "blocks" : {
+          "dsp0" : {
+            "block0" : true
+          }
+        },
+        "@pedalstate" : 2,
+        "@ledcolor" : 0,
+        "controllers" : {
+          "dsp0" : {
+            "block0" : {
+              "HighQ" : {
+                "@fs_enabled" : false,
+                "@value" : 6.6622714996337891
+              },
+              "LowCut" : {
+                "@fs_enabled" : false,
+                "@value" : 493.64218139648438
+              },
+              "MidQ" : {
+                "@fs_enabled" : false,
+                "@value" : 5.055567741394043
+              },
+              "LowFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 158.59571838378906
+              },
+              "HighFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 8254.4521484375
+              },
+              "HighGain" : {
+                "@fs_enabled" : false,
+                "@value" : 8.50958251953125
+              },
+              "LowGain" : {
+                "@fs_enabled" : false,
+                "@value" : -11.487285614013672
+              },
+              "LowQ" : {
+                "@fs_enabled" : false,
+                "@value" : 6.619011402130127
+              },
+              "MidFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 3914.75537109375
+              },
+              "HighCut" : {
+                "@fs_enabled" : false,
+                "@value" : 2936.47021484375
+              },
+              "MidGain" : {
+                "@fs_enabled" : false,
+                "@value" : -9.5745058059692383
+              }
+            }
+          }
+        },
+        "@custom_name" : false
+      },
+      "variax" : {
+        "@model" : "@variax",
+        "@variax_model" : 8,
+        "@variax_str4tuning" : 0,
+        "@variax_str1level" : 1,
+        "@variax_str5level" : 1,
+        "@variax_str1tuning" : 0,
+        "@variax_lockctrls" : 0,
+        "@variax_str2tuning" : 0,
+        "@variax_customtuning" : false,
+        "@variax_magmode" : true,
+        "@variax_str2level" : 1,
+        "@variax_str5tuning" : 0,
+        "@variax_str6level" : 1,
+        "@variax_toneknob" : -0.10000002384185791,
+        "@variax_str3level" : 1,
+        "@variax_str3tuning" : 0,
+        "@variax_str6tuning" : 0,
+        "@variax_volumeknob" : -0.10000002384185791,
+        "@variax_str4level" : 1
+      },
+      "dsp1" : {
+        "split" : {
+          "@model" : "HD2_AppDSPFlowSplitY",
+          "BalanceA" : 0.5,
+          "@no_snapshot_bypass" : false,
+          "bypass" : false,
+          "@position" : 0,
+          "@enabled" : true,
+          "BalanceB" : 0.5
+        },
+        "inputA" : {
+          "@input" : 0,
+          "@model" : "HD2_AppDSPFlow1Input",
+          "noiseGate" : false,
+          "decay" : 0.5,
+          "threshold" : -48
+        },
+        "inputB" : {
+          "@input" : 0,
+          "@model" : "HD2_AppDSPFlow2Input",
+          "noiseGate" : false,
+          "decay" : 0.5,
+          "threshold" : -48
+        },
+        "join" : {
+          "@model" : "HD2_AppDSPFlowJoin",
+          "B Pan" : 0.5,
+          "@no_snapshot_bypass" : false,
+          "B Level" : 0,
+          "A Level" : 0,
+          "A Pan" : 0.5,
+          "@position" : 8,
+          "Level" : 3,
+          "@enabled" : true,
+          "B Polarity" : false
+        },
+        "outputA" : {
+          "@model" : "HD2_AppDSPFlowOutput",
+          "@output" : 1,
+          "pan" : 0.5,
+          "gain" : 0
+        },
+        "outputB" : {
+          "@model" : "HD2_AppDSPFlowOutput",
+          "@output" : 0,
+          "pan" : 0.5,
+          "gain" : 0
+        }
+      },
+      "dtdual" : {
+        "@dt_topology" : 0,
+        "@dt_tubeconfig" : 0,
+        "@model" : "@dt",
+        "@dt_channel" : 0,
+        "@dt_reverb" : true,
+        "@dt_poweramp" : 1,
+        "@dt_12ax7boost" : 0,
+        "@dt_bplusvoltage" : 0,
+        "@dt_feedbackcap" : 0,
+        "@dt_revmix" : 0.25
+      },
+      "powercabdual" : {
+        "@model" : "@powercab",
+        "@powercab_color" : 0,
+        "@powercab_mic" : 0,
+        "@powercab_flatlevel" : 0,
+        "@powercab_irlevel" : -18,
+        "@powercab_hicut" : 20100,
+        "@powercab_lowcut" : 19.899999618530273,
+        "@powercab_distance" : 3,
+        "@powercab_speakerlevel" : -15,
+        "@powercab_userir" : 0,
+        "@powercab_speaker" : 0
+      },
+      "controller" : {
+        "dsp0" : {
+          "block0" : {
+            "HighQ" : {
+              "@min" : 0.10000002384185791,
+              "@max" : 10,
+              "@controller" : 19,
+              "@snapshot_disable" : false
+            },
+            "LowCut" : {
+              "@min" : 19.899999618530273,
+              "@max" : 1000,
+              "@controller" : 19,
+              "@snapshot_disable" : false
+            },
+            "MidQ" : {
+              "@min" : 0.10000002384185791,
+              "@max" : 10,
+              "@controller" : 19,
+              "@snapshot_disable" : false
+            },
+            "LowFreq" : {
+              "@min" : 20,
+              "@max" : 495,
+              "@controller" : 19,
+              "@snapshot_disable" : false
+            },
+            "HighFreq" : {
+              "@min" : 500,
+              "@max" : 18000,
+              "@controller" : 19,
+              "@snapshot_disable" : false
+            },
+            "HighGain" : {
+              "@min" : -12,
+              "@max" : 12,
+              "@controller" : 19,
+              "@snapshot_disable" : false
+            },
+            "LowGain" : {
+              "@min" : -12,
+              "@max" : 12,
+              "@controller" : 19,
+              "@snapshot_disable" : false
+            },
+            "LowQ" : {
+              "@min" : 0.10000002384185791,
+              "@max" : 10,
+              "@controller" : 19,
+              "@snapshot_disable" : false
+            },
+            "MidFreq" : {
+              "@min" : 125,
+              "@max" : 8000,
+              "@controller" : 19,
+              "@snapshot_disable" : false
+            },
+            "HighCut" : {
+              "@min" : 1000,
+              "@max" : 20100,
+              "@controller" : 19,
+              "@snapshot_disable" : false
+            },
+            "MidGain" : {
+              "@min" : -12,
+              "@max" : 12,
+              "@controller" : 19,
+              "@snapshot_disable" : false
+            }
+          }
+        }
+      },
+      "snapshot1" : {
+        "@name" : "SNAPSHOT 2",
+        "@tempo" : 120,
+        "@valid" : true,
+        "blocks" : {
+          "dsp0" : {
+            "block0" : true
+          }
+        },
+        "@pedalstate" : 2,
+        "@ledcolor" : 0,
+        "controllers" : {
+          "dsp0" : {
+            "block0" : {
+              "HighQ" : {
+                "@fs_enabled" : false,
+                "@value" : 2.2644600868225098
+              },
+              "LowCut" : {
+                "@fs_enabled" : false,
+                "@value" : 41.267398834228516
+              },
+              "MidQ" : {
+                "@fs_enabled" : false,
+                "@value" : 7.1961917877197266
+              },
+              "LowFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 357.10256958007812
+              },
+              "HighFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 16366.1728515625
+              },
+              "HighGain" : {
+                "@fs_enabled" : false,
+                "@value" : 9.9131546020507812
+              },
+              "LowGain" : {
+                "@fs_enabled" : false,
+                "@value" : 4.7817492485046387
+              },
+              "LowQ" : {
+                "@fs_enabled" : false,
+                "@value" : 3.6039924621582031
+              },
+              "MidFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 6536.30126953125
+              },
+              "HighCut" : {
+                "@fs_enabled" : false,
+                "@value" : 2519.630859375
+              },
+              "MidGain" : {
+                "@fs_enabled" : false,
+                "@value" : 1.3344087600708008
+              }
+            }
+          }
+        },
+        "@custom_name" : false
+      },
+      "snapshot5" : {
+        "@name" : "SNAPSHOT 6",
+        "@tempo" : 120,
+        "@valid" : true,
+        "blocks" : {
+          "dsp0" : {
+            "block0" : true
+          }
+        },
+        "@pedalstate" : 2,
+        "@ledcolor" : 0,
+        "controllers" : {
+          "dsp0" : {
+            "block0" : {
+              "HighQ" : {
+                "@fs_enabled" : false,
+                "@value" : 7.6117277145385742
+              },
+              "LowCut" : {
+                "@fs_enabled" : false,
+                "@value" : 61.827301025390625
+              },
+              "MidQ" : {
+                "@fs_enabled" : false,
+                "@value" : 7.8394203186035156
+              },
+              "LowFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 247.93804931640625
+              },
+              "HighFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 17380.744140625
+              },
+              "HighGain" : {
+                "@fs_enabled" : false,
+                "@value" : 0.048048973083496094
+              },
+              "LowGain" : {
+                "@fs_enabled" : false,
+                "@value" : -6.1925573348999023
+              },
+              "LowQ" : {
+                "@fs_enabled" : false,
+                "@value" : 3.1337852478027344
+              },
+              "MidFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 4397.32177734375
+              },
+              "HighCut" : {
+                "@fs_enabled" : false,
+                "@value" : 5830.640625
+              },
+              "MidGain" : {
+                "@fs_enabled" : false,
+                "@value" : 0.53671669960021973
+              }
+            }
+          }
+        },
+        "@custom_name" : false
+      },
+      "dsp0" : {
+        "block0" : {
+          "HighQ" : 0.7070000171661377,
+          "@model" : "HD2_EQParametric",
+          "HighGain" : 0,
+          "@position" : 0,
+          "@no_snapshot_bypass" : false,
+          "LowCut" : 19.899999618530273,
+          "LowFreq" : 110,
+          "LowQ" : 0.7070000171661377,
+          "@enabled" : true,
+          "MidFreq" : 2000,
+          "MidGain" : 0,
+          "@path" : 0,
+          "@type" : 0,
+          "LowGain" : 0,
+          "MidQ" : 0.7070000171661377,
+          "Level" : 0,
+          "@stereo" : false,
+          "HighCut" : 20100,
+          "HighFreq" : 8000
+        },
+        "inputA" : {
+          "@input" : 1,
+          "@model" : "HD2_AppDSPFlow1Input",
+          "noiseGate" : false,
+          "decay" : 0.10000002384185791,
+          "threshold" : -48
+        },
+        "inputB" : {
+          "@input" : 0,
+          "@model" : "HD2_AppDSPFlow2Input",
+          "noiseGate" : false,
+          "decay" : 0.5,
+          "threshold" : -48
+        },
+        "split" : {
+          "@model" : "HD2_AppDSPFlowSplitY",
+          "BalanceA" : 0.5,
+          "@no_snapshot_bypass" : false,
+          "bypass" : false,
+          "@position" : 0,
+          "@enabled" : true,
+          "BalanceB" : 0.5
+        },
+        "join" : {
+          "@model" : "HD2_AppDSPFlowJoin",
+          "B Pan" : 0.5,
+          "@no_snapshot_bypass" : false,
+          "B Level" : 0,
+          "A Level" : 0,
+          "A Pan" : 0.5,
+          "@position" : 8,
+          "Level" : 3,
+          "@enabled" : true,
+          "B Polarity" : false
+        },
+        "outputB" : {
+          "@model" : "HD2_AppDSPFlowOutput",
+          "@output" : 0,
+          "pan" : 0.5,
+          "gain" : 0
+        },
+        "outputA" : {
+          "@model" : "HD2_AppDSPFlowOutput",
+          "@output" : 1,
+          "pan" : 0.5,
+          "gain" : 0
+        }
+      },
+      "snapshot2" : {
+        "@name" : "SNAPSHOT 3",
+        "@tempo" : 120,
+        "@valid" : true,
+        "blocks" : {
+          "dsp0" : {
+            "block0" : true
+          }
+        },
+        "@pedalstate" : 2,
+        "@ledcolor" : 0,
+        "controllers" : {
+          "dsp0" : {
+            "block0" : {
+              "HighQ" : {
+                "@fs_enabled" : false,
+                "@value" : 8.5367794036865234
+              },
+              "LowCut" : {
+                "@fs_enabled" : false,
+                "@value" : 569.62054443359375
+              },
+              "MidQ" : {
+                "@fs_enabled" : false,
+                "@value" : 9.5971107482910156
+              },
+              "LowFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 464.91864013671875
+              },
+              "HighFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 17687.451171875
+              },
+              "HighGain" : {
+                "@fs_enabled" : false,
+                "@value" : -10.30186939239502
+              },
+              "LowGain" : {
+                "@fs_enabled" : false,
+                "@value" : -1.1915524005889893
+              },
+              "LowQ" : {
+                "@fs_enabled" : false,
+                "@value" : 8.4731073379516602
+              },
+              "MidFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 3082.558837890625
+              },
+              "HighCut" : {
+                "@fs_enabled" : false,
+                "@value" : 5066.20458984375
+              },
+              "MidGain" : {
+                "@fs_enabled" : false,
+                "@value" : -9.4113521575927734
+              }
+            }
+          }
+        },
+        "@custom_name" : false
+      },
+      "global" : {
+        "@PowercabVoicing" : 0,
+        "@model" : "@global_params",
+        "@topology0" : "A",
+        "@cursor_dsp" : 0,
+        "@PowercabMode" : 0,
+        "@guitarpad" : 0,
+        "@pedalstate" : 2,
+        "@cursor_group" : "block0",
+        "@DtSelect" : 0,
+        "@cursor_path" : 0,
+        "@current_snapshot" : 7,
+        "@tempo" : 120,
+        "@cursor_position" : 0,
+        "@topology1" : "A",
+        "@PowercabSelect" : 2,
+        "@guitarinputZ" : 0
+      },
+      "dt0" : {
+        "@dt_topology" : 0,
+        "@dt_tubeconfig" : 0,
+        "@model" : "@dt",
+        "@dt_channel" : 0,
+        "@dt_reverb" : true,
+        "@dt_poweramp" : 1,
+        "@dt_12ax7boost" : 0,
+        "@dt_bplusvoltage" : 0,
+        "@dt_feedbackcap" : 0,
+        "@dt_revmix" : 0.25
+      },
+      "powercab0" : {
+        "@model" : "@powercab",
+        "@powercab_color" : 0,
+        "@powercab_mic" : 0,
+        "@powercab_flatlevel" : 0,
+        "@powercab_irlevel" : -18,
+        "@powercab_hicut" : 20100,
+        "@powercab_lowcut" : 19.899999618530273,
+        "@powercab_distance" : 3,
+        "@powercab_speakerlevel" : -15,
+        "@powercab_userir" : 0,
+        "@powercab_speaker" : 0
+      },
+      "snapshot6" : {
+        "@name" : "SNAPSHOT 7",
+        "@tempo" : 120,
+        "@valid" : true,
+        "blocks" : {
+          "dsp0" : {
+            "block0" : true
+          }
+        },
+        "@pedalstate" : 2,
+        "@ledcolor" : 0,
+        "controllers" : {
+          "dsp0" : {
+            "block0" : {
+              "HighQ" : {
+                "@fs_enabled" : false,
+                "@value" : 3.9211940765380859
+              },
+              "LowCut" : {
+                "@fs_enabled" : false,
+                "@value" : 453.61819458007812
+              },
+              "MidQ" : {
+                "@fs_enabled" : false,
+                "@value" : 8.6631917953491211
+              },
+              "LowFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 474.3902587890625
+              },
+              "HighFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 17846.169921875
+              },
+              "HighGain" : {
+                "@fs_enabled" : false,
+                "@value" : 0.82221412658691406
+              },
+              "LowGain" : {
+                "@fs_enabled" : false,
+                "@value" : 2.3285543918609619
+              },
+              "LowQ" : {
+                "@fs_enabled" : false,
+                "@value" : 5.6439104080200195
+              },
+              "MidFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 5492.34619140625
+              },
+              "HighCut" : {
+                "@fs_enabled" : false,
+                "@value" : 9012.3994140625
+              },
+              "MidGain" : {
+                "@fs_enabled" : false,
+                "@value" : 8.3781814575195312
+              }
+            }
+          }
+        },
+        "@custom_name" : false
+      },
+      "snapshot3" : {
+        "@name" : "SNAPSHOT 4",
+        "@tempo" : 120,
+        "@valid" : true,
+        "blocks" : {
+          "dsp0" : {
+            "block0" : true
+          }
+        },
+        "@pedalstate" : 2,
+        "@ledcolor" : 0,
+        "controllers" : {
+          "dsp0" : {
+            "block0" : {
+              "HighQ" : {
+                "@fs_enabled" : false,
+                "@value" : 6.291926383972168
+              },
+              "LowCut" : {
+                "@fs_enabled" : false,
+                "@value" : 701.33953857421875
+              },
+              "MidQ" : {
+                "@fs_enabled" : false,
+                "@value" : 9.0260190963745117
+              },
+              "LowFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 389.6231689453125
+              },
+              "HighFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 5205.3916015625
+              },
+              "HighGain" : {
+                "@fs_enabled" : false,
+                "@value" : -9.2139596939086914
+              },
+              "LowGain" : {
+                "@fs_enabled" : false,
+                "@value" : -11.847576141357422
+              },
+              "LowQ" : {
+                "@fs_enabled" : false,
+                "@value" : 7.9306755065917969
+              },
+              "MidFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 135.66868591308594
+              },
+              "HighCut" : {
+                "@fs_enabled" : false,
+                "@value" : 10436.767578125
+              },
+              "MidGain" : {
+                "@fs_enabled" : false,
+                "@value" : -7.7708740234375
+              }
+            }
+          }
+        },
+        "@custom_name" : false
+      },
+      "snapshot0" : {
+        "@name" : "SNAPSHOT 1",
+        "@tempo" : 120,
+        "@valid" : true,
+        "blocks" : {
+          "dsp0" : {
+            "block0" : true
+          }
+        },
+        "@pedalstate" : 2,
+        "@ledcolor" : 0,
+        "controllers" : {
+          "dsp0" : {
+            "block0" : {
+              "HighQ" : {
+                "@fs_enabled" : false,
+                "@value" : 1.4767980575561523
+              },
+              "LowCut" : {
+                "@fs_enabled" : false,
+                "@value" : 744.3372802734375
+              },
+              "MidQ" : {
+                "@fs_enabled" : false,
+                "@value" : 5.9817376136779785
+              },
+              "LowFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 217.31436157226562
+              },
+              "HighFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 12452.6845703125
+              },
+              "HighGain" : {
+                "@fs_enabled" : false,
+                "@value" : 6.7289490699768066
+              },
+              "LowGain" : {
+                "@fs_enabled" : false,
+                "@value" : 10.528078079223633
+              },
+              "LowQ" : {
+                "@fs_enabled" : false,
+                "@value" : 1.1286473274230957
+              },
+              "MidFreq" : {
+                "@fs_enabled" : false,
+                "@value" : 1158.193359375
+              },
+              "HighCut" : {
+                "@fs_enabled" : false,
+                "@value" : 14308.4892578125
+              },
+              "MidGain" : {
+                "@fs_enabled" : false,
+                "@value" : -11.949583053588867
+              }
+            }
+          }
+        },
+        "@custom_name" : false
+      },
+      "dt1" : {
+        "@dt_topology" : 0,
+        "@dt_tubeconfig" : 0,
+        "@model" : "@dt",
+        "@dt_channel" : 0,
+        "@dt_reverb" : true,
+        "@dt_poweramp" : 1,
+        "@dt_12ax7boost" : 0,
+        "@dt_bplusvoltage" : 0,
+        "@dt_feedbackcap" : 0,
+        "@dt_revmix" : 0.25
+      }
+    },
+    "schema" : null,
+    "device_version" : 57737216
+  },
+  "meta" : null,
+  "schema" : "L6Preset",
+  "version" : 6
+}
