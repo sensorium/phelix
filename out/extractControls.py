@@ -18,11 +18,6 @@ def extractControls():
 	dest_preset = "Vol"
 	with open(os.path.expanduser("presets/WRS/"+source_preset+".hlx"), "r") as dest_f:
 		dest_dict = json.load(dest_f)
-
-
-
-
-
 		for item_name in preset_dict["data"]["tone"]["controller"]["dsp0"]:
 			if item_name.startswith("block"):
 				block_dict = {}

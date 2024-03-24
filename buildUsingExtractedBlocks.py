@@ -122,28 +122,31 @@ def randomiseBlocks(blocks_path, preset_dict, dspName):
     chooseParams(preset_dict,dspName)
     turnBlocksOnOrOff(preset_dict,dspName)
 
+def chooseBlock(blocks_path):
+    block_files = [f for f in os.listdir(blocks_path) if os.path.isfile(os.path.join(blocks_path, f))]
+    return random.choice(block_files)
+
 # WIP
-def loadBlocks(blocks_path, preset_dict, dspName, numBlocks):
+def insertBlocks(blocks_path, preset_dict, dspName, numBlocks):
     for i in range(numBlocks):
-        chooseBlock(blocks_path, preset_dict, dspName)
+        chosen_block = chooseBlock(blocks_path)
 
 # WIP
 def generateFromSavedBlocks(blocks_path, preset_dict, dspName):
-    loadBlocks(blocks_path, preset_dict, dspName, 5)
+    insertBlocks(blocks_path, preset_dict, dspName, 5)
 
 
 def processPreset(folder, presetName):
-    blocks_path = os.path.join(folder,presetName,"blocks")
-    print(blocks_path)
+    blocks_path = "blocks"
     with open(os.path.join(folder, presetName+".hlx"), "r") as f:
         preset_dict = json.load(f)
 
         setLedColours(preset_dict)
-        randomiseBlocks(blocks_path, preset_dict, "dsp0")
-        randomiseBlocks(blocks_path, preset_dict, "dsp1")
+        generateFromSavedBlocks(blocks_path, preset_dict, "dsp0")
+#        generateFromSavedBlocks(blocks_path, preset_dict, "dsp1")
 
         with open(os.path.join(folder, "Test.hlx"), "w") as json_file:
             json.dump(preset_dict, json_file, indent=4)
 
 
-processPreset("presets", "coctow")
+processPreset("presets", "Distortions1")
