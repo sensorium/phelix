@@ -35,4 +35,4 @@ def extractControls(preset_path, blocks_path,presetName):
 		extractBlocksFromPath(preset_dict, "dsp1", blocks_path)
 
 
-extractControls("presets/Setlist3-USER 1", "blocks/new", "Preset015-Deadshit Nation.hlx")
+extractControls("presets/new", "blocks/new", "animalechosynth.hlx")
