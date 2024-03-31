@@ -14,7 +14,9 @@ def extractBlocksFromPath(preset_dict, dspName, blocks_path):
 				block_dict["SnapshotParams"] = preset_dict["data"]["tone"]["snapshot0"]["controllers"][dspName][block_name]
 				block_dict["Ranges"] = preset_dict["data"]["tone"]["controller"][dspName][block_name]
 				block_dict["Defaults"] = preset_dict["data"]["tone"][dspName][block_name]
-				block_filename = preset_dict["data"]["tone"][dspName][block_name]["@model"]
+				block_filename = preset_dict["data"]["tone"][dspName][block_name]["@model"]+".json"
+				if block_filename.startswith("HD2_Cab"):
+					block_filename = "Cab/"+block_filename
 				with open(os.path.join(blocks_path,block_filename), "w") as json_file:
 					json.dump(block_dict, json_file, indent=4)
 				print(os.path.join(blocks_path,block_filename))
@@ -35,4 +37,4 @@ def extractControls(preset_path, blocks_path,presetName):
 		extractBlocksFromPath(preset_dict, "dsp1", blocks_path)
 
 
-extractControls("presets/new", "blocks/new", "animalechosynth.hlx")
+extractControls("presets/test", "blocks/test", "mod3.hlx")

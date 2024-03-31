@@ -1,0 +1,70 @@
+{
+    "SnapshotParams": {
+        "CloseThreshold": {
+            "@fs_enabled": false,
+            "@value": -48.599998474121094
+        },
+        "Decay": {
+            "@fs_enabled": false,
+            "@value": 1.0809998512268066
+        },
+        "HoldTime": {
+            "@fs_enabled": false,
+            "@value": 0.057000041007995605
+        },
+        "Level": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "OpenThreshold": {
+            "@fs_enabled": false,
+            "@value": -39.79999923706055
+        }
+    },
+    "Ranges": {
+        "CloseThreshold": {
+            "@min": -96,
+            "@max": 0,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Decay": {
+            "@min": 0.009999990463256836,
+            "@max": 4,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "HoldTime": {
+            "@min": 0.009999990463256836,
+            "@max": 0.7999999523162842,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Level": {
+            "@min": -60,
+            "@max": 6,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "OpenThreshold": {
+            "@min": -96,
+            "@max": 0,
+            "@controller": 19,
+            "@snapshot_disable": false
+        }
+    },
+    "Defaults": {
+        "@model": "HD2_GateHardGate",
+        "OpenThreshold": -39.79999923706055,
+        "@position": 6,
+        "@no_snapshot_bypass": false,
+        "@enabled": true,
+        "@path": 0,
+        "@type": 0,
+        "CloseThreshold": -48.599998474121094,
+        "Level": 0,
+        "@stereo": false,
+        "Decay": 1.0809998512268066,
+        "HoldTime": 0.057000041007995605
+    }
+}

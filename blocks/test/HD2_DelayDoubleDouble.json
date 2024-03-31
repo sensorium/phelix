@@ -1,0 +1,71 @@
+{
+    "SnapshotParams": {
+        "Doubles": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "Slop": {
+            "@fs_enabled": false,
+            "@value": 0.6000000238418579
+        },
+        "Sensitivity": {
+            "@fs_enabled": false,
+            "@value": 0.7200000286102295
+        },
+        "Dry Level": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "Wet Level": {
+            "@fs_enabled": false,
+            "@value": 0
+        }
+    },
+    "Ranges": {
+        "Doubles": {
+            "@min": 0,
+            "@max": 3,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Slop": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Sensitivity": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Dry Level": {
+            "@min": -60,
+            "@max": 9,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Wet Level": {
+            "@min": -60,
+            "@max": 9,
+            "@controller": 19,
+            "@snapshot_disable": false
+        }
+    },
+    "Defaults": {
+        "@model": "HD2_DelayDoubleDouble",
+        "Dry Level": 0,
+        "@position": 2,
+        "@no_snapshot_bypass": false,
+        "Source": 1,
+        "@enabled": true,
+        "Doubles": 0,
+        "@path": 0,
+        "@type": 0,
+        "Sensitivity": 0.7200000286102295,
+        "Wet Level": 0,
+        "@stereo": false,
+        "Slop": 0.6000000238418579
+    }
+}

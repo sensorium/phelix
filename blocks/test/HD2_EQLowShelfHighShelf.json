@@ -1,0 +1,70 @@
+{
+    "SnapshotParams": {
+        "HighGain": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "HighFreq": {
+            "@fs_enabled": false,
+            "@value": 3000
+        },
+        "LowGain": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "LowFreq": {
+            "@fs_enabled": false,
+            "@value": 300
+        },
+        "Level": {
+            "@fs_enabled": false,
+            "@value": 0
+        }
+    },
+    "Ranges": {
+        "HighGain": {
+            "@min": -12,
+            "@max": 12,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "HighFreq": {
+            "@min": 400,
+            "@max": 15000,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "LowGain": {
+            "@min": -12,
+            "@max": 12,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "LowFreq": {
+            "@min": 20,
+            "@max": 2000,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Level": {
+            "@min": -60,
+            "@max": 12,
+            "@controller": 19,
+            "@snapshot_disable": false
+        }
+    },
+    "Defaults": {
+        "@model": "HD2_EQLowShelfHighShelf",
+        "HighGain": 0,
+        "@position": 2,
+        "@no_snapshot_bypass": false,
+        "LowFreq": 300,
+        "@enabled": true,
+        "@path": 0,
+        "@type": 0,
+        "LowGain": 0,
+        "Level": 0,
+        "@stereo": false,
+        "HighFreq": 3000
+    }
+}

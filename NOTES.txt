@@ -1,0 +1,68 @@
+snapshot0:
+    commands:
+        "@pedalstate" : 1,
+    "controllers" : {
+          "dsp0" : {
+            "block0" : {
+              "Mix" : {
+                "@fs_enabled" : false,
+                "@value" : 1
+              },
+              "Pedal" : {
+                "@fs_enabled" : false,
+                "@value" : 0
+              }
+
+data : {
+    tone : "    {
+        "controller" : {
+            "dsp0" : {
+                "block0" : {
+                    "Mix" : {
+                    "@min" : 0,
+                    "@max" : 1,
+                    "@controller" : 19,
+                    "@snapshot_disable" : false
+                    },
+                    "Pedal" : {
+                    "@min" : 0,
+                    "@max" : 1,
+                    "@controller" : 1,
+                    "@snapshot_disable" : false
+                    }
+                },
+                "block4" : {
+                    "Feedback" : {
+                    "@min" : 0,
+                    "@max" : 1,
+                    "@controller" : 19,
+                    "@snapshot_disable" : false
+                    },
+                    "Mix" : {
+                    "@min" : 0,
+                    "@max" : 1,
+                    "@controller" : 19,
+                    "@snapshot_disable" : false
+                    },
+                    "Time" : {
+                    "@min" : 1.7200000286102295,
+                    "@max" : 0,
+                    "@controller" : 1,
+                    "@snapshot_disable" : false
+                    },
+                    "SyncSelect1" : {
+                    "@min" : 1,
+                    "@max" : 19,
+                    "@controller" : 19,
+                    "@snapshot_disable" : false
+                    }
+                },
+    }
+
+
+
+find a minimal preset template which I can add blocks to
+make a bundle with one block in each preset
+save the bundle as seperate presets
+process the presets to extract all blocks
+(is there a way to do it without having to snapshot every control?)

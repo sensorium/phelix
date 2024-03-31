@@ -1,0 +1,48 @@
+{
+    "SnapshotParams": {
+        "HighCut": {
+            "@fs_enabled": false,
+            "@value": 20100
+        },
+        "Level": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "LowCut": {
+            "@fs_enabled": false,
+            "@value": 19.899999618530273
+        }
+    },
+    "Ranges": {
+        "HighCut": {
+            "@min": 1000,
+            "@max": 20100,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Level": {
+            "@min": -60,
+            "@max": 6,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "LowCut": {
+            "@min": 19.899999618530273,
+            "@max": 1000,
+            "@controller": 19,
+            "@snapshot_disable": false
+        }
+    },
+    "Defaults": {
+        "@model": "HD2_EQLowCutHighCut",
+        "LowCut": 19.899999618530273,
+        "@no_snapshot_bypass": false,
+        "@path": 0,
+        "@stereo": false,
+        "@type": 0,
+        "@position": 1,
+        "Level": 0,
+        "@enabled": true,
+        "HighCut": 20100
+    }
+}

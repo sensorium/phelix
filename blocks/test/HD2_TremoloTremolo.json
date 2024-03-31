@@ -1,0 +1,83 @@
+{
+    "SnapshotParams": {
+        "DutyCycle": {
+            "@fs_enabled": false,
+            "@value": 0.5
+        },
+        "Intensity": {
+            "@fs_enabled": false,
+            "@value": 1
+        },
+        "WaveShape": {
+            "@fs_enabled": false,
+            "@value": 3
+        },
+        "Speed": {
+            "@fs_enabled": false,
+            "@value": 3
+        },
+        "Level": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "SyncSelect1": {
+            "@fs_enabled": false,
+            "@value": 6
+        }
+    },
+    "Ranges": {
+        "DutyCycle": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Intensity": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "WaveShape": {
+            "@min": 0,
+            "@max": 6,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Speed": {
+            "@min": 0,
+            "@max": 15,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Level": {
+            "@min": -60,
+            "@max": 6,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "SyncSelect1": {
+            "@min": 1,
+            "@max": 19,
+            "@controller": 19,
+            "@snapshot_disable": false
+        }
+    },
+    "Defaults": {
+        "@model": "HD2_TremoloTremolo",
+        "@position": 6,
+        "@no_snapshot_bypass": false,
+        "SyncSelect1": 6,
+        "Intensity": 1,
+        "Speed": 3,
+        "@enabled": true,
+        "DutyCycle": 0.5,
+        "TempoSync1": false,
+        "@path": 0,
+        "@type": 0,
+        "Level": 0,
+        "@stereo": false,
+        "Spread": 1,
+        "WaveShape": 3
+    }
+}
