@@ -67,34 +67,43 @@ def addCabs(preset_dict,dspName,blocks_path):
         
 
 def getRandControllerBlock(preset_dict,dspName):
+    # returns a random block, or "none" if there are no blocks
     blocks = []
     for block_name in preset_dict["data"]["tone"]["controller"][dspName]:
         blocks.append(block_name)
-    return random.choice(blocks)
+    randblock = "none"
+    if len(blocks)>0:
+        randblock = random.choice(blocks)
+    return randblock
 
 def getRandControllerParam(preset_dict,dspName,block):
+    # returns a random param, or "none" if there are no params
     print("getRandControllerParam for "+dspName+" "+block)
     params = []
     for param in preset_dict["data"]["tone"]["controller"][dspName][block]:
         params.append(param)
         print("append to getRandControllerParam choices " +param)
-    return random.choice(params)
+    randparam = "none"
+    if len(params) > 0:
+        randparam = random.choice(params)
+    return randparam
 
 
 def delRandomParamControl(preset_dict,dspName):
-
+# delete a param if the random choice exists
     randblock = getRandControllerBlock(preset_dict,dspName)
-    randparam = getRandControllerParam(preset_dict,dspName,randblock)
-
-    # remove the param from all snapshots
-    for snapshot_num in range(num_snapshots):
-        snapshot_name = "snapshot" + str(snapshot_num)
-        if randparam in preset_dict["data"]["tone"][snapshot_name]["controllers"][dspName][randblock]:
-            del preset_dict["data"]["tone"][snapshot_name]["controllers"][dspName][randblock][randparam]
- 
-    # remove param from controller
-    if randparam in preset_dict["data"]["tone"]["controller"][dspName][randblock]:
-        del preset_dict["data"]["tone"]["controller"][dspName][randblock][randparam]
+    if randblock != "none":
+        randparam = getRandControllerParam(preset_dict,dspName,randblock)
+        if randparam != "none":
+            # remove the param from all snapshots
+            for snapshot_num in range(num_snapshots):
+                snapshot_name = "snapshot" + str(snapshot_num)
+                if randparam in preset_dict["data"]["tone"][snapshot_name]["controllers"][dspName][randblock]:
+                    del preset_dict["data"]["tone"][snapshot_name]["controllers"][dspName][randblock][randparam]
+        
+            # remove param from controller
+            if randparam in preset_dict["data"]["tone"]["controller"][dspName][randblock]:
+                del preset_dict["data"]["tone"]["controller"][dspName][randblock][randparam]
     
     #print("deleted "+randblock+" "+randparam)
 
@@ -114,22 +123,30 @@ def countParamControls(preset_dict,dspName):
 
 def replaceWithPedalControllers(preset_dict,dspName, pedalnum):
     print("insert pedal")
-    # choose some blocks in dspName, and change controller 19 to controller 1
-    max_controllers = min(countParamControls(preset_dict,dspName)-1,7)
-    for i in range(random.randint(1,max_controllers)) :
+    # choose some blocks in dspName, and change controller 19 to controller 1 if the blocks and params exist
+    max_controllers = min(countParamControls(preset_dict,dspName),8)
+    for i in range(random.randint(0,max_controllers)) :
         randblock = getRandControllerBlock(preset_dict,dspName)
-        randparam = getRandControllerParam(preset_dict,dspName,randblock)
-        print("replacing "+dspName, randblock, randparam, pedalnum)
-       # print(preset_dict["data"]["tone"]["controller"][dspName][randblock])
-        pedalParam = preset_dict["data"]["tone"]["controller"][dspName][randblock][randparam]
+        if randblock != "none":
+            randparam = getRandControllerParam(preset_dict,dspName,randblock)
+            if randparam != "none":
+                print("replacing "+dspName, randblock, randparam, pedalnum)
+            # print(preset_dict["data"]["tone"]["controller"][dspName][randblock])
+                pedalParam = preset_dict["data"]["tone"]["controller"][dspName][randblock][randparam]
 
-        pedalParam["@controller"] = pedalnum
-        new_max = random.uniform(pedalParam["@min"],pedalParam["@max"])
-        new_min = random.uniform(pedalParam["@min"],pedalParam["@max"])
-                        
-        # also choose random max and min values within the original limits
-        pedalParam["@max"] = new_max
-        pedalParam["@min"] = new_min
+                pedalParam["@controller"] = pedalnum
+                if isinstance(pedalParam["@min"], bool):
+                    p = [True, False]
+                    random.shuffle(p)
+                    new_max = p.pop()
+                    new_min = p.pop()
+                else:
+                    new_max = random.uniform(pedalParam["@min"],pedalParam["@max"])
+                    new_min = random.uniform(pedalParam["@min"],pedalParam["@max"])
+                                
+                # also choose random max and min values within the original limits
+                pedalParam["@max"] = new_max
+                pedalParam["@min"] = new_min
 
 
 # insert param keys into each snapshot in preset
