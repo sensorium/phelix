@@ -20,7 +20,7 @@ def replaceBlockDefaultParams(block_dict,preset_dict,block_num,dspName):
     preset_dict["data"]["tone"][dspName]["block"+str(block_num)] = block_dict["Defaults"]
 
 
-def chooseBlock(blocks_path):
+def chooseBlockFile(blocks_path):
     block_files = [f for f in os.listdir(blocks_path) if os.path.isfile(os.path.join(blocks_path, f))]
     return random.choice(block_files)
 
@@ -66,23 +66,26 @@ def addCabs(preset_dict,dspName,blocks_path):
         preset_dict["data"]["tone"][dspName][cab_name] = cab_dict["Defaults"]
         
 
-def delRandomParam(preset_dict,dspName):
+def getRandControllerBlock(preset_dict,dspName):
     blocks = []
+    for block_name in preset_dict["data"]["tone"]["controller"][dspName]:
+        blocks.append(block_name)
+    return random.choice(blocks)
+
+def getRandControllerParam(preset_dict,dspName,block):
+    print("getRandControllerParam for "+dspName+" "+block)
     params = []
+    for param in preset_dict["data"]["tone"]["controller"][dspName][block]:
+        params.append(param)
+        print("append to getRandControllerParam choices " +param)
+    return random.choice(params)
 
-    for block_name in preset_dict["data"]["tone"][dspName]:
-        if block_name.startswith("block"):
-            blocks.append(block_name)
-    randblock = random.choice(blocks)
-    # print(randblock)
 
-    for param in preset_dict["data"]["tone"][dspName][randblock]:
-        #if not preset_dict["data"]["tone"][dspName][randblock][param].startswith("@"):
-        if not param.startswith("@"):
-            params.append(param)
-    randparam = random.choice(params)
-    # print(randparam)
-    
+def delRandomParamControl(preset_dict,dspName):
+
+    randblock = getRandControllerBlock(preset_dict,dspName)
+    randparam = getRandControllerParam(preset_dict,dspName,randblock)
+
     # remove the param from all snapshots
     for snapshot_num in range(num_snapshots):
         snapshot_name = "snapshot" + str(snapshot_num)
@@ -95,19 +98,38 @@ def delRandomParam(preset_dict,dspName):
     
     #print("deleted "+randblock+" "+randparam)
 
-def countParams(preset_dict):
+
+
+
+def countParamControls(preset_dict,dspName):
     num_params = 0
-    for block_name in preset_dict["data"]["tone"]["snapshot0"]["controllers"]["dsp0"]:
-        prototype_block = preset_dict["data"]["tone"]["controller"]["dsp0"][block_name]
-        for parameter in prototype_block.items():
-            num_params += 1
-    for block_name in preset_dict["data"]["tone"]["snapshot0"]["controllers"]["dsp1"]:
-        prototype_block = preset_dict["data"]["tone"]["controller"]["dsp1"][block_name]
-        for parameter  in prototype_block.items():
-            num_params += 1
-    #print(num_params)
+    for block_name in preset_dict["data"]["tone"]["controller"][dspName]:
+        if block_name.startswith("block"):
+            print("counting params in "+block_name)
+            for parameter in preset_dict["data"]["tone"]["controller"][dspName][block_name]: #.items():
+                num_params += 1
+                print("counted "+parameter,num_params)
     return num_params
 
+
+def replaceWithPedalControllers(preset_dict,dspName, pedalnum):
+    print("insert pedal")
+    # choose some blocks in dspName, and change controller 19 to controller 1
+    max_controllers = min(countParamControls(preset_dict,dspName)-1,7)
+    for i in range(random.randint(1,max_controllers)) :
+        randblock = getRandControllerBlock(preset_dict,dspName)
+        randparam = getRandControllerParam(preset_dict,dspName,randblock)
+        print("replacing "+dspName, randblock, randparam, pedalnum)
+       # print(preset_dict["data"]["tone"]["controller"][dspName][randblock])
+        pedalParam = preset_dict["data"]["tone"]["controller"][dspName][randblock][randparam]
+
+        pedalParam["@controller"] = pedalnum
+        new_max = random.uniform(pedalParam["@min"],pedalParam["@max"])
+        new_min = random.uniform(pedalParam["@min"],pedalParam["@max"])
+                        
+        # also choose random max and min values within the original limits
+        pedalParam["@max"] = new_max
+        pedalParam["@min"] = new_min
 
 
 # insert param keys into each snapshot in preset
@@ -130,7 +152,7 @@ def replaceParamKeys(preset_dict,dspName,blocks_path):
         if block_name.startswith("block"): # or block_name.startswith("cab"): # cabs will be sorted with amps later, but cabs in amps will take an extra position at this step
             # load default params from file chosen randomly from blocks folder
             while True:
-                block_dict = loadBlockParams(blocks_path+"/"+chooseBlock(blocks_path))
+                block_dict = loadBlockParams(blocks_path+"/"+chooseBlockFile(blocks_path))
                 # allow only one amp in dsp section of preset_dict
                 if block_dict["Defaults"]["@model"].startswith("HD2_Amp"):
                      num_amps += 1                                          
@@ -214,30 +236,7 @@ def chooseParamValues(preset_dict,dspName):
                 preset_dict["data"]["tone"][snapshot_name]["controllers"][dspName][block_name][parameter]["@value"] = result
 
 
-def combThruAmpsAndCabs(preset_dict,dspName):
-    #make lists of Amps and Cabs
-    cabs = []
-    amps = []
 
-    for block_name in preset_dict["data"]["tone"][dspName]:
-        if block_name.startswith("cab"):
-            cabs.append(block_name)
-        if preset_dict["data"]["tone"][dspName][block_name]["@model"].startswith("HD2_Amp"):
-            amps.append(block_name)
-
-    random.shuffle(cabs)
-    random.shuffle(amps)
-
-    if amps:
-        for amp in amps:
-            if "@cab" in preset_dict["data"]["tone"][dspName][amp]:
-                del preset_dict["data"]["tone"][dspName][amp]["@cab"] # remove exisiting cab
-            if cabs:
-                if random.randint(0,1) == 1:
-                    preset_dict["data"]["tone"][dspName][amp]["@cab"] = cabs.pop()
-                    del preset_dict["data"]["tone"][dspName][amp]["@cab"]["@path"]
-                    del preset_dict["data"]["tone"][dspName][amp]["@cab"]["@position"]
-    
 
 def turnBlocksOnOrOff(preset_dict,dspName):
     for snapshot_num in range(num_snapshots):
@@ -260,8 +259,8 @@ def generateFromSavedBlocks(preset_dict, dspName,blocks_path):
     replaceParamKeys(preset_dict,dspName,blocks_path)
     chooseParamValues(preset_dict,dspName)
     addCabs(preset_dict,dspName,blocks_path)
-    #combThruAmpsAndCabs(preset_dict,dspName)
     turnBlocksOnOrOff(preset_dict,dspName)
+
 
 def processPreset(presets_path,blocks_path, presetName):
     with open(os.path.join(presets_path, presetName), "r") as f:
@@ -274,12 +273,15 @@ def processPreset(presets_path,blocks_path, presetName):
         generateFromSavedBlocks(preset_dict, "dsp0",blocks_path)
         generateFromSavedBlocks(preset_dict, "dsp1",blocks_path)
 
-        while countParams(preset_dict)>64:
+        while (countParamControls(preset_dict,"dsp0")+countParamControls(preset_dict,"dsp1"))>64:
             if random.randint(0,1) == 1:
-                delRandomParam(preset_dict, "dsp0")
+                delRandomParamControl(preset_dict, "dsp0")
             else:
-                delRandomParam(preset_dict, "dsp1")
+                delRandomParamControl(preset_dict, "dsp1")
             
+        replaceWithPedalControllers(preset_dict,"dsp0", 2)
+        replaceWithPedalControllers(preset_dict,"dsp1", 2)
+        
         setLedColours(preset_dict)
 
         with open(os.path.join(presets_path, "aTest.hlx"), "w") as json_file:
