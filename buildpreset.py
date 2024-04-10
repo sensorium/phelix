@@ -78,11 +78,11 @@ def getRandControllerBlock(preset_dict,dspName):
 
 def getRandControllerParam(preset_dict,dspName,block):
     # returns a random param, or "none" if there are no params
-    print("getRandControllerParam for "+dspName+" "+block)
+    #print("getRandControllerParam for "+dspName+" "+block)
     params = []
     for param in preset_dict["data"]["tone"]["controller"][dspName][block]:
         params.append(param)
-        print("append to getRandControllerParam choices " +param)
+        #print("append to getRandControllerParam choices " +param)
     randparam = "none"
     if len(params) > 0:
         randparam = random.choice(params)
@@ -114,10 +114,10 @@ def countParamControls(preset_dict,dspName):
     num_params = 0
     for block_name in preset_dict["data"]["tone"]["controller"][dspName]:
         if block_name.startswith("block"):
-            print("counting params in "+block_name)
+            #print("counting params in "+block_name)
             for parameter in preset_dict["data"]["tone"]["controller"][dspName][block_name]: #.items():
                 num_params += 1
-                print("counted "+parameter,num_params)
+                #print("counted "+parameter,num_params)
     return num_params
 
 
@@ -147,6 +147,10 @@ def replaceWithPedalControllers(preset_dict,dspName, pedalnum):
                 # also choose random max and min values within the original limits
                 pedalParam["@max"] = new_max
                 pedalParam["@min"] = new_min
+
+
+def seriesOrParallelPaths(preset_dict):
+    preset_dict["data"]["tone"]["dsp0"]["outputA"]["@output"] = random.randint(1,2)
 
 
 # insert param keys into each snapshot in preset
@@ -204,8 +208,8 @@ def replaceParamKeys(preset_dict,dspName,blocks_path):
                 # add snapshot params from block_dict
                 preset_dict["data"]["tone"][snapshot_name]["controllers"][dspName][block_name] = deepcopy(block_dict["SnapshotParams"])
                      
-    join_position = random.randint(2,8)
-    split_position = random.randint(1,join_position-1)
+    join_position = random.randint(3,8)
+    split_position = random.randint(0,join_position-1)
 
     preset_dict["data"]["tone"][dspName]["join"]["@position"] = join_position
     preset_dict["data"]["tone"][dspName]["split"]["@position"] = split_position
@@ -233,10 +237,11 @@ def chooseParamValues(preset_dict,dspName):
                     mode = ((pmax-pmin) * 0.8) + pmin # choose level from 0.2 to max, peak around 0.8 of max range
                     result = random.triangular(lowest, pmax, mode)
                 elif parameter == "Time": # choose times at the short end  
-                    mode = ((pmax-pmin) * 0.1) + pmin
-                    result = random.triangular(pmin, pmax, mode)
-                    #print("setting Time "+str(result))
-                    #result = math.min(max, random.expovariate(0.5))
+                    #mode = ((pmax-pmin) * 0.1) + pmin
+                    #result = random.triangular(pmin, pmax, mode)
+                    closerToOneForLowerNum = 0.95 + (0.75 - 0.95) * (pmax - 2) / (8 - 2)
+                    result = min(pmax, random.expovariate(closerToOneForLowerNum))
+                    print("setting Time, max "+str(pmax),str(result))
                 elif parameter == "Mix": # choose mix around middle
                     lowest = ((pmax-pmin) * 0.2) + pmin # choose mix from 0.2 to max, peak around 0.5 of max range
                     mode = ((pmax-pmin) * 0.5) + pmin
@@ -279,6 +284,24 @@ def generateFromSavedBlocks(preset_dict, dspName,blocks_path):
     turnBlocksOnOrOff(preset_dict,dspName)
 
 
+
+def namePreset(preset_dict):
+    vowels = 'aeiou'
+    consonants = 'bcdfghjklmnpqrstvwxyz'
+
+    name = ''
+    for _ in range(random.randint(2,4)):
+        # name += random.choice(consonants)
+        # name += random.choice(vowels)
+        if random.choice([True, False]):  # Randomly choose between vowels and consonants
+            name += random.choice(vowels)+random.choice(consonants)
+        else:
+            name += random.choice(consonants)+random.choice(vowels)
+
+    print(name)
+    preset_dict["data"]["meta"]["name"] = name
+    
+    
 def processPreset(presets_path,blocks_path, presetName):
     with open(os.path.join(presets_path, presetName), "r") as f:
         preset_dict = json.load(f)
@@ -289,6 +312,8 @@ def processPreset(presets_path,blocks_path, presetName):
         print("generating")
         generateFromSavedBlocks(preset_dict, "dsp0",blocks_path)
         generateFromSavedBlocks(preset_dict, "dsp1",blocks_path)
+        seriesOrParallelPaths(preset_dict)
+        namePreset(preset_dict)
 
         while (countParamControls(preset_dict,"dsp0")+countParamControls(preset_dict,"dsp1"))>64:
             if random.randint(0,1) == 1:

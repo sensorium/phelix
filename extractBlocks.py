@@ -37,4 +37,4 @@ def extractControls(preset_path, blocks_path,presetName):
 		extractBlocksFromPath(preset_dict, "dsp1", blocks_path)
 
 
-extractControls("presets/test", "blocks/test", "mod3.hlx")
+extractControls("presets/test", "blocks/test", "delay4.hlx")

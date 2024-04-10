@@ -1,28 +1,28 @@
 {
     "SnapshotParams": {
-        "LowCut": {
-            "@fs_enabled": false,
-            "@value": 80
-        },
-        "Rotate": {
-            "@fs_enabled": false,
-            "@value": 0
-        },
         "SyncSelect1": {
             "@fs_enabled": false,
             "@value": 6
         },
-        "Fill": {
+        "Mode": {
             "@fs_enabled": false,
-            "@value": 3
+            "@value": false
         },
-        "Step Time": {
+        "Noise": {
             "@fs_enabled": false,
-            "@value": 0.13600003719329834
+            "@value": 0.10000002384185791
         },
-        "Steps": {
+        "Headroom": {
             "@fs_enabled": false,
-            "@value": 8
+            "@value": 0
+        },
+        "Depth": {
+            "@fs_enabled": false,
+            "@value": 0.2799999713897705
+        },
+        "Time": {
+            "@fs_enabled": false,
+            "@value": 0.375
         },
         "Level": {
             "@fs_enabled": false,
@@ -30,51 +30,47 @@
         },
         "Mix": {
             "@fs_enabled": false,
-            "@value": 0.4219999313354492
-        },
-        "HighCut": {
-            "@fs_enabled": false,
-            "@value": 20000
+            "@value": 0.5
         },
         "Feedback": {
             "@fs_enabled": false,
-            "@value": 0
+            "@value": 0.38999998569488525
         }
     },
     "Ranges": {
-        "LowCut": {
-            "@min": 19.899999618530273,
-            "@max": 500,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Rotate": {
-            "@min": 0,
-            "@max": 15,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
         "SyncSelect1": {
             "@min": 1,
             "@max": 19,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Fill": {
-            "@min": 1,
-            "@max": 16,
+        "Mode": {
+            "@min": false,
+            "@max": true,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Step Time": {
+        "Noise": {
             "@min": 0,
-            "@max": 0.5,
+            "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Steps": {
-            "@min": 1,
-            "@max": 16,
+        "Headroom": {
+            "@min": -12,
+            "@max": 12,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Depth": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Time": {
+            "@min": 0.019999980926513672,
+            "@max": 0.5,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -90,12 +86,6 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "HighCut": {
-            "@min": 500,
-            "@max": 20100,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
         "Feedback": {
             "@min": 0,
             "@max": 1,
@@ -104,24 +94,25 @@
         }
     },
     "Defaults": {
-        "@model": "Victoria_EuclideanDelay",
-        "Step Time": 0.13600003719329834,
-        "@position": 3,
-        "@no_snapshot_bypass": false,
-        "Feedback": 0,
-        "LowCut": 80,
-        "Steps": 8,
-        "@enabled": true,
-        "SyncSelect1": 6,
-        "TempoSync1": false,
-        "@path": 0,
+        "Depth": 0.2799999713897705,
         "@trails": false,
+        "@enabled": true,
+        "Noise": 0.10000002384185791,
         "@type": 7,
-        "Fill": 3,
-        "Mix": 0.4219999313354492,
-        "Level": 0,
+        "SyncSelect1": 6,
+        "@model": "HD2_DelayElephantMan",
         "@stereo": false,
-        "HighCut": 20000,
-        "Rotate": 0
+        "@path": 0,
+        "Level": 0,
+        "Mix": 0.5,
+        "Spread": 0.2720000743865967,
+        "Feedback": 0.38999998569488525,
+        "Scale": 1,
+        "@position": 4,
+        "Headroom": 0,
+        "@no_snapshot_bypass": false,
+        "Mode": false,
+        "TempoSync1": false,
+        "Time": 0.375
     }
 }
