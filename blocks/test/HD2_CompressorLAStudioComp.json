@@ -1,36 +1,46 @@
 {
     "SnapshotParams": {
-        "Attack": {
+        "PeakReduction": {
             "@fs_enabled": false,
-            "@value": 0
+            "@value": 0.7799999713897705
         },
-        "Release": {
+        "Emphasis": {
             "@fs_enabled": false,
-            "@value": 1
+            "@value": 0.09000003337860107
+        },
+        "Type": {
+            "@fs_enabled": false,
+            "@value": false
         },
         "Mix": {
             "@fs_enabled": false,
             "@value": 1
         },
-        "Sensitivity": {
+        "Gain": {
             "@fs_enabled": false,
-            "@value": 0.5
+            "@value": 0.6200000047683716
         },
         "Level": {
             "@fs_enabled": false,
-            "@value": 0.5
+            "@value": 0
         }
     },
     "Ranges": {
-        "Attack": {
+        "PeakReduction": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Release": {
+        "Emphasis": {
             "@min": 0,
             "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Type": {
+            "@min": false,
+            "@max": true,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -40,31 +50,32 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Sensitivity": {
+        "Gain": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
         "Level": {
-            "@min": 0,
-            "@max": 1,
+            "@min": -120,
+            "@max": 12,
             "@controller": 19,
             "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "@model": "HD2_CompressorKinkyComp",
-        "@position": 2,
+        "@model": "HD2_CompressorLAStudioComp",
+        "@position": 5,
         "@no_snapshot_bypass": false,
-        "Release": 1,
         "@enabled": true,
-        "Sensitivity": 0.5,
+        "Emphasis": 0.09000003337860107,
         "@path": 0,
         "@type": 0,
-        "Attack": 0,
         "Mix": 1,
-        "Level": 0.5,
-        "@stereo": false
+        "PeakReduction": 0.7799999713897705,
+        "Type": false,
+        "Level": 0,
+        "@stereo": false,
+        "Gain": 0.6200000047683716
     }
 }

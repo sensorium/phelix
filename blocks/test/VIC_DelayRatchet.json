@@ -1,70 +1,72 @@
 {
     "SnapshotParams": {
-        "Attack": {
+        "Time": {
+            "@fs_enabled": false,
+            "@value": 0.10000002384185791
+        },
+        "FX Level": {
+            "@fs_enabled": false,
+            "@value": 0.7999999523162842
+        },
+        "Operation": {
+            "@fs_enabled": false,
+            "@value": 2
+        },
+        "Level": {
             "@fs_enabled": false,
             "@value": 0
         },
-        "Release": {
+        "SyncSelect1": {
             "@fs_enabled": false,
-            "@value": 1
-        },
-        "Mix": {
-            "@fs_enabled": false,
-            "@value": 1
-        },
-        "Sensitivity": {
-            "@fs_enabled": false,
-            "@value": 0.5
-        },
-        "Level": {
-            "@fs_enabled": false,
-            "@value": 0.5
+            "@value": 6
         }
     },
     "Ranges": {
-        "Attack": {
+        "Time": {
+            "@min": 0.04999995231628418,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "FX Level": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Release": {
+        "Operation": {
             "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Mix": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Sensitivity": {
-            "@min": 0,
-            "@max": 1,
+            "@max": 2,
             "@controller": 19,
             "@snapshot_disable": false
         },
         "Level": {
-            "@min": 0,
-            "@max": 1,
+            "@min": -60,
+            "@max": 6,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "SyncSelect1": {
+            "@min": 1,
+            "@max": 19,
             "@controller": 19,
             "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "@model": "HD2_CompressorKinkyComp",
-        "@position": 2,
+        "@model": "VIC_DelayRatchet",
+        "@position": 3,
         "@no_snapshot_bypass": false,
-        "Release": 1,
+        "SyncSelect1": 6,
+        "TempoSync1": false,
         "@enabled": true,
-        "Sensitivity": 0.5,
         "@path": 0,
         "@type": 0,
-        "Attack": 0,
-        "Mix": 1,
-        "Level": 0.5,
+        "Time": 0.10000002384185791,
+        "Transport": false,
+        "FX Level": 0.7999999523162842,
+        "Operation": 2,
+        "Level": 0,
         "@stereo": false
     }
 }

@@ -1,28 +1,32 @@
 {
     "SnapshotParams": {
-        "LowCut": {
-            "@fs_enabled": false,
-            "@value": 100
-        },
-        "Mix": {
-            "@fs_enabled": false,
-            "@value": 0.25
-        },
-        "Decay": {
-            "@fs_enabled": false,
-            "@value": 2
-        },
-        "PreDelay": {
-            "@fs_enabled": false,
-            "@value": 0.009999990463256836
-        },
-        "VarDelayAmpl": {
-            "@fs_enabled": false,
-            "@value": 0.6000000238418579
-        },
         "BassFreq": {
             "@fs_enabled": false,
             "@value": 100
+        },
+        "Motion": {
+            "@fs_enabled": false,
+            "@value": 0.28999996185302734
+        },
+        "Diffusion": {
+            "@fs_enabled": false,
+            "@value": 0.7000000476837158
+        },
+        "LowCut": {
+            "@fs_enabled": false,
+            "@value": 117
+        },
+        "RoomSize": {
+            "@fs_enabled": false,
+            "@value": 1
+        },
+        "Damping": {
+            "@fs_enabled": false,
+            "@value": 3720
+        },
+        "Mix": {
+            "@fs_enabled": false,
+            "@value": 0.38999998569488525
         },
         "BassBoost": {
             "@fs_enabled": false,
@@ -32,53 +36,59 @@
             "@fs_enabled": false,
             "@value": 0
         },
-        "MatrFreq": {
+        "Decay": {
             "@fs_enabled": false,
-            "@value": 0.33000004291534424
+            "@value": 4
         },
         "HighCut": {
             "@fs_enabled": false,
-            "@value": 10000
+            "@value": 6300
         },
-        "Damping": {
+        "Predelay": {
             "@fs_enabled": false,
-            "@value": 3720
+            "@value": 0.04999995231628418
         }
     },
     "Ranges": {
+        "BassFreq": {
+            "@min": 20,
+            "@max": 500,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Motion": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Diffusion": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
         "LowCut": {
             "@min": 19.899999618530273,
             "@max": 1000,
             "@controller": 19,
             "@snapshot_disable": false
         },
+        "RoomSize": {
+            "@min": 0,
+            "@max": 2,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Damping": {
+            "@min": 500,
+            "@max": 20000,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
         "Mix": {
             "@min": 0,
             "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Decay": {
-            "@min": 0.10000002384185791,
-            "@max": 45.099998474121094,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "PreDelay": {
-            "@min": 0,
-            "@max": 0.10000002384185791,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "VarDelayAmpl": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "BassFreq": {
-            "@min": 20,
-            "@max": 500,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -94,44 +104,45 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "MatrFreq": {
-            "@min": 0,
-            "@max": 1,
+        "Decay": {
+            "@min": 0.10000002384185791,
+            "@max": 45.099998474121094,
             "@controller": 19,
             "@snapshot_disable": false
         },
         "HighCut": {
-            "@min": 1000,
+            "@min": 500,
             "@max": 20100,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Damping": {
-            "@min": 500,
-            "@max": 20000,
+        "Predelay": {
+            "@min": 0,
+            "@max": 0.20000004768371582,
             "@controller": 19,
             "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "BassFreq": 100,
-        "@model": "VIC_DynPlate",
-        "PreDelay": 0.009999990463256836,
-        "@position": 1,
-        "@no_snapshot_bypass": false,
-        "LowCut": 100,
-        "VarDelayAmpl": 0.6000000238418579,
-        "@enabled": true,
-        "Damping": 3720,
-        "MatrFreq": 0.33000004291534424,
-        "@path": 0,
+        "RoomSize": 1,
         "@trails": false,
+        "BassFreq": 100,
+        "@enabled": true,
+        "Diffusion": 0.7000000476837158,
         "@type": 7,
-        "Mix": 0.25,
-        "BassBoost": 0,
-        "Level": 0,
+        "Motion": 0.28999996185302734,
+        "Damping": 3720,
+        "@model": "VIC_ReverbRotating",
         "@stereo": false,
-        "Decay": 2,
-        "HighCut": 10000
+        "Decay": 4,
+        "LowCut": 117,
+        "@path": 0,
+        "Level": 0,
+        "Mix": 0.38999998569488525,
+        "BassBoost": 0,
+        "HighCut": 6300,
+        "@position": 0,
+        "@no_snapshot_bypass": false,
+        "Predelay": 0.04999995231628418
     }
 }

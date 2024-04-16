@@ -20,6 +20,14 @@ def extractBlocksFromPath(preset_dict, dspName, blocks_path):
 				with open(os.path.join(blocks_path,block_filename), "w") as json_file:
 					json.dump(block_dict, json_file, indent=4)
 				print(os.path.join(blocks_path,block_filename))
+		
+
+def extractSplits(preset_dict, dspName, blocks_path):
+	if "split" in preset_dict["data"]["tone"][dspName]:
+		split_filename = preset_dict["data"]["tone"][dspName]["split"]["@model"]+".json"
+		with open(os.path.join(blocks_path,split_filename), "w") as json_file:
+			json.dump(preset_dict["data"]["tone"][dspName]["split"], json_file, indent=4)
+			print(os.path.join(blocks_path,split_filename))
 
 
 # This code defines a function that creates a directory 
@@ -35,6 +43,7 @@ def extractControls(preset_path, blocks_path,presetName):
 		preset_dict = json.load(f)
 		extractBlocksFromPath(preset_dict, "dsp0", blocks_path)
 		extractBlocksFromPath(preset_dict, "dsp1", blocks_path)
+		#extractSplits(preset_dict, "dsp0", blocks_path)
+		#extractSplits(preset_dict, "dsp1", blocks_path)
 
-
-extractControls("presets/test", "blocks/test", "delay4.hlx")
+extractControls("presets/test", "blocks/test", "delay5.hlx")

@@ -2,23 +2,27 @@
     "SnapshotParams": {
         "Attack": {
             "@fs_enabled": false,
-            "@value": 0.03799998760223389
+            "@value": 0.009999990463256836
         },
         "Knee": {
             "@fs_enabled": false,
-            "@value": 6
+            "@value": 0
         },
         "Ratio": {
             "@fs_enabled": false,
-            "@value": 3
+            "@value": 10
         },
         "Threshold": {
             "@fs_enabled": false,
-            "@value": -37.099998474121094
+            "@value": -24
+        },
+        "Gain": {
+            "@fs_enabled": false,
+            "@value": 3
         },
         "Level": {
             "@fs_enabled": false,
-            "@value": 7
+            "@value": 10
         },
         "Mix": {
             "@fs_enabled": false,
@@ -26,13 +30,13 @@
         },
         "Release": {
             "@fs_enabled": false,
-            "@value": 0.20000004768371582
+            "@value": 0.10000002384185791
         }
     },
     "Ranges": {
         "Attack": {
             "@min": 0.00010001659393310547,
-            "@max": 0.20000004768371582,
+            "@max": 0.019999980926513672,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -43,20 +47,26 @@
             "@snapshot_disable": false
         },
         "Ratio": {
-            "@min": 0,
-            "@max": 5,
+            "@min": 1,
+            "@max": 40,
             "@controller": 19,
             "@snapshot_disable": false
         },
         "Threshold": {
-            "@min": -60,
-            "@max": 0,
+            "@min": -40,
+            "@max": 22,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Gain": {
+            "@min": -15,
+            "@max": 15,
             "@controller": 19,
             "@snapshot_disable": false
         },
         "Level": {
-            "@min": -60,
-            "@max": 36,
+            "@min": -20,
+            "@max": 20,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -67,26 +77,27 @@
             "@snapshot_disable": false
         },
         "Release": {
-            "@min": 0.04999995231628418,
-            "@max": 2.5,
+            "@min": 0.10000002384185791,
+            "@max": 3,
             "@controller": 19,
             "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "@model": "HD2_CompressorDeluxeComp",
-        "@position": 0,
+        "@model": "HD2_CompressorRochesterComp",
+        "@position": 4,
         "@no_snapshot_bypass": false,
-        "Threshold": -37.099998474121094,
-        "Release": 0.20000004768371582,
+        "Threshold": -24,
+        "Release": 0.10000002384185791,
         "@enabled": true,
-        "Knee": 6,
+        "Knee": 0,
         "@path": 0,
         "@type": 0,
-        "Attack": 0.03799998760223389,
+        "Attack": 0.009999990463256836,
         "Mix": 1,
-        "Ratio": 3,
-        "Level": 7,
-        "@stereo": false
+        "Ratio": 10,
+        "Level": 10,
+        "@stereo": false,
+        "Gain": 3
     }
 }

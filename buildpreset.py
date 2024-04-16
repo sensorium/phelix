@@ -125,7 +125,8 @@ def replaceWithPedalControllers(preset_dict,dspName, pedalnum):
     print("insert pedal")
     # choose some blocks in dspName, and change controller 19 to controller 1 if the blocks and params exist
     max_controllers = min(countParamControls(preset_dict,dspName),8)
-    for i in range(random.randint(0,max_controllers)) :
+    #for i in range(random.randint(0,max_controllers)) :
+    for i in range(8) :
         randblock = getRandControllerBlock(preset_dict,dspName)
         if randblock != "none":
             randparam = getRandControllerParam(preset_dict,dspName,randblock)
@@ -256,9 +257,14 @@ def chooseParamValues(preset_dict,dspName):
                 else:
                     result = random.uniform(pmin, pmax) # switch choices are rounded to nearest integer in helix
                 preset_dict["data"]["tone"][snapshot_name]["controllers"][dspName][block_name][parameter]["@value"] = result
+                # make defaults same as snapshot 0
+                if (snapshot_num == 0) and (block_name.startswith("block") or block_name.startswith("cab")) and (not parameter.startswith("@")):
+                        defaults_block[parameter] = result
 
 
 
+def chooseSplit(preset_dict,dspName):
+    preset_dict["data"]["tone"][dspNames]["join"]["split"]["@model"] = rendom.choice(["HD2_AppDSPFlowSplitXOver","HD2_AppDSPFlowSplitY"])
 
 def turnBlocksOnOrOff(preset_dict,dspName):
     for snapshot_num in range(num_snapshots):
@@ -266,7 +272,10 @@ def turnBlocksOnOrOff(preset_dict,dspName):
         if dspName in preset_dict["data"]["tone"][snapshot_name]["blocks"]:
             for block in preset_dict["data"]["tone"][snapshot_name]["blocks"][dspName]:
                 if block.startswith("block") or block.startswith("cab"):
-                    preset_dict["data"]["tone"][snapshot_name]["blocks"][dspName][block] = random.choice([True, False])
+                    state = False
+                    if (random.uniform(0,1) < .7): 
+                        state = True
+                    preset_dict["data"]["tone"][snapshot_name]["blocks"][dspName][block] = state
 
 
 def setLedColours(preset_dict):
@@ -288,16 +297,12 @@ def generateFromSavedBlocks(preset_dict, dspName,blocks_path):
 def namePreset(preset_dict):
     vowels = 'aeiou'
     consonants = 'bcdfghjklmnpqrstvwxyz'
-
     name = ''
     for _ in range(random.randint(2,4)):
-        # name += random.choice(consonants)
-        # name += random.choice(vowels)
-        if random.choice([True, False]):  # Randomly choose between vowels and consonants
+        if random.choice([True, False]):
             name += random.choice(vowels)+random.choice(consonants)
         else:
             name += random.choice(consonants)+random.choice(vowels)
-
     print(name)
     preset_dict["data"]["meta"]["name"] = name
     

@@ -1,46 +1,36 @@
 {
     "SnapshotParams": {
-        "Attack": {
+        "Blend": {
             "@fs_enabled": false,
-            "@value": 0
+            "@value": 1
+        },
+        "Compression": {
+            "@fs_enabled": false,
+            "@value": 0.5
         },
         "Release": {
             "@fs_enabled": false,
-            "@value": 1
-        },
-        "Mix": {
-            "@fs_enabled": false,
-            "@value": 1
-        },
-        "Sensitivity": {
-            "@fs_enabled": false,
-            "@value": 0.5
+            "@value": 0.25
         },
         "Level": {
             "@fs_enabled": false,
-            "@value": 0.5
+            "@value": 0.6499999761581421
         }
     },
     "Ranges": {
-        "Attack": {
+        "Blend": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Compression": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
         "Release": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Mix": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Sensitivity": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
@@ -54,17 +44,16 @@
         }
     },
     "Defaults": {
-        "@model": "HD2_CompressorKinkyComp",
-        "@position": 2,
+        "@model": "HD2_CompressorOptoComp",
+        "Compression": 0.5,
         "@no_snapshot_bypass": false,
-        "Release": 1,
-        "@enabled": true,
-        "Sensitivity": 0.5,
         "@path": 0,
+        "@stereo": false,
         "@type": 0,
-        "Attack": 0,
-        "Mix": 1,
-        "Level": 0.5,
-        "@stereo": false
+        "Blend": 1,
+        "@position": 3,
+        "Level": 0.6499999761581421,
+        "@enabled": true,
+        "Release": 0.25
     }
 }

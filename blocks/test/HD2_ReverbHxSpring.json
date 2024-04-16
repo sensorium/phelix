@@ -2,19 +2,15 @@
     "SnapshotParams": {
         "LowCut": {
             "@fs_enabled": false,
-            "@value": 169
+            "@value": 200
         },
-        "Rate": {
+        "Spring Count": {
             "@fs_enabled": false,
-            "@value": 0.25
+            "@value": 2
         },
-        "Decay": {
+        "Dwell": {
             "@fs_enabled": false,
-            "@value": 0.43000006675720215
-        },
-        "Predelay": {
-            "@fs_enabled": false,
-            "@value": 0
+            "@value": 0.3999999761581421
         },
         "Level": {
             "@fs_enabled": false,
@@ -22,15 +18,15 @@
         },
         "Mix": {
             "@fs_enabled": false,
-            "@value": 0.2999999523162842
+            "@value": 0.3700000047683716
         },
         "HighCut": {
             "@fs_enabled": false,
-            "@value": 6000
+            "@value": 5000
         },
-        "Modulation": {
+        "Drip": {
             "@fs_enabled": false,
-            "@value": 0.3999999761581421
+            "@value": 1
         }
     },
     "Ranges": {
@@ -40,21 +36,15 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Rate": {
-            "@min": 0,
-            "@max": 1,
+        "Spring Count": {
+            "@min": 1,
+            "@max": 3,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Decay": {
+        "Dwell": {
             "@min": 0,
             "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Predelay": {
-            "@min": 0,
-            "@max": 0.20000004768371582,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -76,29 +66,28 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Modulation": {
+        "Drip": {
             "@min": 0,
-            "@max": 1,
+            "@max": 2,
             "@controller": 19,
             "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "@model": "HD2_ReverbDoubleTank",
-        "Rate": 0.25,
-        "@position": 1,
+        "@model": "HD2_ReverbHxSpring",
+        "@position": 2,
         "@no_snapshot_bypass": false,
-        "LowCut": 169,
+        "Dwell": 0.3999999761581421,
+        "LowCut": 200,
+        "Spring Count": 2,
         "@enabled": true,
         "@path": 0,
         "@trails": false,
         "@type": 7,
-        "Mix": 0.2999999523162842,
-        "Modulation": 0.3999999761581421,
+        "Drip": 1,
+        "Mix": 0.3700000047683716,
         "Level": 0,
         "@stereo": false,
-        "Decay": 0.43000006675720215,
-        "HighCut": 6000,
-        "Predelay": 0
+        "HighCut": 5000
     }
 }
