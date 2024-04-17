@@ -9,7 +9,7 @@ def extractBlocksFromPath(preset_dict, dspName, blocks_path):
 	if dspName in preset_dict["data"]["tone"]["controller"]:
 		print(dspName)
 		for block_name in preset_dict["data"]["tone"]["controller"][dspName]:
-			if block_name.startswith("block") or block_name.startswith("cab"):
+			if block_name.startswith("block") or block_name.startswith("cab") or block_name.startswith("split"):
 				block_dict = {}
 				block_dict["SnapshotParams"] = preset_dict["data"]["tone"]["snapshot0"]["controllers"][dspName][block_name]
 				block_dict["Ranges"] = preset_dict["data"]["tone"]["controller"][dspName][block_name]
@@ -22,12 +22,12 @@ def extractBlocksFromPath(preset_dict, dspName, blocks_path):
 				print(os.path.join(blocks_path,block_filename))
 		
 
-def extractSplits(preset_dict, dspName, blocks_path):
-	if "split" in preset_dict["data"]["tone"][dspName]:
-		split_filename = preset_dict["data"]["tone"][dspName]["split"]["@model"]+".json"
-		with open(os.path.join(blocks_path,split_filename), "w") as json_file:
-			json.dump(preset_dict["data"]["tone"][dspName]["split"], json_file, indent=4)
-			print(os.path.join(blocks_path,split_filename))
+# def extractSplits(preset_dict, dspName, blocks_path):
+# 	if "split" in preset_dict["data"]["tone"][dspName]:
+# 		split_filename = preset_dict["data"]["tone"][dspName]["split"]["@model"]+".json"
+# 		with open(os.path.join(blocks_path,split_filename), "w") as json_file:
+# 			json.dump(preset_dict["data"]["tone"][dspName]["split"], json_file, indent=4)
+# 			print(os.path.join(blocks_path,split_filename))
 
 
 # This code defines a function that creates a directory 
@@ -46,4 +46,4 @@ def extractControls(preset_path, blocks_path,presetName):
 		#extractSplits(preset_dict, "dsp0", blocks_path)
 		#extractSplits(preset_dict, "dsp1", blocks_path)
 
-extractControls("presets/test", "blocks/test", "delay5.hlx")
+extractControls("presets/test", "blocks/test", "splitDynSnap.hlx")

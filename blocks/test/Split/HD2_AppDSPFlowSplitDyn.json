@@ -1,11 +1,57 @@
 {
-    "@model": "HD2_AppDSPFlowSplitDyn",
-    "Attack": 0.8600000143051147,
-    "@no_snapshot_bypass": false,
-    "Decay": 0.8600000143051147,
-    "Threshold": -15,
-    "bypass": false,
-    "@position": 0,
-    "Reverse": false,
-    "@enabled": true
+    "SnapshotParams": {
+        "Attack": {
+            "@fs_enabled": false,
+            "@value": 0.8600000143051147
+        },
+        "Decay": {
+            "@fs_enabled": false,
+            "@value": 0.8600000143051147
+        },
+        "Reverse": {
+            "@fs_enabled": false,
+            "@value": false
+        },
+        "Threshold": {
+            "@fs_enabled": false,
+            "@value": -15
+        }
+    },
+    "Ranges": {
+        "Attack": {
+            "@min": 0.04999995231628418,
+            "@max": 5,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Decay": {
+            "@min": 0.04999995231628418,
+            "@max": 5,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Reverse": {
+            "@min": false,
+            "@max": true,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Threshold": {
+            "@min": -60,
+            "@max": 0,
+            "@controller": 19,
+            "@snapshot_disable": false
+        }
+    },
+    "Defaults": {
+        "@model": "HD2_AppDSPFlowSplitDyn",
+        "Attack": 0.8600000143051147,
+        "@no_snapshot_bypass": false,
+        "Decay": 0.8600000143051147,
+        "Threshold": -15,
+        "bypass": false,
+        "@position": 0,
+        "Reverse": false,
+        "@enabled": true
+    }
 }

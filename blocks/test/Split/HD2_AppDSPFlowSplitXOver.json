@@ -1,9 +1,35 @@
 {
-    "@model": "HD2_AppDSPFlowSplitXOver",
-    "bypass": false,
-    "@no_snapshot_bypass": false,
-    "Frequency": 500,
-    "@position": 0,
-    "Reverse": false,
-    "@enabled": true
+    "SnapshotParams": {
+        "Frequency": {
+            "@fs_enabled": false,
+            "@value": 500
+        },
+        "Reverse": {
+            "@fs_enabled": false,
+            "@value": false
+        }
+    },
+    "Ranges": {
+        "Frequency": {
+            "@min": 25,
+            "@max": 15000,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Reverse": {
+            "@min": false,
+            "@max": true,
+            "@controller": 19,
+            "@snapshot_disable": false
+        }
+    },
+    "Defaults": {
+        "@model": "HD2_AppDSPFlowSplitXOver",
+        "bypass": false,
+        "@no_snapshot_bypass": false,
+        "Frequency": 500,
+        "@position": 0,
+        "Reverse": false,
+        "@enabled": true
+    }
 }

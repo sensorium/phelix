@@ -66,6 +66,8 @@ def addCabs(preset_dict,dspName,blocks_path):
         preset_dict["data"]["tone"][dspName][cab_name] = cab_dict["Defaults"]
         
 
+
+
 def getRandControllerBlock(preset_dict,dspName):
     # returns a random block, or "none" if there are no blocks
     blocks = []
@@ -208,13 +210,33 @@ def replaceParamKeys(preset_dict,dspName,blocks_path):
 
                 # add snapshot params from block_dict
                 preset_dict["data"]["tone"][snapshot_name]["controllers"][dspName][block_name] = deepcopy(block_dict["SnapshotParams"])
-                     
+        
+        elif block_name.startswith("split"):
+            split_dict = chooseSplit(preset_dict,dspName,blocks_path)
+            preset_dict["data"]["tone"][dspName]["split"] = deepcopy(split_dict["Defaults"])
+            preset_dict["data"]["tone"]["controller"][dspName][block_name] = split_dict["Ranges"]
+            for snapshot_num in range(num_snapshots):
+                snapshot_name = "snapshot" + str(snapshot_num)
+                preset_dict["data"]["tone"][snapshot_name]["controllers"][dspName][block_name] = deepcopy(split_dict["SnapshotParams"])
+
+            
+               
     join_position = random.randint(3,8)
     split_position = random.randint(0,join_position-1)
 
     preset_dict["data"]["tone"][dspName]["join"]["@position"] = join_position
     preset_dict["data"]["tone"][dspName]["split"]["@position"] = split_position
 
+
+def chooseSplit(preset_dict,dspName,blocks_path):
+    # list all splits in split folder
+    splits_file_list = []
+    for filename in os.listdir(blocks_path+"/Split/"):
+        if filename.startswith("HD2_AppDSPFlowSplit"):
+            splits_file_list.append(filename)
+    return loadBlockParams(blocks_path+"/Split/"+random.choice(splits_file_list))
+
+        
 
 def chooseParamValues(preset_dict,dspName):
    # make random parameter values
@@ -258,13 +280,10 @@ def chooseParamValues(preset_dict,dspName):
                     result = random.uniform(pmin, pmax) # switch choices are rounded to nearest integer in helix
                 preset_dict["data"]["tone"][snapshot_name]["controllers"][dspName][block_name][parameter]["@value"] = result
                 # make defaults same as snapshot 0
-                if (snapshot_num == 0) and (block_name.startswith("block") or block_name.startswith("cab")) and (not parameter.startswith("@")):
+                if (snapshot_num == 0) and (block_name.startswith("block") or block_name.startswith("cab") or block_name.startswith("split")) and (not parameter.startswith("@")):
                         defaults_block[parameter] = result
 
 
-
-def chooseSplit(preset_dict,dspName):
-    preset_dict["data"]["tone"][dspNames]["join"]["split"]["@model"] = rendom.choice(["HD2_AppDSPFlowSplitXOver","HD2_AppDSPFlowSplitY"])
 
 def turnBlocksOnOrOff(preset_dict,dspName):
     for snapshot_num in range(num_snapshots):
@@ -335,4 +354,4 @@ def processPreset(presets_path,blocks_path, presetName):
             json.dump(preset_dict, json_file, indent=4)
 
 num_snapshots = 8
-processPreset("presets/test", "blocks/test","LessOccupied.hlx")
+processPreset("presets/test", "blocks/test","LessOccSplit.hlx")

@@ -1,10 +1,10 @@
 {
     "data": {
         "meta": {
-            "name": "LessOccupied",
+            "name": "LessOccSplit",
             "application": "HX Edit",
             "build_sha": "a7e2585",
-            "modifieddate": 1711628722,
+            "modifieddate": 1713264680,
             "appversion": 57671680
         },
         "device": 2162692,
@@ -64,6 +64,12 @@
                             "Gain": {
                                 "@fs_enabled": false,
                                 "@value": 0
+                            }
+                        },
+                        "split": {
+                            "RouteTo": {
+                                "@fs_enabled": false,
+                                "@value": 0.5
                             }
                         },
                         "block2": {
@@ -156,6 +162,12 @@
                             "Gain": {
                                 "@fs_enabled": false,
                                 "@value": 0
+                            }
+                        },
+                        "split": {
+                            "RouteTo": {
+                                "@fs_enabled": false,
+                                "@value": 0.5
                             }
                         },
                         "block2": {
@@ -305,13 +317,12 @@
                     "B Polarity": false
                 },
                 "split": {
-                    "@model": "HD2_AppDSPFlowSplitY",
-                    "BalanceA": 0.5,
                     "@no_snapshot_bypass": false,
-                    "bypass": false,
-                    "@position": 0,
+                    "@model": "HD2_AppDSPFlowSplitAB",
                     "@enabled": true,
-                    "BalanceB": 0.5
+                    "RouteTo": 0.5,
+                    "@position": 0,
+                    "bypass": false
                 },
                 "outputB": {
                     "@model": "HD2_AppDSPFlowOutput",
@@ -373,6 +384,14 @@
                         "Gain": {
                             "@min": -120,
                             "@max": 12,
+                            "@controller": 19,
+                            "@snapshot_disable": false
+                        }
+                    },
+                    "split": {
+                        "RouteTo": {
+                            "@min": 0,
+                            "@max": 1,
                             "@controller": 19,
                             "@snapshot_disable": false
                         }
@@ -481,6 +500,12 @@
                                 "@value": 0
                             }
                         },
+                        "split": {
+                            "RouteTo": {
+                                "@fs_enabled": false,
+                                "@value": 0.5
+                            }
+                        },
                         "block2": {
                             "Gain": {
                                 "@fs_enabled": false,
@@ -571,6 +596,12 @@
                             "Gain": {
                                 "@fs_enabled": false,
                                 "@value": 0
+                            }
+                        },
+                        "split": {
+                            "RouteTo": {
+                                "@fs_enabled": false,
+                                "@value": 0.5
                             }
                         },
                         "block2": {
@@ -699,13 +730,12 @@
                     "B Polarity": false
                 },
                 "split": {
-                    "@model": "HD2_AppDSPFlowSplitY",
-                    "BalanceA": 0.5,
                     "@no_snapshot_bypass": false,
-                    "bypass": false,
-                    "@position": 0,
+                    "@model": "HD2_AppDSPFlowSplitAB",
                     "@enabled": true,
-                    "BalanceB": 0.5
+                    "RouteTo": 0.5,
+                    "@position": 0,
+                    "bypass": false
                 },
                 "outputB": {
                     "@model": "HD2_AppDSPFlowOutput",
@@ -764,6 +794,12 @@
                                 "@value": 0
                             }
                         },
+                        "split": {
+                            "RouteTo": {
+                                "@fs_enabled": false,
+                                "@value": 0.5
+                            }
+                        },
                         "block2": {
                             "Gain": {
                                 "@fs_enabled": false,
@@ -816,17 +852,16 @@
                 "@PowercabVoicing": 0,
                 "@model": "@global_params",
                 "@topology0": "SABJ",
-                "@cursor_dsp": 1,
+                "@cursor_dsp": 0,
                 "@PowercabMode": 0,
                 "@guitarpad": 0,
                 "@pedalstate": 2,
-                "@cursor_group": "block4",
+                "@cursor_group": "split",
                 "@DtSelect": 0,
-                "@cursor_path": 1,
-                "@current_snapshot": 0,
                 "@tempo": 120,
-                "@cursor_position": 2,
+                "@current_snapshot": 0,
                 "@topology1": "SABJ",
+                "@cursor_position": 0,
                 "@PowercabSelect": 2,
                 "@guitarinputZ": 0
             },
@@ -897,6 +932,12 @@
                             "Gain": {
                                 "@fs_enabled": false,
                                 "@value": 0
+                            }
+                        },
+                        "split": {
+                            "RouteTo": {
+                                "@fs_enabled": false,
+                                "@value": 0.5
                             }
                         },
                         "block2": {
@@ -991,6 +1032,12 @@
                                 "@value": 0
                             }
                         },
+                        "split": {
+                            "RouteTo": {
+                                "@fs_enabled": false,
+                                "@value": 0.5
+                            }
+                        },
                         "block2": {
                             "Gain": {
                                 "@fs_enabled": false,
@@ -1081,6 +1128,12 @@
                             "Gain": {
                                 "@fs_enabled": false,
                                 "@value": 0
+                            }
+                        },
+                        "split": {
+                            "RouteTo": {
+                                "@fs_enabled": false,
+                                "@value": 0.5
                             }
                         },
                         "block2": {
