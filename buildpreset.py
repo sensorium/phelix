@@ -238,7 +238,7 @@ def chooseSplit(preset_dict,dsp_name,blocks_path):
 
         
 
-def chooseParamValues(preset_dict,dsp_name):
+def chooseParamValues(preset_dict,dsp_name,fraction_new): #fraction_new is 0.0 to 1.0
    # make random parameter values
     for snapshot_num in range(num_snapshots):
         snapshot_name = "snapshot" + str(snapshot_num)
@@ -281,7 +281,16 @@ def chooseParamValues(preset_dict,dsp_name):
                 preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp_name][block_name][parameter]["@value"] = result
                 # make defaults same as snapshot 0
                 if (snapshot_num == 0) and (block_name.startswith("block") or block_name.startswith("cab") or block_name.startswith("split")) and (not parameter.startswith("@")):
-                        defaults_block[parameter] = result
+                        if isinstance(result, bool):
+                            defaults_block[parameter] = result
+                        else:
+                            prev_result = defaults_block[parameter]
+                            fraction_prev = 1.0-fraction_new
+                            result_mix = result*fraction_new + prev_result*fraction_prev
+                            result_mix_constrained = max(pmin, min(result_mix, pmax))
+                            defaults_block[parameter] = result_mix_constrained
+
+
 
 def copySnapshot(preset_dict, snapshot_src, snapshot_dst):
     preset_dict["data"]["tone"][snapshot_dst] = deepcopy(preset_dict["data"]["tone"][snapshot_src])
@@ -292,18 +301,21 @@ def copySnapshotToAll(preset_dict, snapshot_src):
         if snapshot_name != snapshot_src:
             copySnapshot(preset_dict, snapshot_src, snapshot_name)
 
-def mutateSnapshot(preset_dict, snapshot_src_num):
+def mutateSnapshot(preset_dict, snapshot_src_num,fraction_new):
     snapshot_src_name = "snapshot" + str(snapshot_src_num)
     copySnapshotToAll(preset_dict, snapshot_src_name)
     # change param values in all snapshots
-    chooseParamValues(preset_dict, "dsp0")
-    chooseParamValues(preset_dict, "dsp1")
+    chooseParamValues(preset_dict, "dsp0",fraction_new)
+    chooseParamValues(preset_dict, "dsp1",fraction_new)
+    setLedColours(preset_dict)
+    #turnBlocksOnOrOff(preset_dict,"dsp0")
+    #turnBlocksOnOrOff(preset_dict,"dsp1")
 
 
-def mutatePresetSnapshotParams(preset_filename, snapshot_num, new_preset_filename):
+def mutatePresetSnapshotParams(preset_filename, snapshot_num, new_preset_filename, fraction_new):
     with open(preset_filename, "r") as f:
         preset_dict = json.load(f)
-        mutateSnapshot(preset_dict, snapshot_num)
+        mutateSnapshot(preset_dict, snapshot_num,fraction_new)
         with open(new_preset_filename, "w") as f:
             json.dump(preset_dict, f, indent=4) 
 
@@ -330,7 +342,7 @@ def setLedColours(preset_dict):
 def generateFromSavedBlocks(preset_dict, dsp_name,blocks_path):
     print(dsp_name)
     replaceParamKeys(preset_dict,dsp_name,blocks_path)
-    chooseParamValues(preset_dict,dsp_name)
+    chooseParamValues(preset_dict,dsp_name,1.0)
     addCabs(preset_dict,dsp_name,blocks_path)
     turnBlocksOnOrOff(preset_dict,dsp_name)
 
@@ -378,4 +390,4 @@ def processPreset(presets_path,blocks_path, presetName):
 
 num_snapshots = 8
 #processPreset("presets/test", "blocks/test","LessOccSplit.hlx")
-mutatePresetSnapshotParams("presets/test/PartlyOccupied.hlx", 0, "presets/test/mutate_dst.hlx")
+mutatePresetSnapshotParams("presets/test/baenof.hlx", 0, "presets/test/baenof_0+.hlx",0.1)
