@@ -1,77 +1,81 @@
 {
     "SnapshotParams": {
+        "Decay": {
+            "@fs_enabled": false,
+            "@value": 0.7200000286102295
+        },
+        "Intensity": {
+            "@fs_enabled": false,
+            "@value": 0.6299999952316284
+        },
         "LowCut": {
             "@fs_enabled": false,
-            "@value": 19.899999618530273
+            "@value": 122
         },
-        "Distance": {
+        "Mix": {
             "@fs_enabled": false,
-            "@value": 7
+            "@value": 0.5
         },
-        "Mic": {
-            "@fs_enabled": false,
-            "@value": 11
-        },
-        "Position": {
-            "@fs_enabled": false,
-            "@value": 0.19000005722045898
-        },
-        "Angle": {
+        "Level": {
             "@fs_enabled": false,
             "@value": 0
         },
         "HighCut": {
             "@fs_enabled": false,
-            "@value": 20100
+            "@value": 9760
         }
     },
     "Ranges": {
+        "Decay": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Intensity": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
         "LowCut": {
             "@min": 19.899999618530273,
             "@max": 500,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Distance": {
-            "@min": 1,
-            "@max": 12,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Mic": {
-            "@min": 0,
-            "@max": 11,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Position": {
+        "Mix": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Angle": {
-            "@min": 0,
-            "@max": 45,
+        "Level": {
+            "@min": -60,
+            "@max": 6,
             "@controller": 19,
             "@snapshot_disable": false
         },
         "HighCut": {
-            "@min": 500,
+            "@min": 86,
             "@max": 20100,
             "@controller": 19,
             "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "@model": "HD2_CabMicIr_1x12Grammatico",
-        "LowCut": 19.899999618530273,
-        "Mic": 11,
-        "Angle": 0,
-        "Position": 0.19000005722045898,
-        "Distance": 7,
-        "Level": 0,
+        "@model": "HD2_ReverbOcto",
+        "@position": 2,
+        "@no_snapshot_bypass": false,
+        "LowCut": 122,
+        "Intensity": 0.6299999952316284,
         "@enabled": true,
-        "HighCut": 20100
+        "@path": 0,
+        "@trails": false,
+        "@type": 7,
+        "Mix": 0.5,
+        "Level": 0,
+        "Decay": 0.7200000286102295,
+        "HighCut": 9760
     }
 }

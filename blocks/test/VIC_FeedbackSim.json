@@ -1,0 +1,136 @@
+{
+    "SnapshotParams": {
+        "Attack": {
+            "@fs_enabled": false,
+            "@value": 0.5
+        },
+        "ReleaseTime": {
+            "@fs_enabled": false,
+            "@value": 0.7999999523162842
+        },
+        "OnsetThresh": {
+            "@fs_enabled": false,
+            "@value": 10
+        },
+        "Gain": {
+            "@fs_enabled": false,
+            "@value": 0.7000000476837158
+        },
+        "DryCtrl": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "FeedbackType": {
+            "@fs_enabled": false,
+            "@value": 6
+        },
+        "Reference": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "DryLevel": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "OffsetThresh": {
+            "@fs_enabled": false,
+            "@value": -6
+        },
+        "Retrigger": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "SilenceThresh": {
+            "@fs_enabled": false,
+            "@value": -100
+        }
+    },
+    "Ranges": {
+        "Attack": {
+            "@min": 0.1499999761581421,
+            "@max": 6,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "ReleaseTime": {
+            "@min": 0.1499999761581421,
+            "@max": 6,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "OnsetThresh": {
+            "@min": 3,
+            "@max": 30,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Gain": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "DryCtrl": {
+            "@min": 0,
+            "@max": 2,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "FeedbackType": {
+            "@min": 0,
+            "@max": 11,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Reference": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "DryLevel": {
+            "@min": -60,
+            "@max": 0,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "OffsetThresh": {
+            "@min": -40,
+            "@max": -2,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Retrigger": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "SilenceThresh": {
+            "@min": -120,
+            "@max": -30,
+            "@controller": 19,
+            "@snapshot_disable": false
+        }
+    },
+    "Defaults": {
+        "@model": "VIC_FeedbackSim",
+        "Reference": 0,
+        "@position": 2,
+        "@no_snapshot_bypass": false,
+        "FeedbackType": 6,
+        "Retrigger": 0,
+        "DryCtrl": 0,
+        "@enabled": false,
+        "OnsetThresh": 10,
+        "SilenceThresh": -100,
+        "@path": 0,
+        "@type": 0,
+        "Attack": 0.5,
+        "Trails": true,
+        "DryLevel": 0,
+        "OffsetThresh": -6,
+        "Gain": 0.7000000476837158,
+        "ReleaseTime": 0.7999999523162842
+    }
+}

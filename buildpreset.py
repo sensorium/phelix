@@ -221,8 +221,8 @@ def replaceParamKeys(preset_dict,dsp_name,blocks_path):
 
             
                
-    join_position = random.randint(3,8)
-    split_position = random.randint(0,join_position-1)
+    join_position = random.randint(6,8)
+    split_position = random.randint(0,3)
 
     preset_dict["data"]["tone"][dsp_name]["join"]["@position"] = join_position
     preset_dict["data"]["tone"][dsp_name]["split"]["@position"] = split_position
@@ -230,11 +230,11 @@ def replaceParamKeys(preset_dict,dsp_name,blocks_path):
 
 def chooseSplit(preset_dict,dsp_name,blocks_path):
     # list all splits in split folder
-    splits_file_list = []
-    for filename in os.listdir(blocks_path+"/Split/"):
-        if filename.startswith("HD2_AppDSPFlowSplit"):
-            splits_file_list.append(filename)
-    return loadBlockParams(blocks_path+"/Split/"+random.choice(splits_file_list))
+    splits_file_list = ["HD2_AppDSPFlowSplitAB", "HD2_AppDSPFlowSplitDyn", "HD2_AppDSPFlowSplitXOver"]
+    weights = [0.5, 0.25, 0.25]
+    split_file = ''.join(random.choices(splits_file_list,weights,k=1))
+    print(split_file)
+    return loadBlockParams(blocks_path+"/Split/"+split_file+".json")
 
         
 
@@ -283,6 +283,29 @@ def chooseParamValues(preset_dict,dsp_name):
                 if (snapshot_num == 0) and (block_name.startswith("block") or block_name.startswith("cab") or block_name.startswith("split")) and (not parameter.startswith("@")):
                         defaults_block[parameter] = result
 
+def copySnapshot(preset_dict, snapshot_src, snapshot_dst):
+    preset_dict["data"]["tone"][snapshot_dst] = deepcopy(preset_dict["data"]["tone"][snapshot_src])
+
+def copySnapshotToAll(preset_dict, snapshot_src):
+    for snapshot_num in range(num_snapshots):
+        snapshot_name = "snapshot" + str(snapshot_num)
+        if snapshot_name != snapshot_src:
+            copySnapshot(preset_dict, snapshot_src, snapshot_name)
+
+def mutateSnapshot(preset_dict, snapshot_src_num):
+    snapshot_src_name = "snapshot" + str(snapshot_src_num)
+    copySnapshotToAll(preset_dict, snapshot_src_name)
+    # change param values in all snapshots
+    chooseParamValues(preset_dict, "dsp0")
+    chooseParamValues(preset_dict, "dsp1")
+
+
+def mutatePresetSnapshotParams(preset_filename, snapshot_num, new_preset_filename):
+    with open(preset_filename, "r") as f:
+        preset_dict = json.load(f)
+        mutateSnapshot(preset_dict, snapshot_num)
+        with open(new_preset_filename, "w") as f:
+            json.dump(preset_dict, f, indent=4) 
 
 
 def turnBlocksOnOrOff(preset_dict,dsp_name):
@@ -354,4 +377,5 @@ def processPreset(presets_path,blocks_path, presetName):
             json.dump(preset_dict, json_file, indent=4)
 
 num_snapshots = 8
-processPreset("presets/test", "blocks/test","LessOccSplit.hlx")
+#processPreset("presets/test", "blocks/test","LessOccSplit.hlx")
+mutatePresetSnapshotParams("presets/test/PartlyOccupied.hlx", 0, "presets/test/mutate_dst.hlx")
