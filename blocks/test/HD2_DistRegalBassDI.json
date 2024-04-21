@@ -1,36 +1,30 @@
 {
     "SnapshotParams": {
+        "Volume": {
+            "@fs_enabled": false,
+            "@value": 0.23000001907348633
+        },
         "Bass": {
             "@fs_enabled": false,
-            "@value": 0.5499999523162842
-        },
-        "Gain": {
-            "@fs_enabled": false,
-            "@value": 0.6499999761581421
-        },
-        "Level": {
-            "@fs_enabled": false,
-            "@value": 0.6600000858306885
+            "@value": 0.6200000047683716
         },
         "Treble": {
             "@fs_enabled": false,
             "@value": 0.4500000476837158
+        },
+        "Low Cut": {
+            "@fs_enabled": false,
+            "@value": false
         }
     },
     "Ranges": {
+        "Volume": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
         "Bass": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Gain": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Level": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
@@ -39,21 +33,27 @@
         "Treble": {
             "@min": 0,
             "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Low Cut": {
+            "@min": false,
+            "@max": true,
             "@controller": 19,
             "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "@model": "HD2_DistValveDriver",
+        "@model": "HD2_DistRegalBassDI",
         "Treble": 0.4500000476837158,
         "@no_snapshot_bypass": false,
         "@path": 0,
         "@stereo": false,
         "@type": 0,
-        "Bass": 0.5499999523162842,
-        "Gain": 0.6499999761581421,
-        "@position": 2,
-        "Level": 0.6600000858306885,
+        "Bass": 0.6200000047683716,
+        "Low Cut": false,
+        "@position": 3,
+        "Volume": 0.23000001907348633,
         "@enabled": true
     }
 }

@@ -1,12 +1,12 @@
 {
     "SnapshotParams": {
-        "Bass": {
+        "Blend": {
             "@fs_enabled": false,
-            "@value": 0.5499999523162842
+            "@value": 0.6299999952316284
         },
-        "Gain": {
+        "Drive": {
             "@fs_enabled": false,
-            "@value": 0.6499999761581421
+            "@value": 0.7599999904632568
         },
         "Level": {
             "@fs_enabled": false,
@@ -14,17 +14,17 @@
         },
         "Treble": {
             "@fs_enabled": false,
-            "@value": 0.4500000476837158
+            "@value": 0.41999995708465576
         }
     },
     "Ranges": {
-        "Bass": {
+        "Blend": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Gain": {
+        "Drive": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
@@ -44,15 +44,15 @@
         }
     },
     "Defaults": {
-        "@model": "HD2_DistValveDriver",
-        "Treble": 0.4500000476837158,
+        "@model": "HD2_DistAmpegScramblerOD",
+        "Treble": 0.41999995708465576,
         "@no_snapshot_bypass": false,
         "@path": 0,
         "@stereo": false,
         "@type": 0,
-        "Bass": 0.5499999523162842,
-        "Gain": 0.6499999761581421,
-        "@position": 2,
+        "Blend": 0.6299999952316284,
+        "@position": 1,
+        "Drive": 0.7599999904632568,
         "Level": 0.6600000858306885,
         "@enabled": true
     }

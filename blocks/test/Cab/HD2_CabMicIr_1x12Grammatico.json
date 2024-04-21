@@ -4,19 +4,23 @@
             "@fs_enabled": false,
             "@value": 19.899999618530273
         },
-        "Distance": {
-            "@fs_enabled": false,
-            "@value": 7
-        },
         "Mic": {
             "@fs_enabled": false,
             "@value": 11
+        },
+        "Angle": {
+            "@fs_enabled": false,
+            "@value": 0
         },
         "Position": {
             "@fs_enabled": false,
             "@value": 0.19000005722045898
         },
-        "Angle": {
+        "Distance": {
+            "@fs_enabled": false,
+            "@value": 7
+        },
+        "Level": {
             "@fs_enabled": false,
             "@value": 0
         },
@@ -32,15 +36,15 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Distance": {
-            "@min": 1,
-            "@max": 12,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
         "Mic": {
             "@min": 0,
             "@max": 11,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Angle": {
+            "@min": 0,
+            "@max": 45,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -50,9 +54,15 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Angle": {
-            "@min": 0,
-            "@max": 45,
+        "Distance": {
+            "@min": 1,
+            "@max": 12,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Level": {
+            "@min": -60,
+            "@max": 6,
             "@controller": 19,
             "@snapshot_disable": false
         },

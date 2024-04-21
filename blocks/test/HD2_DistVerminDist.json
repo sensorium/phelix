@@ -1,42 +1,32 @@
 {
     "SnapshotParams": {
-        "Bass": {
+        "Level": {
             "@fs_enabled": false,
-            "@value": 0.5499999523162842
+            "@value": 0.8500000238418579
+        },
+        "Filter": {
+            "@fs_enabled": false,
+            "@value": 0.6000000238418579
         },
         "Gain": {
             "@fs_enabled": false,
-            "@value": 0.6499999761581421
-        },
-        "Level": {
-            "@fs_enabled": false,
-            "@value": 0.6600000858306885
-        },
-        "Treble": {
-            "@fs_enabled": false,
-            "@value": 0.4500000476837158
+            "@value": 0.6800000667572021
         }
     },
     "Ranges": {
-        "Bass": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Gain": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
         "Level": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Treble": {
+        "Filter": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Gain": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
@@ -44,16 +34,15 @@
         }
     },
     "Defaults": {
-        "@model": "HD2_DistValveDriver",
-        "Treble": 0.4500000476837158,
+        "@model": "HD2_DistVerminDist",
+        "Filter": 0.6000000238418579,
         "@no_snapshot_bypass": false,
         "@path": 0,
         "@stereo": false,
         "@type": 0,
-        "Bass": 0.5499999523162842,
-        "Gain": 0.6499999761581421,
-        "@position": 2,
-        "Level": 0.6600000858306885,
+        "Gain": 0.6800000667572021,
+        "@position": 6,
+        "Level": 0.8500000238418579,
         "@enabled": true
     }
 }

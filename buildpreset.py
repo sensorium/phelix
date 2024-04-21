@@ -389,5 +389,5 @@ def processPreset(presets_path,blocks_path, presetName):
             json.dump(preset_dict, json_file, indent=4)
 
 num_snapshots = 8
-#processPreset("presets/test", "blocks/test","LessOccSplit.hlx")
-mutatePresetSnapshotParams("presets/test/baenof.hlx", 0, "presets/test/baenof_0+.hlx",0.1)
+processPreset("presets/test", "blocks/test","LessOccSplit.hlx")
+#mutatePresetSnapshotParams("presets/test/baenof.hlx", 0, "presets/test/baenof_0+.hlx",0.1)

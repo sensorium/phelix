@@ -46,4 +46,4 @@ def extractControls(preset_path, blocks_path,presetName):
 		#extractSplits(preset_dict, "dsp0", blocks_path)
 		#extractSplits(preset_dict, "dsp1", blocks_path)
 
-extractControls("presets/test", "blocks/test", "revLegacy7-12.hlx")
+extractControls("presets/test", "blocks/test", "amps1.hlx")

@@ -1,0 +1,81 @@
+{
+    "SnapshotParams": {
+        "Attack": {
+            "@fs_enabled": false,
+            "@value": 0.36000001430511475
+        },
+        "Thick": {
+            "@fs_enabled": false,
+            "@value": 1
+        },
+        "Notch Gain": {
+            "@fs_enabled": false,
+            "@value": -3.4000000953674316
+        },
+        "Drive": {
+            "@fs_enabled": false,
+            "@value": 0.7999999523162842
+        },
+        "Level": {
+            "@fs_enabled": false,
+            "@value": 0.5499999523162842
+        },
+        "Notch Freq": {
+            "@fs_enabled": false,
+            "@value": 1600
+        }
+    },
+    "Ranges": {
+        "Attack": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Thick": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Notch Gain": {
+            "@min": -10,
+            "@max": 10,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Drive": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Level": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Notch Freq": {
+            "@min": 200,
+            "@max": 2500,
+            "@controller": 19,
+            "@snapshot_disable": false
+        }
+    },
+    "Defaults": {
+        "@model": "HD2_DistThrifterFuzz",
+        "@position": 5,
+        "@no_snapshot_bypass": false,
+        "Drive": 0.7999999523162842,
+        "Notch Gain": -3.4000000953674316,
+        "@enabled": true,
+        "Thick": 1,
+        "Notch Freq": 1600,
+        "@path": 0,
+        "@type": 0,
+        "Attack": 0.36000001430511475,
+        "Level": 0.5499999523162842,
+        "@stereo": false
+    }
+}

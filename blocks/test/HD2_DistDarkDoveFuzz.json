@@ -1,42 +1,32 @@
 {
     "SnapshotParams": {
-        "Bass": {
-            "@fs_enabled": false,
-            "@value": 0.5499999523162842
-        },
-        "Gain": {
-            "@fs_enabled": false,
-            "@value": 0.6499999761581421
-        },
         "Level": {
             "@fs_enabled": false,
-            "@value": 0.6600000858306885
+            "@value": 0.5
         },
-        "Treble": {
+        "Sustain": {
             "@fs_enabled": false,
-            "@value": 0.4500000476837158
+            "@value": 0.5
+        },
+        "Tone": {
+            "@fs_enabled": false,
+            "@value": 0.5
         }
     },
     "Ranges": {
-        "Bass": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Gain": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
         "Level": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Treble": {
+        "Sustain": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Tone": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
@@ -44,16 +34,15 @@
         }
     },
     "Defaults": {
-        "@model": "HD2_DistValveDriver",
-        "Treble": 0.4500000476837158,
+        "@model": "HD2_DistDarkDoveFuzz",
         "@no_snapshot_bypass": false,
         "@path": 0,
         "@stereo": false,
         "@type": 0,
-        "Bass": 0.5499999523162842,
-        "Gain": 0.6499999761581421,
-        "@position": 2,
-        "Level": 0.6600000858306885,
+        "Sustain": 0.5,
+        "@position": 0,
+        "Level": 0.5,
+        "Tone": 0.5,
         "@enabled": true
     }
 }
