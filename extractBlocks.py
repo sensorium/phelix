@@ -5,16 +5,16 @@
 
 import sys, os, json
 
-def extractBlocksFromPath(preset_dict, dspName, blocks_path):
-	if dspName in preset_dict["data"]["tone"]["controller"]:
-		print(dspName)
-		for block_name in preset_dict["data"]["tone"]["controller"][dspName]:
+def extractBlocksFromPath(preset_dict, dsp_name, blocks_path):
+	if dsp_name in preset_dict["data"]["tone"]["controller"]:
+		print(dsp_name)
+		for block_name in preset_dict["data"]["tone"]["controller"][dsp_name]:
 			if block_name.startswith("block") or block_name.startswith("cab") or block_name.startswith("split"):
 				block_dict = {}
-				block_dict["SnapshotParams"] = preset_dict["data"]["tone"]["snapshot0"]["controllers"][dspName][block_name]
-				block_dict["Ranges"] = preset_dict["data"]["tone"]["controller"][dspName][block_name]
-				block_dict["Defaults"] = preset_dict["data"]["tone"][dspName][block_name]
-				block_filename = preset_dict["data"]["tone"][dspName][block_name]["@model"]+".json"
+				block_dict["SnapshotParams"] = preset_dict["data"]["tone"]["snapshot0"]["controllers"][dsp_name][block_name]
+				block_dict["Ranges"] = preset_dict["data"]["tone"]["controller"][dsp_name][block_name]
+				block_dict["Defaults"] = preset_dict["data"]["tone"][dsp_name][block_name]
+				block_filename = preset_dict["data"]["tone"][dsp_name][block_name]["@model"]+".json"
 				if block_filename.startswith("HD2_Cab"):
 					block_filename = "Cab/"+block_filename
 				with open(os.path.join(blocks_path,block_filename), "w") as json_file:

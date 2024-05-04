@@ -6,17 +6,18 @@ from copy import deepcopy
 
 import mutate
 
+
+#todo:
+#load effects from category folders so there can be even (or other) chances of them being used
+# swap blocks with ones from file
+
 # load a template preset from a json file, return a dictionary
 def loadPreset(presetFile):
     with open(os.path.expanduser(presetFile), "r") as f:
         preset_dict = json.load(f)
     return preset_dict
 
-# load extracted block parameters from a json file, return a dictionary
-def loadBlockParams(blocksFile):
-    with open(os.path.expanduser(blocksFile), "r") as f:
-        block_dict = json.load(f)
-    return block_dict
+
 
 # replace block default params with extracted block params, given blockNumber and dsp_name
 def replaceBlockDefaultParams(block_dict,preset_dict,block_num,dsp_name):
@@ -60,7 +61,7 @@ def addCabs(preset_dict,dsp_name,blocks_path):
         cabs_used += 1
         preset_dict["data"]["tone"][dsp_name][amp]["@cab"] = cab_name
         # load a random cab
-        cab_dict = loadBlockParams(blocks_path+"/Cab/"+random.choice(cabs_file_list))
+        cab_dict = mutate.loadBlockParams(blocks_path+"/Cab/"+random.choice(cabs_file_list))
         # delete cab path and position, if they exist
         if "@path" in cab_dict["Defaults"]:
             del cab_dict["Defaults"]["@path"]
@@ -97,7 +98,7 @@ def replaceParamKeys(preset_dict,dsp_name,blocks_path):
         if block_name.startswith("block"): # or block_name.startswith("cab"): # cabs will be sorted with amps later, but cabs in amps will take an extra position at this step
             # load default params from file chosen randomly from blocks folder
             while True:
-                block_dict = loadBlockParams(blocks_path+"/"+chooseBlockFile(blocks_path))
+                block_dict = mutate.loadBlockParams(blocks_path+"/"+chooseBlockFile(blocks_path))
                 # allow only one amp in dsp section of preset_dict
                 if block_dict["Defaults"]["@model"].startswith("HD2_Amp"):
                      num_amps += 1                                          
@@ -155,7 +156,7 @@ def chooseSplit(preset_dict,dsp_name,blocks_path):
     weights = [0.5, 0.25, 0.25]
     split_file = ''.join(random.choices(splits_file_list,weights,k=1))
     print(split_file)
-    return loadBlockParams(blocks_path+"/Split/"+split_file+".json")
+    return mutate.loadBlockParams(blocks_path+"/Split/"+split_file+".json")
 
 
 
@@ -208,23 +209,15 @@ def replaceWithPedalControllers(preset_dict,dsp_name, pedalnum):
     for i in range(8) :
         randdsp, randblock = mutate.getRandDspAndBlock(preset_dict)
         if randblock != "none":
-            randparam = mutate.getRandControllerParam(preset_dict,randdsp,randblock)
+            randparam = mutate.getRandControllerParamNoBool(preset_dict,randdsp,randblock)
             if randparam != "none":
                 print("replacing "+randdsp, randblock, randparam, pedalnum)
-            # print(preset_dict["data"]["tone"]["controller"][dsp_name][randblock])
-                pedalParam = preset_dict["data"]["tone"]["controller"][randdsp][randblock][randparam]
-
-                pedalParam["@controller"] = pedalnum
-                if isinstance(pedalParam["@min"], bool):
-                    p = [True, False]
-                    random.shuffle(p)
-                    new_max = p.pop()
-                    new_min = p.pop()
-                else:
-                    new_max = random.uniform(pedalParam["@min"],pedalParam["@max"])
-                    new_min = random.uniform(pedalParam["@min"],pedalParam["@max"])
-                                
+                # print(preset_dict["data"]["tone"]["controller"][dsp_name][randblock])
                 # also choose random max and min values within the original limits
+                pedalParam = preset_dict["data"]["tone"]["controller"][randdsp][randblock][randparam]
+                pedalParam["@controller"] = pedalnum
+                new_max = random.uniform(pedalParam["@min"],pedalParam["@max"])
+                new_min = random.uniform(pedalParam["@min"],pedalParam["@max"])
                 pedalParam["@max"] = new_max
                 pedalParam["@min"] = new_min
 
@@ -242,11 +235,8 @@ def processPreset(presets_path,blocks_path, presetName):
         seriesOrParallelPaths(preset_dict)
         namePreset(preset_dict)
 
-        while (mutate.countParamControls(preset_dict,"dsp0")+mutate.countParamControls(preset_dict,"dsp1"))>64:
-            if random.randint(0,1) == 1:
-                mutate.delRandomParamControl(preset_dict, "dsp0")
-            else:
-                mutate.delRandomParamControl(preset_dict, "dsp1")
+        while mutate.countParamControls(preset_dict)>64:
+                mutate.delRandomParamControl(preset_dict)
             
         replaceWithPedalControllers(preset_dict,"dsp0", 2)
         replaceWithPedalControllers(preset_dict,"dsp1", 2)
@@ -262,8 +252,8 @@ num_snapshots = 8
 fraction_change_block_states = 0.1
 fraction_move = 0.1
 fraction_swap = 0.15
-#processPreset("presets/test", "blocks/test","LessOccSplit.hlx")
-mutate.mutatePresetSnapshotParams("presets/test/ulva5.hlx", 5, "presets/test/ulva_5+.hlx",0.1,fraction_change_block_states,fraction_move, fraction_swap)
+processPreset("presets/test", "blocks/test","LessOccSplit.hlx")
+#mutate.mutatePresetSnapshotParams("presets/test/minenica_6.hlx", 6, "presets/test/minenica_6+.hlx",0.1,fraction_change_block_states,fraction_move, fraction_swap)
 
 # if __name__ == '__main__': 
 #     main() 
