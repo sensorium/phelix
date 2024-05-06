@@ -1,92 +1,104 @@
 {
     "SnapshotParams": {
-        "Shape": {
+        "Bright": {
             "@fs_enabled": false,
             "@value": 0
         },
-        "Depth": {
+        "Master": {
             "@fs_enabled": false,
             "@value": 1
         },
-        "Speed": {
+        "Bass": {
             "@fs_enabled": false,
-            "@value": 9.40999984741211
+            "@value": 0.559999942779541
         },
-        "Volsens": {
+        "Treble": {
             "@fs_enabled": false,
-            "@value": 0
+            "@value": 0.4700000286102295
         },
-        "Level": {
+        "ChVol": {
             "@fs_enabled": false,
-            "@value": 0
+            "@value": 0.75
         },
-        "Mix": {
+        "Drive": {
             "@fs_enabled": false,
-            "@value": 1
+            "@value": 0.2799999713897705
         },
-        "SyncSelect1": {
+        "Mid": {
             "@fs_enabled": false,
-            "@value": 6
+            "@value": 0.26999998092651367
+        },
+        "Presence": {
+            "@fs_enabled": false,
+            "@value": 0.2999999523162842
         }
     },
     "Ranges": {
-        "Shape": {
+        "Bright": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Depth": {
+        "Master": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Speed": {
-            "@min": 0,
-            "@max": 15,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Volsens": {
+        "Bass": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Level": {
-            "@min": -60,
-            "@max": 6,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Mix": {
+        "Treble": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "SyncSelect1": {
-            "@min": 1,
-            "@max": 19,
+        "ChVol": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Drive": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Mid": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Presence": {
+            "@min": 0,
+            "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "@model": "HD2_MM4BiasTremolo",
+        "@model": "HD2_AmpJazzRivet120",
+        "Master": 1,
         "@position": 0,
         "@no_snapshot_bypass": false,
-        "SyncSelect1": 6,
-        "Speed": 9.40999984741211,
-        "TempoSync1": false,
+        "Bright": 0,
+        "Drive": 0.2799999713897705,
+        "ChVol": 0.75,
         "@enabled": true,
-        "Shape": 0,
         "@path": 0,
-        "@type": 0,
-        "Mix": 1,
-        "Level": 0,
-        "Volsens": 0,
-        "Depth": 1
+        "@type": 3,
+        "Bass": 0.559999942779541,
+        "Mid": 0.26999998092651367,
+        "@bypassvolume": 1,
+        "@cab": "cab0",
+        "Presence": 0.2999999523162842,
+        "Treble": 0.4700000286102295
     }
 }

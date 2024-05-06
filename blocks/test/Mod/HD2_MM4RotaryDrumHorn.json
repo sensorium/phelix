@@ -1,52 +1,52 @@
 {
     "SnapshotParams": {
-        "DutyCycle": {
+        "Speed": {
             "@fs_enabled": false,
-            "@value": 0.5
+            "@value": true
         },
-        "Intensity": {
+        "Horn Depth": {
+            "@fs_enabled": false,
+            "@value": 0.6299999952316284
+        },
+        "Mix": {
             "@fs_enabled": false,
             "@value": 1
         },
-        "WaveShape": {
+        "Drive": {
             "@fs_enabled": false,
-            "@value": 3
-        },
-        "Speed": {
-            "@fs_enabled": false,
-            "@value": 3
+            "@value": 0
         },
         "Level": {
             "@fs_enabled": false,
             "@value": 0
         },
-        "SyncSelect1": {
+        "Depth": {
             "@fs_enabled": false,
-            "@value": 6
+            "@value": 0.5
         }
     },
     "Ranges": {
-        "DutyCycle": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Intensity": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "WaveShape": {
-            "@min": 0,
-            "@max": 6,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
         "Speed": {
+            "@min": false,
+            "@max": true,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Horn Depth": {
             "@min": 0,
-            "@max": 15,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Mix": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Drive": {
+            "@min": 0,
+            "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -56,28 +56,25 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "SyncSelect1": {
-            "@min": 1,
-            "@max": 19,
+        "Depth": {
+            "@min": 0,
+            "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "@model": "HD2_TremoloTremolo",
-        "@position": 4,
+        "@model": "HD2_MM4RotaryDrumHorn",
+        "@position": 2,
         "@no_snapshot_bypass": false,
-        "SyncSelect1": 6,
-        "Intensity": 1,
-        "Speed": 3,
+        "Drive": 0,
+        "Speed": true,
         "@enabled": true,
-        "DutyCycle": 0.5,
-        "TempoSync1": false,
+        "Horn Depth": 0.6299999952316284,
         "@path": 0,
         "@type": 0,
+        "Mix": 1,
         "Level": 0,
-        "@stereo": false,
-        "Spread": 1,
-        "WaveShape": 3
+        "Depth": 0.5
     }
 }

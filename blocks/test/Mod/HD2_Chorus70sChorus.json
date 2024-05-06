@@ -1,28 +1,36 @@
 {
     "SnapshotParams": {
-        "Shape": {
+        "VibratoDepth": {
+            "@fs_enabled": false,
+            "@value": 0.5
+        },
+        "Mode": {
+            "@fs_enabled": false,
+            "@value": false
+        },
+        "ChorusIntensity": {
+            "@fs_enabled": false,
+            "@value": 0.5699999332427979
+        },
+        "Headroom": {
             "@fs_enabled": false,
             "@value": 0
         },
-        "Depth": {
+        "VibratoRate": {
             "@fs_enabled": false,
-            "@value": 1
+            "@value": 0.7000000476837158
         },
-        "Speed": {
+        "SyncSelect2": {
             "@fs_enabled": false,
-            "@value": 9.40999984741211
-        },
-        "Volsens": {
-            "@fs_enabled": false,
-            "@value": 0
+            "@value": 6
         },
         "Level": {
             "@fs_enabled": false,
-            "@value": 0
+            "@value": 1
         },
         "Mix": {
             "@fs_enabled": false,
-            "@value": 1
+            "@value": 0.5
         },
         "SyncSelect1": {
             "@fs_enabled": false,
@@ -30,27 +38,39 @@
         }
     },
     "Ranges": {
-        "Shape": {
+        "VibratoDepth": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Depth": {
+        "Mode": {
+            "@min": false,
+            "@max": true,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "ChorusIntensity": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Speed": {
-            "@min": 0,
-            "@max": 15,
+        "Headroom": {
+            "@min": -12,
+            "@max": 12,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Volsens": {
+        "VibratoRate": {
             "@min": 0,
             "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "SyncSelect2": {
+            "@min": 1,
+            "@max": 19,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -74,19 +94,25 @@
         }
     },
     "Defaults": {
-        "@model": "HD2_MM4BiasTremolo",
-        "@position": 0,
-        "@no_snapshot_bypass": false,
-        "SyncSelect1": 6,
-        "Speed": 9.40999984741211,
-        "TempoSync1": false,
         "@enabled": true,
-        "Shape": 0,
-        "@path": 0,
+        "ChorusIntensity": 0.5699999332427979,
         "@type": 0,
-        "Mix": 1,
-        "Level": 0,
-        "Volsens": 0,
-        "Depth": 1
+        "Stereo": false,
+        "SyncSelect2": 6,
+        "SyncSelect1": 6,
+        "@model": "HD2_Chorus70sChorus",
+        "@stereo": false,
+        "VibratoDepth": 0.5,
+        "@path": 0,
+        "Level": 1,
+        "Mix": 0.5,
+        "Spread": 0,
+        "VibratoRate": 0.7000000476837158,
+        "@position": 1,
+        "Headroom": 0,
+        "@no_snapshot_bypass": false,
+        "Mode": false,
+        "TempoSync1": false,
+        "TempoSync2": false
     }
 }

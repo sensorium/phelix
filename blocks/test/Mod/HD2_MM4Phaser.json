@@ -1,46 +1,50 @@
 {
     "SnapshotParams": {
-        "DutyCycle": {
+        "SyncSelect1": {
             "@fs_enabled": false,
-            "@value": 0.5
+            "@value": 6
         },
-        "Intensity": {
+        "Stage": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "Depth": {
             "@fs_enabled": false,
             "@value": 1
         },
-        "WaveShape": {
-            "@fs_enabled": false,
-            "@value": 3
-        },
         "Speed": {
             "@fs_enabled": false,
-            "@value": 3
+            "@value": 1.5900001525878906
         },
         "Level": {
             "@fs_enabled": false,
             "@value": 0
         },
-        "SyncSelect1": {
+        "Mix": {
             "@fs_enabled": false,
-            "@value": 6
+            "@value": 1
+        },
+        "Feedback": {
+            "@fs_enabled": false,
+            "@value": 0
         }
     },
     "Ranges": {
-        "DutyCycle": {
-            "@min": 0,
-            "@max": 1,
+        "SyncSelect1": {
+            "@min": 1,
+            "@max": 19,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Intensity": {
+        "Stage": {
             "@min": 0,
-            "@max": 1,
+            "@max": 3,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "WaveShape": {
+        "Depth": {
             "@min": 0,
-            "@max": 6,
+            "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -56,28 +60,33 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "SyncSelect1": {
-            "@min": 1,
-            "@max": 19,
+        "Mix": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Feedback": {
+            "@min": 0,
+            "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "@model": "HD2_TremoloTremolo",
-        "@position": 4,
+        "@model": "HD2_MM4Phaser",
+        "@position": 0,
         "@no_snapshot_bypass": false,
+        "Feedback": 0,
+        "Speed": 1.5900001525878906,
         "SyncSelect1": 6,
-        "Intensity": 1,
-        "Speed": 3,
         "@enabled": true,
-        "DutyCycle": 0.5,
         "TempoSync1": false,
         "@path": 0,
         "@type": 0,
+        "Mix": 1,
+        "Stage": 0,
         "Level": 0,
-        "@stereo": false,
-        "Spread": 1,
-        "WaveShape": 3
+        "Depth": 1
     }
 }

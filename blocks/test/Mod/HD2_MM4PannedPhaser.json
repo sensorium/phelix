@@ -1,24 +1,28 @@
 {
     "SnapshotParams": {
-        "DutyCycle": {
+        "Pan": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "Depth": {
             "@fs_enabled": false,
             "@value": 0.5
         },
-        "Intensity": {
+        "Pan Speed": {
             "@fs_enabled": false,
-            "@value": 1
-        },
-        "WaveShape": {
-            "@fs_enabled": false,
-            "@value": 3
+            "@value": 0.5
         },
         "Speed": {
             "@fs_enabled": false,
-            "@value": 3
+            "@value": 3.8299999237060547
         },
         "Level": {
             "@fs_enabled": false,
             "@value": 0
+        },
+        "Mix": {
+            "@fs_enabled": false,
+            "@value": 1
         },
         "SyncSelect1": {
             "@fs_enabled": false,
@@ -26,21 +30,21 @@
         }
     },
     "Ranges": {
-        "DutyCycle": {
+        "Pan": {
+            "@min": 0,
+            "@max": 2,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Depth": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Intensity": {
+        "Pan Speed": {
             "@min": 0,
             "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "WaveShape": {
-            "@min": 0,
-            "@max": 6,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -56,6 +60,12 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
+        "Mix": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
         "SyncSelect1": {
             "@min": 1,
             "@max": 19,
@@ -64,20 +74,19 @@
         }
     },
     "Defaults": {
-        "@model": "HD2_TremoloTremolo",
-        "@position": 4,
+        "@model": "HD2_MM4PannedPhaser",
+        "@position": 3,
         "@no_snapshot_bypass": false,
         "SyncSelect1": 6,
-        "Intensity": 1,
-        "Speed": 3,
-        "@enabled": true,
-        "DutyCycle": 0.5,
+        "Speed": 3.8299999237060547,
         "TempoSync1": false,
+        "@enabled": true,
         "@path": 0,
         "@type": 0,
+        "Mix": 1,
+        "Pan Speed": 0.5,
         "Level": 0,
-        "@stereo": false,
-        "Spread": 1,
-        "WaveShape": 3
+        "Pan": 0,
+        "Depth": 0.5
     }
 }

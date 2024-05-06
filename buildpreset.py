@@ -10,23 +10,16 @@ import mutate
 #todo:
 #load effects from category folders so there can be even (or other) chances of them being used
 # swap blocks with ones from file
+# make wahs frequently have pedal control - if exp1, then the default val can be randomly chosen
 
+
+    
 # load a template preset from a json file, return a dictionary
 def loadPreset(presetFile):
     with open(os.path.expanduser(presetFile), "r") as f:
         preset_dict = json.load(f)
     return preset_dict
 
-
-
-# replace block default params with extracted block params, given blockNumber and dsp_name
-def replaceBlockDefaultParams(block_dict,preset_dict,block_num,dsp_name):
-    preset_dict["data"]["tone"][dsp_name]["block"+str(block_num)] = block_dict["Defaults"]
-
-
-def chooseBlockFile(blocks_path):
-    block_files = [f for f in os.listdir(blocks_path) if os.path.isfile(os.path.join(blocks_path, f))]
-    return random.choice(block_files)
 
 # return a random number biased between max and min
 # from https://stackoverflow.com/questions/29325069/how-to-generate-random-numbers-biased-towards-one-value-in-a-range
@@ -70,10 +63,6 @@ def addCabs(preset_dict,dsp_name,blocks_path):
         preset_dict["data"]["tone"][dsp_name][cab_name] = cab_dict["Defaults"]
         
 
-
-
-
-
 def seriesOrParallelPaths(preset_dict):
     preset_dict["data"]["tone"]["dsp0"]["outputA"]["@output"] = random.randint(1,2)
 
@@ -98,7 +87,7 @@ def replaceParamKeys(preset_dict,dsp_name,blocks_path):
         if block_name.startswith("block"): # or block_name.startswith("cab"): # cabs will be sorted with amps later, but cabs in amps will take an extra position at this step
             # load default params from file chosen randomly from blocks folder
             while True:
-                block_dict = mutate.loadBlockParams(blocks_path+"/"+chooseBlockFile(blocks_path))
+                block_dict = mutate.loadBlockParams(mutate.chooseBlockFile(blocks_path))
                 # allow only one amp in dsp section of preset_dict
                 if block_dict["Defaults"]["@model"].startswith("HD2_Amp"):
                      num_amps += 1                                          
@@ -116,22 +105,7 @@ def replaceParamKeys(preset_dict,dsp_name,blocks_path):
                 preset_dict["data"]["tone"][dsp_name][block_name]["@position"] = block_positions_path1.pop()
 
             preset_dict["data"]["tone"]["controller"][dsp_name][block_name] = block_dict["Ranges"]
-
-            # insert snapshot params into preset
-            for snapshot_num in range(num_snapshots):
-                snapshot_name = "snapshot" + str(snapshot_num)
-                #print(snapshot_name)
-                # following "if" line probably unnecessary
-                if "controllers" not in preset_dict["data"]["tone"][snapshot_name]:
-                    preset_dict["data"]["tone"][snapshot_name]["controllers"] = {}
-                    print("added controllers")
-                # following "if" line probably unnecessary
-                if dsp_name not in preset_dict["data"]["tone"][snapshot_name]["controllers"]:
-                    preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp_name] = {}
-                    print("added " + dsp_name)
-
-                # add snapshot params from block_dict
-                preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp_name][block_name] = deepcopy(block_dict["SnapshotParams"])
+            mutate.insertSnapshotParamsIntoPreset(preset_dict,dsp_name, block_name, block_dict)
         
         elif block_name.startswith("split"):
             split_dict = chooseSplit(preset_dict,dsp_name,blocks_path)
@@ -206,7 +180,7 @@ def replaceWithPedalControllers(preset_dict,dsp_name, pedalnum):
     # choose some blocks in dsp_name, and change controller 19 to controller 1 if the blocks and params exist
     #max_controllers = min(mutate.countParamControls(preset_dict,dsp_name),8)
     #for i in range(random.randint(0,max_controllers)) :
-    for i in range(8) :
+    for i in range(mutate.NUM_PEDAL_PARAMS) :
         randdsp, randblock = mutate.getRandDspAndBlock(preset_dict)
         if randblock != "none":
             randparam = mutate.getRandControllerParamNoBool(preset_dict,randdsp,randblock)
@@ -253,7 +227,7 @@ fraction_change_block_states = 0.1
 fraction_move = 0.1
 fraction_swap = 0.15
 processPreset("presets/test", "blocks/test","LessOccSplit.hlx")
-#mutate.mutatePresetSnapshotParams("presets/test/minenica_6.hlx", 6, "presets/test/minenica_6+.hlx",0.1,fraction_change_block_states,fraction_move, fraction_swap)
+#mutate.mutatePresetSnapshotParams("presets/test/ecdafafalal_2.hlx", 2, "presets/test/ecdafafalal_2+.hlx",0.1,fraction_change_block_states,fraction_move, fraction_swap)
 
 # if __name__ == '__main__': 
 #     main() 

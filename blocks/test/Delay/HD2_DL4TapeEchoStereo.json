@@ -1,20 +1,24 @@
 {
     "SnapshotParams": {
-        "Shape": {
+        "SyncSelect1": {
             "@fs_enabled": false,
-            "@value": 0
+            "@value": 6
         },
-        "Depth": {
+        "Time": {
             "@fs_enabled": false,
-            "@value": 1
+            "@value": 0.27900004386901855
         },
-        "Speed": {
+        "Bass": {
             "@fs_enabled": false,
-            "@value": 9.40999984741211
+            "@value": 0.5
         },
-        "Volsens": {
+        "Treble": {
             "@fs_enabled": false,
-            "@value": 0
+            "@value": 0.5
+        },
+        "DryThru": {
+            "@fs_enabled": false,
+            "@value": false
         },
         "Level": {
             "@fs_enabled": false,
@@ -22,35 +26,41 @@
         },
         "Mix": {
             "@fs_enabled": false,
-            "@value": 1
+            "@value": 0.309999942779541
         },
-        "SyncSelect1": {
+        "Feedback": {
             "@fs_enabled": false,
-            "@value": 6
+            "@value": 0.38999998569488525
         }
     },
     "Ranges": {
-        "Shape": {
+        "SyncSelect1": {
+            "@min": 1,
+            "@max": 19,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Time": {
+            "@min": 0,
+            "@max": 2.5,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Bass": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Depth": {
+        "Treble": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Speed": {
-            "@min": 0,
-            "@max": 15,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Volsens": {
-            "@min": 0,
-            "@max": 1,
+        "DryThru": {
+            "@min": false,
+            "@max": true,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -66,27 +76,29 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "SyncSelect1": {
-            "@min": 1,
-            "@max": 19,
+        "Feedback": {
+            "@min": 0,
+            "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "@model": "HD2_MM4BiasTremolo",
+        "@model": "HD2_DL4TapeEchoStereo",
         "@position": 0,
         "@no_snapshot_bypass": false,
+        "DryThru": false,
+        "Feedback": 0.38999998569488525,
         "SyncSelect1": 6,
-        "Speed": 9.40999984741211,
-        "TempoSync1": false,
         "@enabled": true,
-        "Shape": 0,
+        "TempoSync1": false,
         "@path": 0,
-        "@type": 0,
-        "Mix": 1,
+        "@trails": false,
+        "@type": 7,
+        "Bass": 0.5,
+        "Mix": 0.309999942779541,
+        "Time": 0.27900004386901855,
         "Level": 0,
-        "Volsens": 0,
-        "Depth": 1
+        "Treble": 0.5
     }
 }

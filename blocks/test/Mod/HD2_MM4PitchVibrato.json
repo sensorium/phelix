@@ -1,24 +1,28 @@
 {
     "SnapshotParams": {
-        "DutyCycle": {
+        "Rise": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "Depth": {
             "@fs_enabled": false,
             "@value": 0.5
         },
-        "Intensity": {
-            "@fs_enabled": false,
-            "@value": 1
-        },
-        "WaveShape": {
-            "@fs_enabled": false,
-            "@value": 3
-        },
         "Speed": {
             "@fs_enabled": false,
-            "@value": 3
+            "@value": 6.360000133514404
+        },
+        "Volsens": {
+            "@fs_enabled": false,
+            "@value": 0
         },
         "Level": {
             "@fs_enabled": false,
             "@value": 0
+        },
+        "Mix": {
+            "@fs_enabled": false,
+            "@value": 1
         },
         "SyncSelect1": {
             "@fs_enabled": false,
@@ -26,21 +30,15 @@
         }
     },
     "Ranges": {
-        "DutyCycle": {
+        "Rise": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Intensity": {
+        "Depth": {
             "@min": 0,
             "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "WaveShape": {
-            "@min": 0,
-            "@max": 6,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -50,9 +48,21 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
+        "Volsens": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
         "Level": {
             "@min": -60,
             "@max": 6,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Mix": {
+            "@min": 0,
+            "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -64,20 +74,20 @@
         }
     },
     "Defaults": {
-        "@model": "HD2_TremoloTremolo",
-        "@position": 4,
+        "@model": "HD2_MM4PitchVibrato",
+        "@position": 1,
         "@no_snapshot_bypass": false,
         "SyncSelect1": 6,
-        "Intensity": 1,
-        "Speed": 3,
-        "@enabled": true,
-        "DutyCycle": 0.5,
+        "Speed": 6.360000133514404,
         "TempoSync1": false,
+        "@enabled": true,
         "@path": 0,
         "@type": 0,
+        "Mix": 1,
+        "RiseTimeSwitch": true,
+        "Rise": 0,
         "Level": 0,
-        "@stereo": false,
-        "Spread": 1,
-        "WaveShape": 3
+        "Volsens": 0,
+        "Depth": 0.5
     }
 }

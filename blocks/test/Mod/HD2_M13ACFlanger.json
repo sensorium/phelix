@@ -1,51 +1,51 @@
 {
     "SnapshotParams": {
-        "DutyCycle": {
+        "SyncSelect1": {
+            "@fs_enabled": false,
+            "@value": 6
+        },
+        "Width": {
             "@fs_enabled": false,
             "@value": 0.5
         },
-        "Intensity": {
+        "Manual": {
             "@fs_enabled": false,
-            "@value": 1
-        },
-        "WaveShape": {
-            "@fs_enabled": false,
-            "@value": 3
+            "@value": 0
         },
         "Speed": {
             "@fs_enabled": false,
-            "@value": 3
+            "@value": 0.5499999523162842
         },
         "Level": {
             "@fs_enabled": false,
             "@value": 0
         },
-        "SyncSelect1": {
+        "Regen": {
             "@fs_enabled": false,
-            "@value": 6
+            "@value": 0.8799999952316284
         }
     },
     "Ranges": {
-        "DutyCycle": {
+        "SyncSelect1": {
+            "@min": 1,
+            "@max": 19,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Width": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Intensity": {
+        "Manual": {
             "@min": 0,
             "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "WaveShape": {
-            "@min": 0,
-            "@max": 6,
             "@controller": 19,
             "@snapshot_disable": false
         },
         "Speed": {
-            "@min": 0,
+            "@min": 0.10000002384185791,
             "@max": 15,
             "@controller": 19,
             "@snapshot_disable": false
@@ -56,28 +56,26 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "SyncSelect1": {
-            "@min": 1,
-            "@max": 19,
+        "Regen": {
+            "@min": 0,
+            "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "@model": "HD2_TremoloTremolo",
-        "@position": 4,
+        "@model": "HD2_M13ACFlanger",
+        "@position": 2,
         "@no_snapshot_bypass": false,
+        "Regen": 0.8799999952316284,
+        "Speed": 0.5499999523162842,
         "SyncSelect1": 6,
-        "Intensity": 1,
-        "Speed": 3,
         "@enabled": true,
-        "DutyCycle": 0.5,
         "TempoSync1": false,
         "@path": 0,
         "@type": 0,
+        "Width": 0.5,
         "Level": 0,
-        "@stereo": false,
-        "Spread": 1,
-        "WaveShape": 3
+        "Manual": 0
     }
 }

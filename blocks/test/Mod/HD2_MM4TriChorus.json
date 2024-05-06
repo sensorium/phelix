@@ -1,24 +1,28 @@
 {
     "SnapshotParams": {
-        "DutyCycle": {
+        "Depth1": {
             "@fs_enabled": false,
-            "@value": 0.5
+            "@value": 0.6299999952316284
         },
-        "Intensity": {
+        "Depth2": {
             "@fs_enabled": false,
-            "@value": 1
+            "@value": 0.9100000858306885
         },
-        "WaveShape": {
+        "Depth3": {
             "@fs_enabled": false,
-            "@value": 3
+            "@value": 0.5299999713897705
         },
         "Speed": {
             "@fs_enabled": false,
-            "@value": 3
+            "@value": 2.3399999141693115
         },
         "Level": {
             "@fs_enabled": false,
             "@value": 0
+        },
+        "Mix": {
+            "@fs_enabled": false,
+            "@value": 0.8600000143051147
         },
         "SyncSelect1": {
             "@fs_enabled": false,
@@ -26,21 +30,21 @@
         }
     },
     "Ranges": {
-        "DutyCycle": {
+        "Depth1": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Intensity": {
+        "Depth2": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "WaveShape": {
+        "Depth3": {
             "@min": 0,
-            "@max": 6,
+            "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -56,6 +60,12 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
+        "Mix": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
         "SyncSelect1": {
             "@min": 1,
             "@max": 19,
@@ -64,20 +74,19 @@
         }
     },
     "Defaults": {
-        "@model": "HD2_TremoloTremolo",
+        "@model": "HD2_MM4TriChorus",
+        "Depth3": 0.5299999713897705,
         "@position": 4,
         "@no_snapshot_bypass": false,
+        "Depth2": 0.9100000858306885,
+        "Speed": 2.3399999141693115,
         "SyncSelect1": 6,
-        "Intensity": 1,
-        "Speed": 3,
         "@enabled": true,
-        "DutyCycle": 0.5,
+        "Depth1": 0.6299999952316284,
         "TempoSync1": false,
         "@path": 0,
         "@type": 0,
-        "Level": 0,
-        "@stereo": false,
-        "Spread": 1,
-        "WaveShape": 3
+        "Mix": 0.8600000143051147,
+        "Level": 0
     }
 }

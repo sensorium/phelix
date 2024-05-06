@@ -1,52 +1,48 @@
 {
     "SnapshotParams": {
-        "DutyCycle": {
+        "Feedback": {
+            "@fs_enabled": false,
+            "@value": 0.6499999761581421
+        },
+        "Mix": {
             "@fs_enabled": false,
             "@value": 0.5
         },
-        "Intensity": {
+        "Dist": {
             "@fs_enabled": false,
-            "@value": 1
+            "@value": 0.6000000238418579
         },
-        "WaveShape": {
+        "Flutter": {
             "@fs_enabled": false,
-            "@value": 3
-        },
-        "Speed": {
-            "@fs_enabled": false,
-            "@value": 3
+            "@value": 0.8999999761581421
         },
         "Level": {
             "@fs_enabled": false,
             "@value": 0
-        },
-        "SyncSelect1": {
-            "@fs_enabled": false,
-            "@value": 6
         }
     },
     "Ranges": {
-        "DutyCycle": {
+        "Feedback": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Intensity": {
+        "Mix": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "WaveShape": {
+        "Dist": {
             "@min": 0,
-            "@max": 6,
+            "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Speed": {
+        "Flutter": {
             "@min": 0,
-            "@max": 15,
+            "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -55,29 +51,19 @@
             "@max": 6,
             "@controller": 19,
             "@snapshot_disable": false
-        },
-        "SyncSelect1": {
-            "@min": 1,
-            "@max": 19,
-            "@controller": 19,
-            "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "@model": "HD2_TremoloTremolo",
-        "@position": 4,
+        "@model": "TapeEater",
+        "Dist": 0.6000000238418579,
         "@no_snapshot_bypass": false,
-        "SyncSelect1": 6,
-        "Intensity": 1,
-        "Speed": 3,
-        "@enabled": true,
-        "DutyCycle": 0.5,
-        "TempoSync1": false,
         "@path": 0,
         "@type": 0,
+        "Flutter": 0.8999999761581421,
+        "@position": 3,
         "Level": 0,
-        "@stereo": false,
-        "Spread": 1,
-        "WaveShape": 3
+        "Mix": 0.5,
+        "@enabled": true,
+        "Feedback": 0.6499999761581421
     }
 }

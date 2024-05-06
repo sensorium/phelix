@@ -5,6 +5,64 @@ import os
 
 num_snapshots = 8
 num_slots_per_dsp = 16
+NUM_PEDAL_PARAMS = 16
+
+def countNumControllersSetTo2(preset_dict):
+    count = 0
+    for dsp_name in ["dsp0", "dsp1"]:
+        for block_name in preset_dict["data"]["tone"]["controller"][dsp_name]:
+            if preset_dict["data"]["tone"]["controller"][dsp_name][block_name] == 2:
+                count += 1
+    return count
+
+
+def chooseParamValuesForOneBlock(preset_dict, snapshot_num, dsp_name, block_name, fraction_new):
+    snapshot_name = "snapshot" + str(snapshot_num)
+    prototype_block = preset_dict["data"]["tone"]["controller"][dsp_name][block_name]
+    defaults_block = preset_dict["data"]["tone"][dsp_name][block_name]
+    for parameter, v in prototype_block.items():
+        #print(parameter)
+        pmin = prototype_block[parameter]["@min"]
+        pmax = prototype_block[parameter]["@max"]
+        # do the right thing for the kind of parameter
+        if isinstance(pmin, bool):
+            result = random.choice([True, False])
+        elif (block_name.startswith("block") or block_name.startswith("cab")) and parameter == "Level":
+            lowest = ((pmax-pmin) * 0.2) + pmin
+            mode = ((pmax-pmin) * 0.8) + pmin # choose level from 0.2 to max, peak around 0.8 of max range
+            result = random.triangular(lowest, pmax, mode)
+        elif parameter == "Time": # choose times at the short end  
+            #mode = ((pmax-pmin) * 0.1) + pmin
+            #result = random.triangular(pmin, pmax, mode)
+            closerToOneForLowerNum = 0.95 + (0.75 - 0.95) * (pmax - 2) / (8 - 2)
+            result = min(pmax, random.expovariate(closerToOneForLowerNum))
+            #print("setting Time, max "+str(pmax),str(result))
+        elif parameter == "Mix": # choose mix around middle
+            lowest = ((pmax-pmin) * 0.2) + pmin # choose mix from 0.2 to max, peak around 0.5 of max range
+            mode = ((pmax-pmin) * 0.5) + pmin
+            result = random.triangular(lowest, pmax, mode)
+        elif parameter == "Feedback": # choose feedback around middle
+            mode = ((pmax-pmin) * 0.5) + pmin
+            result = random.triangular(pmin, pmax, mode)
+        elif (defaults_block["@model"].startswith("HD2_Reverb") or defaults_block["@model"].startswith("VIC") or defaults_block["@model"].startswith("Victoria")) and parameter == "Decay":
+            mode = ((pmax-pmin) * 0.05) + pmin
+            result = random.triangular(pmin, pmax, mode)
+            #result = min(pmax, random.expovariate(0.5))
+        else:
+            result = random.uniform(pmin, pmax) # switch choices are rounded to nearest integer in helix
+        preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp_name][block_name][parameter]["@value"] = result
+        # make defaults same as snapshot 0
+        if (snapshot_num == 0) and (block_name.startswith("block") or block_name.startswith("cab") or block_name.startswith("split")) and (not parameter.startswith("@")):
+                if isinstance(result, bool):
+                    defaults_block[parameter] = result
+                else:
+                    prev_result = defaults_block[parameter]
+                    fraction_prev = 1.0-fraction_new
+                    result_mix = result*fraction_new + prev_result*fraction_prev
+                    result_mix_constrained = max(pmin, min(result_mix, pmax))
+                    defaults_block[parameter] = result_mix_constrained
+                    #print(pmin, pmax, prev_result, result_mix_constrained)
+
 
 def chooseParamValues(preset_dict, fraction_new): #fraction_new is 0.0 to 1.0
    # make random parameter values
@@ -14,52 +72,7 @@ def chooseParamValues(preset_dict, fraction_new): #fraction_new is 0.0 to 1.0
         for dsp_name in ["dsp0", "dsp1"]:
             for block_name in preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp_name]:
                 # for control parameter max and mins
-                prototype_block = preset_dict["data"]["tone"]["controller"][dsp_name][block_name]
-                defaults_block = preset_dict["data"]["tone"][dsp_name][block_name]
-
-                for parameter, v in prototype_block.items():
-                    #print(parameter)
-                    pmin = prototype_block[parameter]["@min"]
-                    pmax = prototype_block[parameter]["@max"]
-                    # do the right thing for the kind of parameter
-                    if isinstance(pmin, bool):
-                        result = random.choice([True, False])
-                    elif (block_name.startswith("block") or block_name.startswith("cab")) and parameter == "Level":
-                        lowest = ((pmax-pmin) * 0.2) + pmin
-                        mode = ((pmax-pmin) * 0.8) + pmin # choose level from 0.2 to max, peak around 0.8 of max range
-                        result = random.triangular(lowest, pmax, mode)
-                    elif parameter == "Time": # choose times at the short end  
-                        #mode = ((pmax-pmin) * 0.1) + pmin
-                        #result = random.triangular(pmin, pmax, mode)
-                        closerToOneForLowerNum = 0.95 + (0.75 - 0.95) * (pmax - 2) / (8 - 2)
-                        result = min(pmax, random.expovariate(closerToOneForLowerNum))
-                        #print("setting Time, max "+str(pmax),str(result))
-                    elif parameter == "Mix": # choose mix around middle
-                        lowest = ((pmax-pmin) * 0.2) + pmin # choose mix from 0.2 to max, peak around 0.5 of max range
-                        mode = ((pmax-pmin) * 0.5) + pmin
-                        result = random.triangular(lowest, pmax, mode)
-                    elif parameter == "Feedback": # choose feedback around middle
-                        mode = ((pmax-pmin) * 0.5) + pmin
-                        result = random.triangular(pmin, pmax, mode)
-                    elif (defaults_block["@model"].startswith("HD2_Reverb") or defaults_block["@model"].startswith("VIC") or defaults_block["@model"].startswith("Victoria")) and parameter == "Decay":
-                        mode = ((pmax-pmin) * 0.05) + pmin
-                        result = random.triangular(pmin, pmax, mode)
-                        #result = min(pmax, random.expovariate(0.5))
-                    else:
-                        result = random.uniform(pmin, pmax) # switch choices are rounded to nearest integer in helix
-                    preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp_name][block_name][parameter]["@value"] = result
-                    # make defaults same as snapshot 0
-                    if (snapshot_num == 0) and (block_name.startswith("block") or block_name.startswith("cab") or block_name.startswith("split")) and (not parameter.startswith("@")):
-                            if isinstance(result, bool):
-                                defaults_block[parameter] = result
-                            else:
-                                prev_result = defaults_block[parameter]
-                                fraction_prev = 1.0-fraction_new
-                                result_mix = result*fraction_new + prev_result*fraction_prev
-                                result_mix_constrained = max(pmin, min(result_mix, pmax))
-                                defaults_block[parameter] = result_mix_constrained
-                                #print(pmin, pmax, prev_result, result_mix_constrained)
-
+               chooseParamValuesForOneBlock(preset_dict, snapshot_num, dsp_name, block_name, 1.0)
 
 def countParamControls(preset_dict):
     num_params = 0
@@ -91,9 +104,6 @@ def getRandDspAndBlock(preset_dict):
     if len(found_blocks)>0:
         rand_dsp_and_block = random.choice(found_blocks)
     return rand_dsp_and_block
-
-
-
 
 
 def getRandControllerParam(preset_dict,dsp_name,block):
@@ -143,7 +153,6 @@ def delRandomParamControl(preset_dict):
     #print("deleted "+randblock+" "+randparam)
 
 
-
 def changeSomePedalControllers(preset_dict, pedalnum, change_fraction):
     #global num_snapshots
     #get a list of params with pedal control (controller number 2)
@@ -181,7 +190,7 @@ def chooseParamValueAround(mean, pmin, pmax):
     sigma=range/4
     p = random.normalvariate(mean,sigma)
     while not (pmin <= p <= pmax):
-        p = random.randint(1, 20)
+        p = random.normalvariate(mean,sigma)
     return p
   
 
@@ -284,9 +293,71 @@ def moveBlocks(preset_dict, dsp_blockname_to_dsp_path_pos):
 
         print("Moved", from_dsp, block_name, from_path, from_position,
               "to", to_dsp, new_block_name, to_path, to_position)
-    
- 
 
+
+# replace block default params with extracted block params, given blockNumber and dsp_name
+def replaceBlockDefaultParams(block_dict,preset_dict,block_num,dsp_name):
+    preset_dict["data"]["tone"][dsp_name]["block"+str(block_num)] = block_dict["Defaults"]
+
+
+# load extracted block parameters from a json file, return a dictionary
+def loadBlockParams(block_filename):
+    with open(os.path.expanduser(block_filename), "r") as f:
+        block_dict = json.load(f)
+    return block_dict
+
+
+def chooseBlockFile(blocks_path="blocks/test"):
+    block_folders = [f for f in os.listdir(blocks_path) if os.path.isdir(os.path.join(blocks_path, f)) and f not in ["Cab", "Split"]]
+    folder = random.choice(block_folders)
+    blocks_path = os.path.join(blocks_path, folder)
+    block_files = [f for f in os.listdir(blocks_path) if os.path.isfile(os.path.join(blocks_path, f))]
+    filename = os.path.join(blocks_path, random.choice(block_files))
+    print(filename)
+    return filename
+
+
+def insertSnapshotParamsIntoPreset(preset_dict,dsp_name, block_name, new_block_dict):
+    for snapshot_num in range(num_snapshots):
+        snapshot_name = "snapshot" + str(snapshot_num)
+        # following "if" line probably unnecessary
+        if "controllers" not in preset_dict["data"]["tone"][snapshot_name]:
+            preset_dict["data"]["tone"][snapshot_name]["controllers"] = {}
+            print("added controllers")
+        # following "if" line probably unnecessary
+        if dsp_name not in preset_dict["data"]["tone"][snapshot_name]["controllers"]:
+            preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp_name] = {}
+            print("added " + dsp_name)
+
+        # add snapshot params from block_dict
+        preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp_name][block_name] = deepcopy(new_block_dict["SnapshotParams"])
+
+
+def swapBlocksFromFile(preset_dict, change_fraction):
+    for dsp_name in ["dsp0", "dsp1"]:
+        for block_name in preset_dict["data"]["tone"][dsp_name]:
+            if block_name.startswith("block"):
+                if random.uniform(0, 1) < change_fraction:  # change state
+                    # replace this block with a random one from file
+                    print("swapping block from file")
+                    path = preset_dict["data"]["tone"][dsp_name][block_name]["@path"]
+                    pos = preset_dict["data"]["tone"][dsp_name][block_name]["@position"]
+                    new_block_dict = loadBlockParams(chooseBlockFile())
+                    preset_dict["data"]["tone"][dsp_name][block_name] = new_block_dict["Defaults"]
+                    preset_dict["data"]["tone"][dsp_name][block_name]["@path"] = path
+                    preset_dict["data"]["tone"][dsp_name][block_name]["@position"] = pos
+                    insertSnapshotParamsIntoPreset(preset_dict,dsp_name, block_name, new_block_dict)
+                    preset_dict["data"]["tone"]["controller"][dsp_name][block_name] = new_block_dict["Ranges"]
+                    for snapshot_num in range(num_snapshots):
+                        chooseParamValuesForOneBlock(preset_dict, snapshot_num, dsp_name, block_name, 1.0)
+                    # add pedal controls to replace any lost from the block replaced
+                    for param in range(NUM_PEDAL_PARAMS  - countNumControllersSetTo2(preset_dict)):
+                        # set control to pedal (controller number 2)
+                        # choose a random parameter
+                        randparam = random.choice(list(preset_dict["data"]["tone"]["controller"][dsp_name][block_name].keys()))
+                        preset_dict["data"]["tone"]["controller"][dsp_name][block_name][randparam]["@controller"] = 2
+                        
+   
 def mutateName(preset_dict):
     vowels = 'aeiou'
     consonants = 'bcdfghjklmnpqrstvwxyz'
@@ -311,12 +382,6 @@ def mutateName(preset_dict):
     print(name)
 
 
-# load extracted block parameters from a json file, return a dictionary
-def loadBlockParams(block_file):
-    with open(os.path.expanduser(block_file), "r") as f:
-        block_dict = json.load(f)
-    return block_dict
-
 
 def movePedalRanges(preset_dict):
     for dsp_name in ["dsp0", "dsp1"]:
@@ -327,10 +392,18 @@ def movePedalRanges(preset_dict):
                     if not isinstance(pedalParam["@min"], bool): # don't want to pedal bools
                         # get original ranges from file
                         block_filename = preset_dict["data"]["tone"][dsp_name][block_or_split_name]["@model"]+".json"
-                        block_dict = loadBlockParams("blocks/test/"+block_filename)
+                        block_folder = "blocks/test/"
+                        for dirpath, dirnames, filenames in os.walk(block_folder):
+                            #print(dirpath,dirnames, filenames)
+                            if block_filename in filenames:
+                                block_folder = dirpath+"/"
+                                break
+                        #print(block_folder+block_filename)
+                        block_dict = loadBlockParams(block_folder+block_filename)
                         pmin = block_dict["Ranges"][param]["@min"]
                         pmax = block_dict["Ranges"][param]["@max"]
-                        new_min = chooseParamValueAround(pedalParam["@min"], pmin, pmax)
+                        #print(pedalParam["@min"], pmin, pmax)
+                        new_min = chooseParamValueAround(pedalParam["@min"], pmin, pmax) #(mean, pmin, pmax)
                         new_max = chooseParamValueAround(pedalParam["@max"], pmin, pmax)
                         pedalParam["@min"] = new_min
                         pedalParam["@max"] = new_max
@@ -371,12 +444,8 @@ def mutateSnapshot(preset_dict, snapshot_src_num,fraction_new,fraction_change_bl
 
     changeSomePedalControllers(preset_dict, 2, 0.5)
     movePedalRanges(preset_dict)
-    # sometimes change some block (and split) positions (check for vacant positions, or swap positions)
-    #mutateBlockPositionsAcrossDsps(preset_dict, "dsp0")
-    #mutateBlockPositionsAcrossDsps(preset_dict, "dsp1")
     mutateBlockPositions(preset_dict, fraction_move, fraction_swap)
-    #makeBlockNamesMatchPositions(preset_dict)
-    #printBlockNames(preset_dict)
+    swapBlocksFromFile(preset_dict, 0.1)
     # sometimes change some split types
     # sometimes change series or parallel
     setLedColours(preset_dict)

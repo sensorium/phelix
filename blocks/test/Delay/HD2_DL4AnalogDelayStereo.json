@@ -1,52 +1,56 @@
 {
     "SnapshotParams": {
-        "DutyCycle": {
+        "SyncSelect1": {
             "@fs_enabled": false,
-            "@value": 0.5
+            "@value": 6
         },
-        "Intensity": {
+        "Time": {
             "@fs_enabled": false,
-            "@value": 1
+            "@value": 0.19000005722045898
         },
-        "WaveShape": {
+        "Bass": {
             "@fs_enabled": false,
-            "@value": 3
+            "@value": 0.6299999952316284
         },
-        "Speed": {
+        "Treble": {
             "@fs_enabled": false,
-            "@value": 3
+            "@value": 0.559999942779541
         },
         "Level": {
             "@fs_enabled": false,
             "@value": 0
         },
-        "SyncSelect1": {
+        "Mix": {
             "@fs_enabled": false,
-            "@value": 6
+            "@value": 0.23000001907348633
+        },
+        "Feedback": {
+            "@fs_enabled": false,
+            "@value": 0.23000001907348633
         }
     },
     "Ranges": {
-        "DutyCycle": {
+        "SyncSelect1": {
+            "@min": 1,
+            "@max": 19,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Time": {
+            "@min": 0,
+            "@max": 2.5,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Bass": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Intensity": {
+        "Treble": {
             "@min": 0,
             "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "WaveShape": {
-            "@min": 0,
-            "@max": 6,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Speed": {
-            "@min": 0,
-            "@max": 15,
             "@controller": 19,
             "@snapshot_disable": false
         },
@@ -56,28 +60,34 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "SyncSelect1": {
-            "@min": 1,
-            "@max": 19,
+        "Mix": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Feedback": {
+            "@min": 0,
+            "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "@model": "HD2_TremoloTremolo",
-        "@position": 4,
+        "@model": "HD2_DL4AnalogDelayStereo",
+        "@position": 3,
         "@no_snapshot_bypass": false,
+        "Feedback": 0.23000001907348633,
         "SyncSelect1": 6,
-        "Intensity": 1,
-        "Speed": 3,
-        "@enabled": true,
-        "DutyCycle": 0.5,
         "TempoSync1": false,
+        "@enabled": true,
         "@path": 0,
-        "@type": 0,
+        "@trails": false,
+        "@type": 7,
+        "Bass": 0.6299999952316284,
+        "Mix": 0.23000001907348633,
+        "Time": 0.2549999952316284,
         "Level": 0,
-        "@stereo": false,
-        "Spread": 1,
-        "WaveShape": 3
+        "Treble": 0.559999942779541
     }
 }

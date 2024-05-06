@@ -1,13 +1,5 @@
 {
     "SnapshotParams": {
-        "SyncSelect1": {
-            "@fs_enabled": false,
-            "@value": 6
-        },
-        "Feedback": {
-            "@fs_enabled": false,
-            "@value": 0.6299999952316284
-        },
         "Mix": {
             "@fs_enabled": false,
             "@value": 1
@@ -22,22 +14,10 @@
         },
         "Speed": {
             "@fs_enabled": false,
-            "@value": 1.5900001525878906
+            "@value": 110
         }
     },
     "Ranges": {
-        "SyncSelect1": {
-            "@min": 1,
-            "@max": 19,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Feedback": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
         "Mix": {
             "@min": 0,
             "@max": 1,
@@ -58,24 +38,21 @@
         },
         "Speed": {
             "@min": 0,
-            "@max": 15,
+            "@max": 3520,
             "@controller": 19,
             "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "@model": "HD2_MM4BarberpolePhaser",
-        "@position": 4,
+        "@model": "HD2_MM4FrequencyShifter",
+        "Mode": 0,
         "@no_snapshot_bypass": false,
-        "Feedback": 0.6299999952316284,
-        "Speed": 1.5900001525878906,
-        "SyncSelect1": 6,
-        "@enabled": true,
-        "TempoSync1": false,
         "@path": 0,
         "@type": 0,
-        "Mix": 1,
+        "Speed": 110,
+        "@position": 4,
         "Level": 0,
-        "Mode": 0
+        "Mix": 1,
+        "@enabled": true
     }
 }
