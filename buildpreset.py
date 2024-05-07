@@ -226,8 +226,8 @@ num_snapshots = 8
 fraction_change_block_states = 0.1
 fraction_move = 0.1
 fraction_swap = 0.15
-processPreset("presets/test", "blocks/test","LessOccSplit.hlx")
-#mutate.mutatePresetSnapshotParams("presets/test/ecdafafalal_2.hlx", 2, "presets/test/ecdafafalal_2+.hlx",0.1,fraction_change_block_states,fraction_move, fraction_swap)
+#processPreset("presets/test", "blocks/test","LessOccSplit.hlx")
+mutate.mutatePresetSnapshotParams("presets/test/memi_0.hlx", 0, "presets/test/memi_0+.hlx",0.1,fraction_change_block_states,fraction_move, fraction_swap)
 
 # if __name__ == '__main__': 
 #     main() 
