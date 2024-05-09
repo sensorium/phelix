@@ -227,7 +227,13 @@ fraction_change_block_states = 0.1
 fraction_move = 0.1
 fraction_swap = 0.15
 #processPreset("presets/test", "blocks/test","LessOccSplit.hlx")
-mutate.mutatePresetSnapshotParams("presets/test/memi_0.hlx", 0, "presets/test/memi_0+.hlx",0.1,fraction_change_block_states,fraction_move, fraction_swap)
+def mutations(num):
+    for i in range(num):
+        mutate.mutatePresetSnapshotParams("presets/test/epbu_6.hlx", 6, "presets/test/epbu_6.hlx",0.1,fraction_change_block_states,fraction_move, fraction_swap)
+
+
+#mutations(5)      
+mutate.mutatePresetSnapshotParams("presets/test/epbu_6.hlx", 6, "presets/test/epbu_6+.hlx",0.1,fraction_change_block_states,fraction_move, fraction_swap)
 
 # if __name__ == '__main__': 
 #     main() 
