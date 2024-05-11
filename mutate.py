@@ -369,34 +369,37 @@ def insertSnapshotParamsIntoPreset(preset_dict,dsp_name, block_name, new_block_d
 def swapBlocksFromFile(preset_dict, change_fraction):
     for dsp_name in ["dsp0", "dsp1"]:
         for block_name in preset_dict["data"]["tone"][dsp_name]:
-            if block_name.startswith(("block", "split")):
+            if block_name.startswith("block"):
                 if random.uniform(0, 1) < change_fraction:  # change state
-                    # replace this block with a random one from file
-                    swapOneBlockFromFile(preset_dict, dsp_name, block_name)
+                    swapBlockFromFile(preset_dict, dsp_name, block_name)
+            if block_name.startswith("split"):
+                if random.uniform(0, 1) < change_fraction:  # change state
+                    swapSplitFromFile(preset_dict, dsp_name, block_name)
 
-
-def swapOneBlockFromFile(preset_dict, dsp_name, block_or_split_name):
+def swapBlockFromFile(preset_dict, dsp_name, block_name):
     print("swapping block from file")
-    if block_or_split_name.startswith("block"):
-        path = preset_dict["data"]["tone"][dsp_name][block_or_split_name]["@path"]
-    pos = preset_dict["data"]["tone"][dsp_name][block_or_split_name]["@position"]
-    if block_or_split_name.startswith("split"):
-        new_block_dict = loadBlockParams(chooseBlockFileInCategory(BLOCKS_PATH, "Split"))
-    else:
-        new_block_dict = loadBlockParams(chooseBlockFile())
-    preset_dict["data"]["tone"][dsp_name][block_or_split_name] = new_block_dict["Defaults"]
-    if block_or_split_name.startswith("block"):
-        preset_dict["data"]["tone"][dsp_name][block_or_split_name]["@path"] = path
-    preset_dict["data"]["tone"][dsp_name][block_or_split_name]["@position"] = pos
-    insertSnapshotParamsIntoPreset(preset_dict,dsp_name, block_or_split_name, new_block_dict)
-    preset_dict["data"]["tone"]["controller"][dsp_name][block_or_split_name] = new_block_dict["Ranges"]
+    path = preset_dict["data"]["tone"][dsp_name][block_name]["@path"]
+    pos = preset_dict["data"]["tone"][dsp_name][block_name]["@position"]
+    new_block_dict = loadBlockParams(chooseBlockFile())
+    preset_dict["data"]["tone"][dsp_name][block_name] = new_block_dict["Defaults"]
+    preset_dict["data"]["tone"][dsp_name][block_name]["@path"] = path
+    preset_dict["data"]["tone"][dsp_name][block_name]["@position"] = pos
+    insertSnapshotParamsIntoPreset(preset_dict,dsp_name, block_name, new_block_dict)
+    preset_dict["data"]["tone"]["controller"][dsp_name][block_name] = new_block_dict["Ranges"]
     for snapshot_num in range(NUM_SNAPSHOTS):
-        chooseParamValuesForOneBlock(preset_dict, snapshot_num, dsp_name, block_or_split_name, 1.0)
-                    # add pedal controls to replace any lost from the block replaced
-                    #replacePedalControls(preset_dict, dsp_name, block_name)
-    for param in range(NUM_PEDAL_PARAMS  - countNumControllersSetTo2(preset_dict)):
-        randparam = random.choice(list(preset_dict["data"]["tone"]["controller"][dsp_name][block_or_split_name].keys()))
-        preset_dict["data"]["tone"]["controller"][dsp_name][block_or_split_name][randparam]["@controller"] = 2
+        chooseParamValuesForOneBlock(preset_dict, snapshot_num, dsp_name, block_name, 1.0)
+
+
+def swapSplitFromFile(preset_dict, dsp_name, block_name):
+    print("swapping split from file")
+    pos = preset_dict["data"]["tone"][dsp_name][block_name]["@position"]
+    new_block_dict = loadBlockParams(chooseBlockFileInCategory(BLOCKS_PATH, "Split"))
+    preset_dict["data"]["tone"][dsp_name][block_name] = new_block_dict["Defaults"]
+    preset_dict["data"]["tone"][dsp_name][block_name]["@position"] = pos
+    insertSnapshotParamsIntoPreset(preset_dict,dsp_name, block_name, new_block_dict)
+    preset_dict["data"]["tone"]["controller"][dsp_name][block_name] = new_block_dict["Ranges"]
+    for snapshot_num in range(NUM_SNAPSHOTS):
+        chooseParamValuesForOneBlock(preset_dict, snapshot_num, dsp_name, block_name, 1.0)
 
 
 def replacePedalControls(preset_dict, dsp_name, block_name):
