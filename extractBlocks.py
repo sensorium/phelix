@@ -1,49 +1,53 @@
-
 # snapshots provide the max and min values for each parameter
 # the snapshotted params need to be set by hand in hxedit (unless there's an automatic way to snapshot all params)
 # this script extracts the params from the snapshots to a json file in the blocks folder
 
 import sys, os, json
 
-def extractBlocksFromPath(preset_dict, dsp_name, blocks_path):
-	if dsp_name in preset_dict["data"]["tone"]["controller"]:
-		print(dsp_name)
-		for block_name in preset_dict["data"]["tone"]["controller"][dsp_name]:
-			if block_name.startswith("block") or block_name.startswith("cab") or block_name.startswith("split"):
-				block_dict = {}
-				block_dict["SnapshotParams"] = preset_dict["data"]["tone"]["snapshot0"]["controllers"][dsp_name][block_name]
-				block_dict["Ranges"] = preset_dict["data"]["tone"]["controller"][dsp_name][block_name]
-				block_dict["Defaults"] = preset_dict["data"]["tone"][dsp_name][block_name]
-				block_filename = preset_dict["data"]["tone"][dsp_name][block_name]["@model"]+".json"
-				# if block_filename.startswith("HD2_Cab"):
-				# 	block_filename = "Cab/"+block_filename
-				with open(os.path.join(blocks_path,block_filename), "w") as json_file:
-					json.dump(block_dict, json_file, indent=4)
-				print(os.path.join(blocks_path,block_filename))
-		
-
-# def extractSplits(preset_dict, dspName, blocks_path):
-# 	if "split" in preset_dict["data"]["tone"][dspName]:
-# 		split_filename = preset_dict["data"]["tone"][dspName]["split"]["@model"]+".json"
-# 		with open(os.path.join(blocks_path,split_filename), "w") as json_file:
-# 			json.dump(preset_dict["data"]["tone"][dspName]["split"], json_file, indent=4)
-# 			print(os.path.join(blocks_path,split_filename))
+BLOCKS_PATH = "blocks/test"
 
 
-# This code defines a function that creates a directory 
-# named "blocks" in the current working directory based on the provided folder and presetName, 
-# loads a JSON file, and then calls a function to extract blocks from the JSON data 
+def extractBlocksFromPath(preset_dict, dsp_name, category_path):
+    if dsp_name in preset_dict["data"]["tone"]["controller"]:
+        print(dsp_name)
+        for block_name in preset_dict["data"]["tone"]["controller"][dsp_name]:
+            if (
+                block_name.startswith("block")
+                or block_name.startswith("cab")
+                or block_name.startswith("split")
+            ):
+                block_dict = {}
+                block_dict["SnapshotParams"] = preset_dict["data"]["tone"]["snapshot0"][
+                    "controllers"
+                ][dsp_name][block_name]
+                block_dict["Ranges"] = preset_dict["data"]["tone"]["controller"][
+                    dsp_name
+                ][block_name]
+                block_dict["Defaults"] = preset_dict["data"]["tone"][dsp_name][
+                    block_name
+                ]
+                block_filename = (
+                    preset_dict["data"]["tone"][dsp_name][block_name]["@model"]
+                    + ".json"
+                )
+                with open(os.path.join(category_path, block_filename), "w") as json_file:
+                    json.dump(block_dict, json_file, indent=4)
+                print(os.path.join(category_path, block_filename))
+
+
+# This code defines a function that creates a directory
+# named "blocks" in the current working directory based on the provided folder and presetName,
+# loads a JSON file, and then calls a function to extract blocks from the JSON data
 # for "dsp0" and "dsp1" into the created directory.
 
-def extractControls(preset_path, blocks_path,presetName):
-	#b locks_path = os.path.join(preset_path,presetName,"blocks")
-	# print(blocks_path)
-	os.makedirs(blocks_path, exist_ok=True)
-	with open(os.path.join(preset_path, presetName), "r") as f:
-		preset_dict = json.load(f)
-		extractBlocksFromPath(preset_dict, "dsp0", blocks_path)
-		extractBlocksFromPath(preset_dict, "dsp1", blocks_path)
-		#extractSplits(preset_dict, "dsp0", blocks_path)
-		#extractSplits(preset_dict, "dsp1", blocks_path)
 
-extractControls("presets/test", "blocks/test/Amp", "delay7leg.hlx")
+def extractControls(preset_path, category, preset_name):
+    full_path = os.path.join(BLOCKS_PATH, category)
+    os.makedirs(full_path, exist_ok=True)
+    with open(os.path.join(preset_path, preset_name), "r") as f:
+        preset_dict = json.load(f)
+        extractBlocksFromPath(preset_dict, "dsp0", full_path)
+        extractBlocksFromPath(preset_dict, "dsp1", full_path)
+
+
+extractControls("presets/test", "Delay", "delay7leg.hlx")
