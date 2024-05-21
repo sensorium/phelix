@@ -209,7 +209,7 @@ def chooseBlocksOnOrOff(preset_dict, dsp_name):
 def generateFromSavedBlocks(preset_dict, dsp_name):
     print(dsp_name)
     replaceParamKeys(preset_dict, dsp_name)
-    mutate.chooseParamValues(preset_dict, 1.0)
+    mutate.chooseParamValuesForAllSnapshots(preset_dict)
     addCabs(preset_dict, dsp_name)
     chooseBlocksOnOrOff(preset_dict, dsp_name)
 
@@ -296,9 +296,9 @@ def generateSomePresets(num):
 def mutations(num):
     for i in range(num):
         mutate.mutatePresetSnapshotParams(
-            "presets/test/memiyuno_6.hlx",
+            "presets/test/240521-2016ded.hlx",
             6,
-            "presets/test/memiyuno_6+" + str(i + 1) + ".hlx",
+            "presets/test/240521-2016ded+" + str(i + 1) + ".hlx",
             0.1,
             fraction_change_block_states,
             fraction_move,
@@ -306,9 +306,12 @@ def mutations(num):
         )
 
 
-generateSomePresets(5)
-# mutations(5)
+#generateSomePresets(5)
+mutations(5)
 # mutate.mutatePresetSnapshotParams("presets/test/memiyun_7.hlx", 7, "presets/test/memiyun_7+.hlx",0.1,fraction_change_block_states,fraction_move, fraction_swap)
 
 # if __name__ == '__main__':
 #     main()
+#mutate probs: 2 amps on 1 dsp
+# split disappears on dsp1
+# cabs are in block positions - are they getting chosen, or not attached to amps properly? (might be when generating, not sure if geerating or mutating)
