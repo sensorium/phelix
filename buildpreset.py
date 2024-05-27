@@ -244,7 +244,7 @@ def generatePresetFromTemplate(presets_path, template_name, save_name, preset_na
         chooseSeriesOrParallelDsps(preset_dict)
         set_preset_name(preset_dict, preset_name)
 
-        while mutate.countParamsInController(preset_dict) > 64:
+        while mutate.count_parameters_in_controller(preset_dict) > 64:
             mutate.remove_one_random_controller_parameter(preset_dict)
 
         replaceWithPedalControllers(preset_dict, 2)
