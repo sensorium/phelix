@@ -232,10 +232,10 @@ def generatePresetFromTemplate(presets_path, template_name, save_name):
         generateFromSavedBlocks(preset_dict, "dsp0")
         generateFromSavedBlocks(preset_dict, "dsp1")
 
-        mutate.seriesOrParallelPaths(preset_dict)
+        chooseSeriesOrParallelDsps(preset_dict)
         namePresetByDate(preset_dict)
 
-        while mutate.countParamControls(preset_dict) > 64:
+        while mutate.countParamsInController(preset_dict) > 64:
             mutate.delRandomParamControl(preset_dict)
 
         replaceWithPedalControllers(preset_dict, 2)
@@ -244,6 +244,10 @@ def generatePresetFromTemplate(presets_path, template_name, save_name):
 
         with open(os.path.join(presets_path, save_name), "w") as json_file:
             json.dump(preset_dict, json_file, indent=4)
+
+
+def chooseSeriesOrParallelDsps(preset_dict):
+    preset_dict["data"]["tone"]["dsp0"]["outputA"]["@output"] = random.choice([1, 2])
 
 
 num_snapshots = 8

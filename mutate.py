@@ -10,13 +10,110 @@ NUM_PEDAL_PARAMS = 16
 BLOCKS_PATH = "blocks/test"
 
 
-def countNumControllersSetTo2(preset_dict):
-    count = 0
-    for dsp_name in ["dsp0", "dsp1"]:
+# functions that start with "get"
+def getRandDspAndBlock(preset_dict):
+    # returns a random block, or "none" if there are no blocks
+    dsp_names = ["dsp0", "dsp1"]
+    found_blocks = []
+    for dsp_name in dsp_names:
         for block_name in preset_dict["data"]["tone"]["controller"][dsp_name]:
-            if preset_dict["data"]["tone"]["controller"][dsp_name][block_name] == 2:
-                count += 1
-    return count
+            found_blocks.append((dsp_name, block_name))
+    rand_dsp_and_block = ["none", "none"]
+    if len(found_blocks) > 0:
+        rand_dsp_and_block = random.choice(found_blocks)
+    return rand_dsp_and_block
+
+
+def getRandControllerParam(preset_dict, dsp_name, block):
+    # returns a random param, or "none" if there are no params
+    # print("getRandControllerParam for "+dsp_name+" "+block)
+    params = []
+    for param in preset_dict["data"]["tone"]["controller"][dsp_name][block]:
+        params.append(param)
+        # print("append to getRandControllerParam choices " +param)
+    randparam = "none"
+    if len(params) > 0:
+        randparam = random.choice(params)
+    return randparam
+
+
+def getRandControllerParamNoBoolNoMic(preset_dict, dsp_name, block):
+    # returns a random param (but not one with a boolean value), or "none" if there are no params
+    params = []
+    for param in preset_dict["data"]["tone"]["controller"][dsp_name][block]:
+        if (
+            not isinstance(
+                preset_dict["data"]["tone"]["controller"][dsp_name][block][param]["@min"],
+                bool,
+            )
+            and param != "Mic"
+        ):
+            params.append(param)
+            # print("append to getRandControllerParamNoBool choices " +param)
+    randparam = "none"
+    if len(params) > 0:
+        randparam = random.choice(params)
+    return randparam
+
+
+def setRandPedalParamAndRanges(preset_dict, pedalnum):
+    randdsp, randblock = getRandDspAndBlock(preset_dict)
+    if randblock != "none":
+        randparam = getRandControllerParamNoBoolNoMic(preset_dict, randdsp, randblock)
+        if randparam != "none":
+            model_name = preset_dict["data"]["tone"][randdsp][randblock]["@model"]
+            print(
+                "setting pedal for " + randdsp,
+                randblock,
+                model_name,
+                randparam,
+                pedalnum,
+            )
+            pedal_param = preset_dict["data"]["tone"]["controller"][randdsp][randblock][randparam]
+            pedal_param["@controller"] = pedalnum
+            new_max = random.uniform(pedal_param["@min"], pedal_param["@max"])
+            new_min = random.uniform(pedal_param["@min"], pedal_param["@max"])
+            # set new random max and min values within the original limits
+            pedal_param["@max"] = new_max
+            pedal_param["@min"] = new_min
+
+
+def setLedColours(preset_dict):
+    for snapshot_num in range(NUM_SNAPSHOTS):
+        snapshot_name = "snapshot" + str(snapshot_num)
+        # snapshot ledcolor
+        preset_dict["data"]["tone"][snapshot_name]["@ledcolor"] = str(snapshot_num + 1)
+
+
+def putRandomParamInController(preset_dict):
+    dsp_name, block_name = chooseAnyBlockSplitOrCabInDsps(preset_dict)
+    print("putRandomParamInController from " + dsp_name, block_name)
+
+    if block_name not in preset_dict["data"]["tone"]["controller"][dsp_name]:
+        preset_dict["data"]["tone"]["controller"][dsp_name][block_name] = {}
+    params_not_in_controller = [
+        parameter
+        for parameter in preset_dict["data"]["tone"][dsp_name][block_name]
+        if parameter not in preset_dict["data"]["tone"]["controller"][dsp_name][block_name]
+        and not parameter.startswith("@")
+        and not parameter.startswith("bypass")
+        and not parameter.startswith("Pan")  # extra unshown uncontrolable parameters in SimplePitchSynth
+        and not parameter.startswith("TempoSync1")  # not visible for GlitchDelay, maybe others
+        and not parameter.startswith("Lock")  # not visible for GlitchDelay, maybe others
+    ]
+    if params_not_in_controller:
+        random_param = random.choice(params_not_in_controller)
+        print(params_not_in_controller)
+        print(random_param)
+        block_dict = loadBlockDictFromFile(preset_dict, dsp_name, block_name)
+        print(block_dict["Ranges"][random_param])
+        preset_dict["data"]["tone"]["controller"][dsp_name][block_name][random_param] = {}
+        preset_dict["data"]["tone"]["controller"][dsp_name][block_name][random_param] = deepcopy(
+            block_dict["Ranges"][random_param]
+        )
+        preset_dict["data"]["tone"]["controller"][dsp_name][block_name][random_param]["@controller"] = 19
+        # add the param to snapshots
+        addParamToAllSnapshots(preset_dict, dsp_name, block_name, random_param)
 
 
 def chooseParamValuesForOneBlock(preset_dict, snapshot_num, dsp_name, block_name, fraction_new):
@@ -79,85 +176,58 @@ def chooseParamValuesForAllSnapshots(preset_dict):
                 chooseParamValuesForOneBlock(preset_dict, snapshot_num, dsp_name, block_name, 1.0)
 
 
-def countParamControls(preset_dict):
-    num_params = 0
-    for dsp_name in ["dsp0", "dsp1"]:
-        for block_name in preset_dict["data"]["tone"]["controller"][dsp_name]:
-            if block_name.startswith(("block", "split")):
-                for parameter in preset_dict["data"]["tone"]["controller"][dsp_name][block_name]:
-                    num_params += 1
-    return num_params
+def chooseParamValueAround(mean, p_min, p_max):
+    p_range = p_max - p_min
+    sigma = p_range / 4
+    p = random.normalvariate(mean, sigma)
+    while not p_min <= p <= p_max:
+        p = random.normalvariate(mean, sigma)
+    return p
 
 
-def setLedColours(preset_dict):
-    for snapshot_num in range(NUM_SNAPSHOTS):
-        snapshot_name = "snapshot" + str(snapshot_num)
-        # snapshot ledcolor
-        preset_dict["data"]["tone"][snapshot_name]["@ledcolor"] = str(snapshot_num + 1)
+def chooseCategory() -> str:
+    block_categories = [
+        ("Amp", 20),
+        ("Cab", 10),
+        ("Delay", 20),
+        ("Distort", 15),
+        ("Dynamics", 10),
+        ("EQ", 20),
+        ("Filter", 5),
+        ("Mod", 30),
+        ("PitchSynth", 10),
+        ("Reverb", 25),
+        ("Split", 10),
+        ("Wah", 10),
+    ]
+    # make 1 choice with weighted probabilities
+    return random.choices(
+        [choice[0] for choice in block_categories], weights=[choice[1] for choice in block_categories], k=1
+    )[0]
 
 
-def getRandDspAndBlock(preset_dict):
-    # returns a random block, or "none" if there are no blocks
-    dsp_names = ["dsp0", "dsp1"]
-    found_blocks = []
-    for dsp_name in dsp_names:
-        for block_name in preset_dict["data"]["tone"]["controller"][dsp_name]:
-            found_blocks.append((dsp_name, block_name))
-    rand_dsp_and_block = ["none", "none"]
-    if len(found_blocks) > 0:
-        rand_dsp_and_block = random.choice(found_blocks)
-    return rand_dsp_and_block
+def chooseAnyBlockFileExceptCabOrSplit():
+    randcat = chooseCategory()
+    while randcat in ["Split", "Cab"]:
+        randcat = chooseCategory()
+    return chooseBlockFileInCategory(randcat)
 
 
-def getRandControllerParam(preset_dict, dsp_name, block):
-    # returns a random param, or "none" if there are no params
-    # print("getRandControllerParam for "+dsp_name+" "+block)
-    params = []
-    for param in preset_dict["data"]["tone"]["controller"][dsp_name][block]:
-        params.append(param)
-        # print("append to getRandControllerParam choices " +param)
-    randparam = "none"
-    if len(params) > 0:
-        randparam = random.choice(params)
-    return randparam
+def chooseBlockFileInCategory(category_folder):
+    full_path = os.path.join(BLOCKS_PATH, category_folder)
+    block_files = [f for f in os.listdir(full_path) if os.path.isfile(os.path.join(full_path, f))]
+    filename = os.path.join(full_path, random.choice(block_files))
+    # print("choosing" + filename)
+    return filename
 
 
-def getRandControllerParamNoBoolNoMic(preset_dict, dsp_name, block):
-    # returns a random param (but not one with a boolean value), or "none" if there are no params
-    params = []
-    for param in preset_dict["data"]["tone"]["controller"][dsp_name][block]:
-        if (
-            not isinstance(
-                preset_dict["data"]["tone"]["controller"][dsp_name][block][param]["@min"],
-                bool,
-            )
-            and param != "Mic"
-        ):
-            params.append(param)
-            # print("append to getRandControllerParamNoBool choices " +param)
-    randparam = "none"
-    if len(params) > 0:
-        randparam = random.choice(params)
-    return randparam
-
-
-def delRandomParamControl(preset_dict):
-    # delete a param if the random choice exists
-    randdsp, randblock = getRandDspAndBlock(preset_dict)
-    if randblock != "none":
-        randparam = getRandControllerParam(preset_dict, randdsp, randblock)
-        if randparam != "none":
-            # remove the param from all snapshots
-            for snapshot_num in range(NUM_SNAPSHOTS):
-                snapshot_name = "snapshot" + str(snapshot_num)
-                if randparam in preset_dict["data"]["tone"][snapshot_name]["controllers"][randdsp][randblock]:
-                    del preset_dict["data"]["tone"][snapshot_name]["controllers"][randdsp][randblock][randparam]
-
-            # remove param from controller
-            if randparam in preset_dict["data"]["tone"]["controller"][randdsp][randblock]:
-                del preset_dict["data"]["tone"]["controller"][randdsp][randblock][randparam]
-
-            print("deleted " + randblock + " " + randparam)
+def chooseAnyBlockSplitOrCabInDsps(preset_dict):
+    dsp_name = random.choice(["dsp0", "dsp1"])
+    block_name = random.choice(list(preset_dict["data"]["tone"][dsp_name].keys()))
+    if block_name.startswith(("block", "split", "cab")):
+        return dsp_name, block_name
+    else:
+        return chooseAnyBlockSplitOrCabInDsps(preset_dict)
 
 
 def changeSomePedalControls(preset_dict, pedalnum, max_changes):
@@ -183,47 +253,13 @@ def changeSomePedalControls(preset_dict, pedalnum, max_changes):
         setRandPedalParamAndRanges(preset_dict, pedalnum)
 
 
-def setRandPedalParamAndRanges(preset_dict, pedalnum):
-    randdsp, randblock = getRandDspAndBlock(preset_dict)
-    if randblock != "none":
-        randparam = getRandControllerParamNoBoolNoMic(preset_dict, randdsp, randblock)
-        if randparam != "none":
-            model_name = preset_dict["data"]["tone"][randdsp][randblock]["@model"]
-            print(
-                "setting pedal for " + randdsp,
-                randblock,
-                model_name,
-                randparam,
-                pedalnum,
-            )
-            pedal_param = preset_dict["data"]["tone"]["controller"][randdsp][randblock][randparam]
-            pedal_param["@controller"] = pedalnum
-            new_max = random.uniform(pedal_param["@min"], pedal_param["@max"])
-            new_min = random.uniform(pedal_param["@min"], pedal_param["@max"])
-            # set new random max and min values within the original limits
-            pedal_param["@max"] = new_max
-            pedal_param["@min"] = new_min
+def changeSomeSnapshotControllers(preset_dict):
+    num_controllers_to_change = random.randint(0, 20)
+    for i in range(num_controllers_to_change):
+        delRandomParamControl(preset_dict)
 
-
-def chooseParamValueAround(mean, p_min, p_max):
-    p_range = p_max - p_min
-    sigma = p_range / 4
-    p = random.normalvariate(mean, sigma)
-    while not p_min <= p <= p_max:
-        p = random.normalvariate(mean, sigma)
-    return p
-
-
-def copySnapshot(preset_dict, snapshot_src, snapshot_dst):
-    preset_dict["data"]["tone"][snapshot_dst] = deepcopy(preset_dict["data"]["tone"][snapshot_src])
-    preset_dict["data"]["tone"][snapshot_dst]["@name"] = snapshot_dst
-
-
-def copySnapshotToAll(preset_dict, snapshot_src):
-    for snapshot_num in range(NUM_SNAPSHOTS):
-        snapshot_dst = "snapshot" + str(snapshot_num)
-        if snapshot_dst != snapshot_src:
-            copySnapshot(preset_dict, snapshot_src, snapshot_dst)
+    while countParamsInController(preset_dict) < 64:  # to avoid setting any twice
+        putRandomParamInController(preset_dict)
 
 
 def changeBlockStates(preset_dict, change_fraction):
@@ -242,6 +278,87 @@ def changeBlockStates(preset_dict, change_fraction):
                             print(
                                 f"{snapshot_name} changed state of {dsp_name} {block_name} from {current_state} to {new_state}"
                             )
+
+
+def changeSeriesOrParallelDsps(preset_dict, change_fraction):
+    if random.uniform(0, 1) < change_fraction:  # change state
+        print("changing series or parallel dsps")
+        current = preset_dict["data"]["tone"]["dsp0"]["outputA"]["@output"]
+        if current == 1:
+            preset_dict["data"]["tone"]["dsp0"]["outputA"]["@output"] = 2
+        else:
+            preset_dict["data"]["tone"]["dsp0"]["outputA"]["@output"] = 1
+
+
+def findPedalParam(preset_dict, pedalnum):
+    for dsp_name in ["dsp0", "dsp1"]:
+        for block_name in preset_dict["data"]["tone"]["controller"][dsp_name]:
+            if block_name.startswith(("block", "split")):
+                for parameter in preset_dict["data"]["tone"]["controller"][dsp_name][block_name]:
+                    if (
+                        preset_dict["data"]["tone"]["controller"][dsp_name][block_name][parameter]["@controller"]
+                        == pedalnum
+                    ):
+                        return dsp_name, block_name, parameter
+    return None, None, None
+
+
+def findBlockInController(preset_dict, block_name):
+    for dsp_name in ["dsp0", "dsp1"]:
+        if block_name in preset_dict["data"]["tone"]["controller"][dsp_name]:
+            return dsp_name, block_name
+    return None, None
+
+
+def findBlockParamInController(preset_dict, dsp_name, block_name, param_name):
+    if (
+        block_name in preset_dict["data"]["tone"]["controller"][dsp_name]
+        and param_name in preset_dict["data"]["tone"]["controller"][dsp_name][block_name]
+    ):
+        return dsp_name, block_name, param_name
+    return None, None, None
+
+
+def countParamsInController(preset_dict):
+    num_params = 0
+    for dsp_name in ["dsp0", "dsp1"]:
+        for block_name in preset_dict["data"]["tone"]["controller"][dsp_name]:
+            if block_name.startswith(("block", "split", "cab")):
+                for parameter in preset_dict["data"]["tone"]["controller"][dsp_name][block_name]:
+                    # print("counting " + parameter)
+                    num_params += 1
+    return num_params
+
+
+def delRandomParamControl(preset_dict):
+    # delete a param if the random choice exists
+    randdsp, randblock = getRandDspAndBlock(preset_dict)
+    if randblock != "none":
+        randparam = getRandControllerParam(preset_dict, randdsp, randblock)
+        if randparam != "none":
+            # remove the param from all snapshots
+            for snapshot_num in range(NUM_SNAPSHOTS):
+                snapshot_name = "snapshot" + str(snapshot_num)
+                if randparam in preset_dict["data"]["tone"][snapshot_name]["controllers"][randdsp][randblock]:
+                    del preset_dict["data"]["tone"][snapshot_name]["controllers"][randdsp][randblock][randparam]
+
+            # remove param from controller
+            if randparam in preset_dict["data"]["tone"]["controller"][randdsp][randblock]:
+                del preset_dict["data"]["tone"]["controller"][randdsp][randblock][randparam]
+
+            print("deleted " + randblock + " " + randparam)
+
+
+def copySnapshot(preset_dict, snapshot_src, snapshot_dst):
+    preset_dict["data"]["tone"][snapshot_dst] = deepcopy(preset_dict["data"]["tone"][snapshot_src])
+    preset_dict["data"]["tone"][snapshot_dst]["@name"] = snapshot_dst
+
+
+def copySnapshotToAll(preset_dict, snapshot_src):
+    for snapshot_num in range(NUM_SNAPSHOTS):
+        snapshot_dst = "snapshot" + str(snapshot_num)
+        if snapshot_dst != snapshot_src:
+            copySnapshot(preset_dict, snapshot_src, snapshot_dst)
 
 
 def findUnusedBlockNameInDsp(preset_dict, dsp_name):
@@ -337,42 +454,6 @@ def loadBlockDict(block_filename):
     with open(os.path.expanduser(block_filename), "r") as f:
         block_dict = json.load(f)
     return block_dict
-
-
-def chooseCategory() -> str:
-    block_categories = [
-        ("Amp", 20),
-        ("Cab", 10),
-        ("Delay", 20),
-        ("Distort", 15),
-        ("Dynamics", 10),
-        ("EQ", 20),
-        ("Filter", 5),
-        ("Mod", 30),
-        ("PitchSynth", 10),
-        ("Reverb", 25),
-        ("Split", 10),
-        ("Wah", 10),
-    ]
-    # make 1 choice with weighted probabilities
-    return random.choices(
-        [choice[0] for choice in block_categories], weights=[choice[1] for choice in block_categories], k=1
-    )[0]
-
-
-def chooseAnyBlockFileExceptCabOrSplit():
-    randcat = chooseCategory()
-    while randcat in ["Split", "Cab"]:
-        randcat = chooseCategory()
-    return chooseBlockFileInCategory(randcat)
-
-
-def chooseBlockFileInCategory(category_folder):
-    full_path = os.path.join(BLOCKS_PATH, category_folder)
-    block_files = [f for f in os.listdir(full_path) if os.path.isfile(os.path.join(full_path, f))]
-    filename = os.path.join(full_path, random.choice(block_files))
-    # print("choosing" + filename)
-    return filename
 
 
 def insertBlockParamsIntoAllSnapshots(preset_dict, dsp_name, destination_block_name, new_block_dict):
@@ -491,20 +572,6 @@ def loadBlockDictFromFile(preset_dict, dsp_name, block_or_split_name):
     return block_dict
 
 
-def seriesOrParallelPaths(preset_dict):
-    preset_dict["data"]["tone"]["dsp0"]["outputA"]["@output"] = random.randint(1, 2)
-
-
-def changeSeriesOrParallelPaths(preset_dict, change_fraction):
-    if random.uniform(0, 1) < change_fraction:  # change state
-        print("changing series or parallel paths")
-        current = preset_dict["data"]["tone"]["dsp0"]["outputA"]["@output"]
-        if current == 1:
-            preset_dict["data"]["tone"]["dsp0"]["outputA"]["@output"] = 2
-        else:
-            preset_dict["data"]["tone"]["dsp0"]["outputA"]["@output"] = 1
-
-
 def load_block_params(block_filename):
     block_folder = None
     for root, _, files in os.walk(BLOCKS_PATH):
@@ -519,15 +586,6 @@ def load_block_params(block_filename):
 #     block_filename = preset_dict["data"]["tone"][dsp_name][block_or_split_name]["@model"] + ".json"
 #     block_dict = load_block_params(block_filename)
 #     return block_dict
-
-
-def chooseAnyBlockInDictionary(preset_dict):
-    dsp_name = random.choice(["dsp0", "dsp1"])
-    block_name = random.choice(list(preset_dict["data"]["tone"][dsp_name].keys()))
-    if block_name.startswith(("block", "split", "cab")):
-        return dsp_name, block_name
-    else:
-        return chooseAnyBlockInDictionary(preset_dict)
 
 
 def addParamToAllSnapshots(preset_dict, dsp_name, block_name, random_param):
@@ -559,39 +617,6 @@ def addParamToAllSnapshots(preset_dict, dsp_name, block_name, random_param):
             )
 
 
-def setRandomParamControl(preset_dict):
-    dsp_name, block_name = chooseAnyBlockInDictionary(preset_dict)
-    params_not_in_controller = [
-        parameter
-        for parameter in preset_dict["data"]["tone"][dsp_name][block_name]
-        if parameter not in preset_dict["data"]["tone"]["controller"][dsp_name][block_name]
-        and not parameter.startswith("@")
-        and not parameter.startswith("bypass")
-    ]
-    if params_not_in_controller:
-        random_param = random.choice(params_not_in_controller)
-        print(params_not_in_controller)
-        print(random_param)
-        block_dict = loadBlockDictFromFile(preset_dict, dsp_name, block_name)
-        print(block_dict["Ranges"][random_param])
-        preset_dict["data"]["tone"]["controller"][dsp_name][block_name][random_param] = {}
-        preset_dict["data"]["tone"]["controller"][dsp_name][block_name][random_param] = deepcopy(
-            block_dict["Ranges"][random_param]
-        )
-        preset_dict["data"]["tone"]["controller"][dsp_name][block_name][random_param]["@controller"] = 19
-        # add the param to snapshots
-        addParamToAllSnapshots(preset_dict, dsp_name, block_name, random_param)
-
-
-def changeSomeSnapshotControllers(preset_dict):
-    num_controllers_to_change = random.randint(0, 20)
-    for i in range(num_controllers_to_change):
-        delRandomParamControl(preset_dict)
-
-    while countParamControls(preset_dict) < 64:  # to avoid setting any twice
-        setRandomParamControl(preset_dict)
-
-
 def mutateSnapshot(preset_dict, snapshot_src_num, fraction_change_block_states, fraction_move):
     mutateName(preset_dict)
     snapshot_src_name = "snapshot" + str(snapshot_src_num)
@@ -603,7 +628,7 @@ def mutateSnapshot(preset_dict, snapshot_src_num, fraction_change_block_states, 
     mutateAllPedalRanges(preset_dict)
     moveBlockPositions(preset_dict, fraction_move)
     swapSomeBlocksAndSplitsFromFile(preset_dict, 0.1)
-    changeSeriesOrParallelPaths(preset_dict, 0.2)
+    changeSeriesOrParallelDsps(preset_dict, 0.2)
     setLedColours(preset_dict)
 
 
