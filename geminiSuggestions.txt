@@ -1,0 +1,173 @@
+from copy import deepcopy
+import json
+import random
+import os
+
+NUM_SNAPSHOTS = 8
+NUM_SLOTS_PER_DSP = 16
+NUM_PEDAL_PARAMS = 16
+BLOCKS_PATH = "blocks/test"
+
+
+def countNumControllersSetTo2(preset_dict):
+    # ... (function remains unchanged)
+
+
+def chooseParamValuesForOneBlock(preset_dict, snapshot_num, dsp_name, block_name, fraction_new):
+    # ... (function remains unchanged)
+
+
+def chooseParamValuesForAllSnapshots(preset_dict):
+    # ... (function remains unchanged)
+
+
+def countParamControls(preset_dict):
+    # ... (function remains unchanged)
+
+
+def setLedColours(preset_dict):
+    # ... (function remains unchanged)
+
+
+def getRandDspAndBlock(preset_dict):
+    # ... (function remains unchanged)
+
+
+def getRandControllerParam(preset_dict, dsp_name, block):
+    # ... (function remains unchanged)
+
+
+def getRandControllerParamNoBoolNoMic(preset_dict, dsp_name, block):
+    # ... (function remains unchanged)
+
+
+def delRandomParamControl(preset_dict):
+    # ... (function remains unchanged)
+
+
+def changeSomePedalControls(preset_dict, pedalnum, max_changes):
+    # ... (function remains unchanged)
+
+
+def setRandPedalParamAndRanges(preset_dict, pedalnum):
+    # ... (function remains unchanged)
+
+
+def chooseParamValueAround(mean, p_min, p_max):
+    # ... (function remains unchanged)
+
+
+def copySnapshot(preset_dict, snapshot_src, snapshot_dst):
+    # ... (function remains unchanged)
+
+
+def copySnapshotToAll(preset_dict, snapshot_src):
+    # ... (function remains unchanged)
+
+
+def changeBlockStates(preset_dict, change_fraction):
+    # ... (function remains unchanged)
+
+
+def findUnusedBlockNameInDsp(preset_dict, dsp_name):
+    # ... (function remains unchanged)
+
+
+def moveBlockPositions(preset_dict, fraction_move):
+    # ... (function remains unchanged)
+
+
+def moveBlocks(preset_dict, dsp_blockname_to_dsp_path_pos):
+    # ... (function remains unchanged)
+
+
+# replace block default params with extracted block params, given blockNumber and dsp_name
+def replaceBlockDefaultParams(block_dict, preset_dict, block_num, dsp_name):
+    # ... (function remains unchanged)
+
+
+# load extracted block parameters from a json file, return a dictionary
+def loadBlockDict(block_filename):
+    # ... (function remains unchanged)
+
+
+def chooseCategory() -> str:
+    # ... (function remains unchanged)
+
+
+def chooseAnyBlockFileExceptCabOrSplit():
+    # ... (function remains unchanged)
+
+
+def chooseBlockFileInCategory(category_folder):
+    # ... (function remains unchanged)
+
+
+def insertBlockParamsIntoAllSnapshots(preset_dict, dsp_name, destination_block_name, new_block_dict):
+    # ... (function remains unchanged)
+
+
+def swapSomeBlocksAndSplitsFromFile(preset_dict, change_fraction):
+    # ... (function remains unchanged)
+
+
+def swapBlockFromFile(preset_dict, dsp_name, block_name):
+    # ... (function remains unchanged)
+
+
+def swapSplitFromFile(preset_dict, dsp_name, block_name):
+    # ... (function remains unchanged)
+
+
+def mutateName(preset_dict):
+    # ... (function remains unchanged)
+
+
+def mutateAllPedalRanges(preset_dict):
+    # ... (function remains unchanged)
+
+
+def mutateOneSetOfPedalRanges(preset_dict, dsp_name, block_or_split_name, param_name):
+    # ... (function remains unchanged)
+
+
+def loadBlockDictFromFile(preset_dict, dsp_name, block_or_split_name):
+    # ... (function remains unchanged)
+
+
+def seriesOrParallelPaths(preset_dict):
+    # ... (function remains unchanged)
+
+
+def changeSeriesOrParallelPaths(preset_dict, change_fraction):
+    # ... (function remains unchanged)
+
+
+def load_block_params(block_filename):
+    # ... (function remains unchanged)
+
+
+def chooseAnyBlockInDictionary(preset_dict):
+    # ... (function remains unchanged)
+
+
+def addParamToAllSnapshots(preset_dict, dsp_name, block_name, random_param):
+    # ... (function remains unchanged)
+
+
+def setRandomParamControl(preset_dict):
+    # ... (function remains unchanged)
+
+
+def changeSomeSnapshotControllers(preset_dict):
+    # ... (function remains unchanged)
+
+
+def mutateSnapshot(preset_dict, snapshot_src_num, fraction_change_block_states, fraction_move):
+    # ... (function remains unchanged)
+
+
+def mutatePresetSnapshotParams(
+    preset_filename, snapshot_num, new_preset_filename, fraction_change_block_states, fraction_move
+):
+    # ... (function remains unchanged)

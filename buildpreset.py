@@ -46,9 +46,7 @@ def addCabs(preset_dict, dsp_name):
 
     amp_blocks_list = []
     for block_name in preset_dict["data"]["tone"][dsp_name]:
-        if preset_dict["data"]["tone"][dsp_name][block_name]["@model"].startswith(
-            "HD2_Amp"
-        ):
+        if preset_dict["data"]["tone"][dsp_name][block_name]["@model"].startswith("HD2_Amp"):
             amp_blocks_list.append(block_name)
 
     for amp in amp_blocks_list:
@@ -57,15 +55,21 @@ def addCabs(preset_dict, dsp_name):
         cabs_used += 1
         preset_dict["data"]["tone"][dsp_name][amp]["@cab"] = cab_name
         # load a random cab
-        cab_dict = mutate.loadBlockParams(
-            BLOCKS_PATH + "/Cab/" + random.choice(cabs_file_list)
-        )
+        cab_dict = mutate.loadBlockDict(BLOCKS_PATH + "/Cab/" + random.choice(cabs_file_list))
         # delete cab path and position, if they exist
         if "@path" in cab_dict["Defaults"]:
             del cab_dict["Defaults"]["@path"]
         if "@position" in cab_dict["Defaults"]:
             del cab_dict["Defaults"]["@position"]
         preset_dict["data"]["tone"][dsp_name][cab_name] = cab_dict["Defaults"]
+
+
+def loadRandomBlockParamsForOneBlockNoCabNoSplitCheckAmps(num_amps):
+    while True:
+        block_dict = mutate.loadBlockDict(mutate.chooseAnyBlockFileExceptCabOrSplit())
+        if not block_dict["Defaults"]["@model"].startswith("HD2_Amp") or num_amps < 1:
+            break
+    return block_dict
 
 
 # insert param keys into each snapshot in preset
@@ -83,17 +87,10 @@ def replaceParamKeys(preset_dict, dsp_name):
         if destination_block_name.startswith(
             "block"
         ):  # or block_name.startswith("cab"): # cabs will be sorted with amps later, but cabs in amps will take an extra position at this step
-            new_block_dict = loadBlockParamsForOneBlock(num_amps)
+            new_block_dict = loadRandomBlockParamsForOneBlockNoCabNoSplitCheckAmps(num_amps)
             num_amps = updateNumAmps(num_amps, new_block_dict)
-            preset_dict["data"]["tone"][dsp_name][destination_block_name] = (
-                new_block_dict["Defaults"]
-            )
-            print(
-                "   loaded "
-                + destination_block_name
-                + " "
-                + new_block_dict["Defaults"]["@model"]
-            )
+            preset_dict["data"]["tone"][dsp_name][destination_block_name] = new_block_dict["Defaults"]
+            print("   loaded " + destination_block_name + " " + new_block_dict["Defaults"]["@model"])
 
             path_num = random.randint(0, 1)
             setPathAndPositionForOneBlock(
@@ -105,26 +102,18 @@ def replaceParamKeys(preset_dict, dsp_name):
                 block_positions_path1,
             )
 
-            addBlockToController(
-                preset_dict, dsp_name, destination_block_name, new_block_dict
-            )
-            mutate.insertBlockParamsIntoAllSnapshots(
-                preset_dict, dsp_name, destination_block_name, new_block_dict
-            )
+            addBlockToController(preset_dict, dsp_name, destination_block_name, new_block_dict)
+            mutate.insertBlockParamsIntoAllSnapshots(preset_dict, dsp_name, destination_block_name, new_block_dict)
 
         elif destination_block_name.startswith("split"):
             split_dict = chooseSplit()
-            preset_dict["data"]["tone"][dsp_name]["split"] = deepcopy(
-                split_dict["Defaults"]
-            )
-            preset_dict["data"]["tone"]["controller"][dsp_name][
-                destination_block_name
-            ] = split_dict["Ranges"]
+            preset_dict["data"]["tone"][dsp_name]["split"] = deepcopy(split_dict["Defaults"])
+            preset_dict["data"]["tone"]["controller"][dsp_name][destination_block_name] = split_dict["Ranges"]
             for snapshot_num in range(num_snapshots):
                 snapshot_name = "snapshot" + str(snapshot_num)
-                preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp_name][
-                    destination_block_name
-                ] = deepcopy(split_dict["SnapshotParams"])
+                preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp_name][destination_block_name] = deepcopy(
+                    split_dict["SnapshotParams"]
+                )
 
     join_position = random.randint(6, 8)
     split_position = random.randint(0, join_position - 3)
@@ -138,14 +127,6 @@ def addControllerAndDspKeysIfNeeded(preset_dict, dsp_name):
         preset_dict["data"]["tone"]["controller"] = {}
     if dsp_name not in preset_dict["data"]["tone"]["controller"]:
         preset_dict["data"]["tone"]["controller"][dsp_name] = {}
-
-
-def loadBlockParamsForOneBlock(num_amps):
-    while True:
-        block_dict = mutate.loadBlockParams(mutate.chooseAnyBlockFileExceptCabOrSplit())
-        if not block_dict["Defaults"]["@model"].startswith("HD2_Amp") or num_amps < 1:
-            break
-    return block_dict
 
 
 def updateNumAmps(num_amps, block_dict):
@@ -164,19 +145,13 @@ def setPathAndPositionForOneBlock(
 ):
     preset_dict["data"]["tone"][dsp_name][block_name]["@path"] = path_num
     if path_num == 0:
-        preset_dict["data"]["tone"][dsp_name][block_name][
-            "@position"
-        ] = block_positions_path0.pop()
+        preset_dict["data"]["tone"][dsp_name][block_name]["@position"] = block_positions_path0.pop()
     else:
-        preset_dict["data"]["tone"][dsp_name][block_name][
-            "@position"
-        ] = block_positions_path1.pop()
+        preset_dict["data"]["tone"][dsp_name][block_name]["@position"] = block_positions_path1.pop()
 
 
 def addBlockToController(preset_dict, dsp_name, block_name, block_dict):
-    preset_dict["data"]["tone"]["controller"][dsp_name][block_name] = block_dict[
-        "Ranges"
-    ]
+    preset_dict["data"]["tone"]["controller"][dsp_name][block_name] = block_dict["Ranges"]
 
 
 def chooseSplit():
@@ -189,7 +164,7 @@ def chooseSplit():
     weights = [0.5, 0.25, 0.25]
     split_file = "".join(random.choices(splits_file_list, weights, k=1))
     print(split_file)
-    return mutate.loadBlockParams(BLOCKS_PATH + "/Split/" + split_file + ".json")
+    return mutate.loadBlockDict(BLOCKS_PATH + "/Split/" + split_file + ".json")
 
 
 def chooseBlocksOnOrOff(preset_dict, dsp_name):
@@ -201,9 +176,7 @@ def chooseBlocksOnOrOff(preset_dict, dsp_name):
                     state = False
                     if random.uniform(0, 1) < 0.7:
                         state = True
-                    preset_dict["data"]["tone"][snapshot_name]["blocks"][dsp_name][
-                        block
-                    ] = state
+                    preset_dict["data"]["tone"][snapshot_name]["blocks"][dsp_name][block] = state
 
 
 def generateFromSavedBlocks(preset_dict, dsp_name):
@@ -266,7 +239,6 @@ def generatePresetFromTemplate(presets_path, template_name, save_name):
             mutate.delRandomParamControl(preset_dict)
 
         replaceWithPedalControllers(preset_dict, 2)
-        # replaceWithPedalControllers(preset_dict,"dsp1", 2)
 
         mutate.setLedColours(preset_dict)
 
@@ -288,7 +260,7 @@ def generateSomePresets(num):
     for i in range(num):
         generatePresetFromTemplate(
             "presets/test",
-            "LessOccSplit.hlx",
+            "LessOccSplitCC.hlx",
             "aGenerated" + str(i + 1) + ".hlx",
         )
 
@@ -296,22 +268,20 @@ def generateSomePresets(num):
 def mutations(num):
     for i in range(num):
         mutate.mutatePresetSnapshotParams(
-            "presets/test/240521-2016ded.hlx",
+            "presets/test/aGenerated1.hlx",
             6,
-            "presets/test/240521-2016ded+" + str(i + 1) + ".hlx",
-            0.1,
+            "presets/test/aGenerated1+" + str(i + 1) + ".hlx",
             fraction_change_block_states,
             fraction_move,
-            fraction_swap,
         )
 
 
-#generateSomePresets(5)
+# generateSomePresets(5)
 mutations(5)
 # mutate.mutatePresetSnapshotParams("presets/test/memiyun_7.hlx", 7, "presets/test/memiyun_7+.hlx",0.1,fraction_change_block_states,fraction_move, fraction_swap)
 
 # if __name__ == '__main__':
 #     main()
-#mutate probs: 2 amps on 1 dsp
+# mutate probs: 2 amps on 1 dsp
 # split disappears on dsp1
 # cabs are in block positions - are they getting chosen, or not attached to amps properly? (might be when generating, not sure if geerating or mutating)

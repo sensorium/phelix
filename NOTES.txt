@@ -69,3 +69,12 @@ process the presets to extract all blocks
 
 
 the preset template needs any splits to have snapshot params for them to be able to be replaced
+controller 18 means midi cc
+
+what's the diff between these:
+data tone controller dsp...blocks
+  lists the params that have been set for snapshots or other controllers
+data tone dsp .. blocks
+  has all the parameters for each block and their defaults before snapshots or other controllers change them
+data tone snapshot# controllers dsp.. blocks
+  has the values for each snapshot controlled param
