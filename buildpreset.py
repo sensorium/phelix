@@ -8,6 +8,8 @@ from copy import deepcopy
 import mutate
 
 BLOCKS_PATH = "blocks/test"
+NUM_SNAPSHOTS = 8
+
 
 # todo:
 # load effects from category folders so there can be even (or other) chances of them being used
@@ -55,7 +57,7 @@ def addCabs(preset_dict, dsp_name):
         cabs_used += 1
         preset_dict["data"]["tone"][dsp_name][amp]["@cab"] = cab_name
         # load a random cab
-        cab_dict = mutate.loadBlockDict(BLOCKS_PATH + "/Cab/" + random.choice(cabs_file_list))
+        cab_dict = mutate.load_block_dictionary(BLOCKS_PATH + "/Cab/" + random.choice(cabs_file_list))
         # delete cab path and position, if they exist
         if "@path" in cab_dict["Defaults"]:
             del cab_dict["Defaults"]["@path"]
@@ -66,7 +68,7 @@ def addCabs(preset_dict, dsp_name):
 
 def loadRandomBlockParamsForOneBlockNoCabNoSplitCheckAmps(num_amps):
     while True:
-        block_dict = mutate.loadBlockDict(mutate.chooseAnyBlockFileExceptCabOrSplit())
+        block_dict = mutate.load_block_dictionary(mutate.choose_random_block_file_excluding_cab_or_split())
         if not block_dict["Defaults"]["@model"].startswith("HD2_Amp") or num_amps < 1:
             break
     return block_dict
@@ -103,13 +105,15 @@ def replaceParamKeys(preset_dict, dsp_name):
             )
 
             addBlockToController(preset_dict, dsp_name, destination_block_name, new_block_dict)
-            mutate.insertBlockParamsIntoAllSnapshots(preset_dict, dsp_name, destination_block_name, new_block_dict)
+            mutate.insert_block_parameters_into_all_snapshots(
+                preset_dict, dsp_name, destination_block_name, new_block_dict
+            )
 
         elif destination_block_name.startswith("split"):
             split_dict = chooseSplit()
             preset_dict["data"]["tone"][dsp_name]["split"] = deepcopy(split_dict["Defaults"])
             preset_dict["data"]["tone"]["controller"][dsp_name][destination_block_name] = split_dict["Ranges"]
-            for snapshot_num in range(num_snapshots):
+            for snapshot_num in range(NUM_SNAPSHOTS):
                 snapshot_name = "snapshot" + str(snapshot_num)
                 preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp_name][destination_block_name] = deepcopy(
                     split_dict["SnapshotParams"]
@@ -164,11 +168,11 @@ def chooseSplit():
     weights = [0.5, 0.25, 0.25]
     split_file = "".join(random.choices(splits_file_list, weights, k=1))
     print(split_file)
-    return mutate.loadBlockDict(BLOCKS_PATH + "/Split/" + split_file + ".json")
+    return mutate.load_block_dictionary(BLOCKS_PATH + "/Split/" + split_file + ".json")
 
 
 def chooseBlocksOnOrOff(preset_dict, dsp_name):
-    for snapshot_num in range(num_snapshots):
+    for snapshot_num in range(NUM_SNAPSHOTS):
         snapshot_name = "snapshot" + str(snapshot_num)
         if dsp_name in preset_dict["data"]["tone"][snapshot_name]["blocks"]:
             for block in preset_dict["data"]["tone"][snapshot_name]["blocks"][dsp_name]:
@@ -182,49 +186,54 @@ def chooseBlocksOnOrOff(preset_dict, dsp_name):
 def generateFromSavedBlocks(preset_dict, dsp_name):
     print(dsp_name)
     replaceParamKeys(preset_dict, dsp_name)
-    mutate.chooseParamValuesForAllSnapshots(preset_dict)
+    mutate.mutate_parameter_values_for_all_snapshots(preset_dict)
     addCabs(preset_dict, dsp_name)
     chooseBlocksOnOrOff(preset_dict, dsp_name)
 
 
-last_name = None
-count = 0
+def set_preset_name(preset_dict, preset_name):
+    print("Preset name: " + preset_name)
+    preset_dict["data"]["meta"]["name"] = preset_name
 
 
-def namePresetByDate(preset_dict):
-    global last_name, count
-    now = datetime.now()
-    name = now.strftime("%y%m%d-%H%M%S")
-    if last_name == name:
-        count += 1
-        name = name + "-" + str(count)
-    else:
-        count = 0
-    last_name = name
-    print(name)
-    preset_dict["data"]["meta"]["name"] = name
+# last_name = None
+# count = 0
 
 
-def namePreset(preset_dict):
-    vowels = "aeiou"
-    consonants = "bcdfghjklmnpqrstvwxyz"
-    name = ""
-    for _ in range(random.randint(2, 4)):
-        if random.choice([True, False]):
-            name += random.choice(vowels) + random.choice(consonants)
-        else:
-            name += random.choice(consonants) + random.choice(vowels)
-    print(name)
-    preset_dict["data"]["meta"]["name"] = name
+# def namePresetByDate(preset_dict, po):
+#     global last_name, count
+#     now = datetime.now()
+#     name = now.strftime("%y%m%d-%H%M")
+#     if last_name == name:
+#         count += 1
+#         name = name + "-" + str(count)
+#     else:
+#         count = 0
+#     last_name = name
+#     print(name)
+#     preset_dict["data"]["meta"]["name"] = name
+
+
+# def namePreset(preset_dict):
+#     vowels = "aeiou"
+#     consonants = "bcdfghjklmnpqrstvwxyz"
+#     name = ""
+#     for _ in range(random.randint(2, 4)):
+#         if random.choice([True, False]):
+#             name += random.choice(vowels) + random.choice(consonants)
+#         else:
+#             name += random.choice(consonants) + random.choice(vowels)
+#     print(name)
+#     preset_dict["data"]["meta"]["name"] = name
 
 
 def replaceWithPedalControllers(preset_dict, pedalnum):
     print("insert pedal")
     for i in range(mutate.NUM_PEDAL_PARAMS):
-        mutate.setRandPedalParamAndRanges(preset_dict, pedalnum)
+        mutate.choose_random_pedal_parameter_and_ranges(preset_dict, pedalnum)
 
 
-def generatePresetFromTemplate(presets_path, template_name, save_name):
+def generatePresetFromTemplate(presets_path, template_name, save_name, preset_name):
     with open(os.path.join(presets_path, template_name), "r") as f:
         preset_dict = json.load(f)
 
@@ -233,14 +242,14 @@ def generatePresetFromTemplate(presets_path, template_name, save_name):
         generateFromSavedBlocks(preset_dict, "dsp1")
 
         chooseSeriesOrParallelDsps(preset_dict)
-        namePresetByDate(preset_dict)
+        set_preset_name(preset_dict, preset_name)
 
         while mutate.countParamsInController(preset_dict) > 64:
-            mutate.delRandomParamControl(preset_dict)
+            mutate.remove_one_random_controller_parameter(preset_dict)
 
         replaceWithPedalControllers(preset_dict, 2)
 
-        mutate.setLedColours(preset_dict)
+        mutate.set_led_colours(preset_dict)
 
         with open(os.path.join(presets_path, save_name), "w") as json_file:
             json.dump(preset_dict, json_file, indent=4)
@@ -250,42 +259,15 @@ def chooseSeriesOrParallelDsps(preset_dict):
     preset_dict["data"]["tone"]["dsp0"]["outputA"]["@output"] = random.choice([1, 2])
 
 
-num_snapshots = 8
-fraction_change_block_states = 0.1
-fraction_move = 0.1
-fraction_swap = 0.15
-
-# generatePresetFromTemplate(
-#    "presets/test", "blocks/test", "LessOccSplit.hlx", "aGenerated.hlx"
-# )
-
-
 def generateSomePresets(num):
+    now = datetime.now()
+    preset_name_base = now.strftime("%y%m%d-%H%M")
     for i in range(num):
+        preset_name = preset_name_base + chr(ord("a") + (i % 26))
         generatePresetFromTemplate(
-            "presets/test",
-            "LessOccSplitCC.hlx",
-            "aGenerated" + str(i + 1) + ".hlx",
+            "presets/test", "LessOccSplitCC.hlx", "aGenerated" + str(i + 1) + ".hlx", preset_name
         )
 
 
-def mutations(num):
-    for i in range(num):
-        mutate.mutatePresetSnapshotParams(
-            "presets/test/aGenerated1.hlx",
-            6,
-            "presets/test/aGenerated1+" + str(i + 1) + ".hlx",
-            fraction_change_block_states,
-            fraction_move,
-        )
-
-
-# generateSomePresets(5)
-mutations(5)
-# mutate.mutatePresetSnapshotParams("presets/test/memiyun_7.hlx", 7, "presets/test/memiyun_7+.hlx",0.1,fraction_change_block_states,fraction_move, fraction_swap)
-
-# if __name__ == '__main__':
-#     main()
-# mutate probs: 2 amps on 1 dsp
-# split disappears on dsp1
-# cabs are in block positions - are they getting chosen, or not attached to amps properly? (might be when generating, not sure if geerating or mutating)
+generateSomePresets(5)
+# mutate.mutations(5)
