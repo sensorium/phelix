@@ -8,6 +8,7 @@ NUM_SNAPSHOTS = 8
 NUM_SLOTS_PER_DSP = 16
 NUM_PEDAL_PARAMS = 16
 BLOCKS_PATH = "blocks/test"
+last_block_position = 8
 
 
 # functions that start with "get"
@@ -355,7 +356,7 @@ def rearrange_block_positions(preset_dict, fraction_move):
     vacant_dsp_path_pos = []
     for dsp_name in dsp_names:
         for path in (0, 1):
-            for pos in range(8):  # slots per path
+            for pos in range(last_block_position):  # slots per path
                 if [dsp_name, path, pos] not in found_dsp_path_pos:
                     vacant_dsp_path_pos.append([dsp_name, path, pos])
 
@@ -572,7 +573,7 @@ def add_parameter_to_all_snapshots(preset_dict, dsp_name, block_name, random_par
             )
 
 
-def mutate_dictionary(preset_dict, snapshot_src_num, fraction_change_block_states, fraction_move, postfix_num):
+def mutate_dictionary(preset_dict, snapshot_src_num, postfix_num):
     increment_preset_name(preset_dict, postfix_num)
     snapshot_src_name = "snapshot" + str(snapshot_src_num)
     duplicate_snapshot_to_all(preset_dict, snapshot_src_name)
@@ -592,7 +593,7 @@ def mutate_preset_from_source_snapshot(
 ):
     with open(preset_filename, "r") as f:
         preset_dict = json.load(f)
-        mutate_dictionary(preset_dict, snapshot_src_num, fraction_change_block_states, fraction_move, postfix_num)
+        mutate_dictionary(preset_dict, snapshot_src_num, postfix_num)
         with open(new_preset_filename, "w") as f:
             json.dump(preset_dict, f, indent=4)
 

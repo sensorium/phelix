@@ -8,13 +8,9 @@ from copy import deepcopy
 import sys
 import mutate
 
-BLOCKS_PATH = "blocks/test"
-NUM_SNAPSHOTS = 8
-
 
 # todo:
-# load effects from category folders so there can be even (or other) chances of them being used
-# swap blocks with ones from file
+
 # make wahs frequently have pedal control - if exp1, then the default val can be randomly chosen
 
 
@@ -46,7 +42,7 @@ def getRndBias(minval, maxval, bias, influence):
 def addCabs(preset_dict, dsp_name):
     # list all cabs in blocks folder
     cabs_file_list = []
-    for filename in os.listdir(BLOCKS_PATH + "/Cab/"):
+    for filename in os.listdir(mutate.BLOCKS_PATH + "/Cab/"):
         if filename.startswith("HD2_Cab"):
             cabs_file_list.append(filename)
 
@@ -64,7 +60,7 @@ def addCabs(preset_dict, dsp_name):
         cabs_used += 1
         preset_dict["data"]["tone"][dsp_name][amp]["@cab"] = cab_name
         # load a random cab
-        cab_dict = mutate.load_block_dictionary(BLOCKS_PATH + "/Cab/" + random.choice(cabs_file_list))
+        cab_dict = mutate.load_block_dictionary(mutate.BLOCKS_PATH + "/Cab/" + random.choice(cabs_file_list))
         # delete cab path and position, if they exist
         if "@path" in cab_dict["Defaults"]:
             del cab_dict["Defaults"]["@path"]
@@ -87,9 +83,9 @@ def initialize_preset_with_random_blocks(preset_dict, dsp_name):
 
     add_controller_and_dsp_keys_if_missing(preset_dict, dsp_name)
 
-    block_positions_path0 = [i for i in range(8)]  # 8 per path
+    block_positions_path0 = [i for i in range(mutate.last_block_position)]
     random.shuffle(block_positions_path0)
-    block_positions_path1 = [i for i in range(8)]  # 8 per path
+    block_positions_path1 = [i for i in range(mutate.last_block_position)]
     random.shuffle(block_positions_path1)
 
     for destination_block_name in preset_dict["data"]["tone"][dsp_name]:
@@ -120,13 +116,13 @@ def initialize_preset_with_random_blocks(preset_dict, dsp_name):
             split_dict = chooseSplit()
             preset_dict["data"]["tone"][dsp_name]["split"] = deepcopy(split_dict["Defaults"])
             preset_dict["data"]["tone"]["controller"][dsp_name][destination_block_name] = split_dict["Ranges"]
-            for snapshot_num in range(NUM_SNAPSHOTS):
+            for snapshot_num in range(mutate.NUM_SNAPSHOTS):
                 snapshot_name = "snapshot" + str(snapshot_num)
                 preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp_name][destination_block_name] = deepcopy(
                     split_dict["SnapshotParams"]
                 )
 
-    join_position = random.randint(6, 8)
+    join_position = random.randint(mutate.last_block_position - 3, mutate.last_block_position)
     split_position = random.randint(0, join_position - 3)
 
     preset_dict["data"]["tone"][dsp_name]["join"]["@position"] = join_position
@@ -175,11 +171,11 @@ def chooseSplit():
     weights = [0.5, 0.25, 0.25]
     split_file = "".join(random.choices(splits_file_list, weights, k=1))
     print_with_stdout_write(split_file)
-    return mutate.load_block_dictionary(BLOCKS_PATH + "/Split/" + split_file + ".json")
+    return mutate.load_block_dictionary(mutate.BLOCKS_PATH + "/Split/" + split_file + ".json")
 
 
 def randomly_activate_or_deactivate_blocks(preset_dict, dsp_name):
-    for snapshot_num in range(NUM_SNAPSHOTS):
+    for snapshot_num in range(mutate.NUM_SNAPSHOTS):
         snapshot_name = "snapshot" + str(snapshot_num)
         if dsp_name in preset_dict["data"]["tone"][snapshot_name]["blocks"]:
             for block in preset_dict["data"]["tone"][snapshot_name]["blocks"][dsp_name]:
