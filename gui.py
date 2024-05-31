@@ -21,19 +21,6 @@ num_presets_entry = None
 output_area = None
 frame1 = None
 frame2 = None
-# window = None
-# def run_buildpreset():
-#     # Specify the command to run the script
-#     command = ["python", "buildpreset.py"]
-
-#     # Run the command and capture the output
-#     result = subprocess.run(command, capture_output=True, text=True)
-
-#     # Get the output as a string
-#     output = result.stdout
-
-#     # Print or use the output as needed
-#     print(output)
 
 
 def load_recent_config_from_file():
@@ -88,18 +75,7 @@ def load_config_into_ui(config):
     global output_entry
     global name_entry
     global num_presets_entry
-    # if template_entry is None:
-    #     template_entry = Entry(root)
-    #     template_entry.pack()
-    # if output_entry is None:
-    #     output_entry = Entry(root)
-    #     output_entry.pack()
-    # if name_entry is None:
-    #     name_entry = Entry(root)
-    #     name_entry.pack()
-    # if num_presets_entry is None:
-    #     num_presets_entry = Entry(root)
-    #     num_presets_entry.pack()
+
     template_entry.delete(0, END)
     template_entry.insert(0, config["template_file"])
     output_entry.delete(0, END)
@@ -116,17 +92,6 @@ def save_ui_to_config(config):
     config["output_file"] = output_entry.get()
     config["preset_name"] = name_entry.get()
     config["num_presets"] = int(num_presets_entry.get())
-
-
-# # save current config to file
-# def save_config_to_file():
-#     save_config(config, "config.json")
-
-
-# load config from file and populate UI
-# def load_config_from_file():
-#     config = load_config("config.json")
-#     load_config_into_ui(config)
 
 
 def generate_presets(output_area):
@@ -166,18 +131,8 @@ def generate_presets(output_area):
     # Decode the output to a string
     output = output.decode("utf-8")
 
-    # Redirect the standard output to a variable
-    # result = subprocess.run(command, capture_output=True, text=True)
-    # Redirect the standard output to a variable
-    # result = subprocess.run(command, capture_output=True, text=True, stdout=subprocess.PIPE)
-    # Run the command and capture the output
-    # result = subprocess.run(command, capture_output=True, text=True)
-
     print("buildpreset ran")
 
-    # Get the output as a string
-    # output = result.stdout
-    print(output)
     # print(output)
 
     # Output to output_area
@@ -217,9 +172,8 @@ def browse_output_file():
     )
     output_entry.insert(0, output_file)
 
-    # Function to show a specific frame
 
-
+# Function to show a specific frame
 current_frame = None
 
 
@@ -297,22 +251,6 @@ def create_gui():
     # Output area
     output_area = tk.Text(frame1)
     output_area.grid(row=7, column=0, columnspan=3, padx=5, pady=5)
-
-    # # Config file buttons
-    # load_config_button = tk.Button(window, text="Load Config", command=load_config_from_file)
-    # load_config_button.grid(row=0, column=0, padx=5, pady=5)
-
-    # save_config_button = tk.Button(window, text="Save Config", command=save_config_to_file)
-    # save_config_button.grid(row=0, column=1, padx=5, pady=5)
-
-    # # Input fields
-    # template_label = tk.Label(window, text="Template File:")
-    # template_label.grid(row=1, column=0, padx=5, pady=5)
-    # template_entry = tk.Entry(window)
-    # template_entry.config(width=40)
-    # template_entry.grid(row=1, column=1, padx=5, pady=5)
-    # template_button = tk.Button(window, text="Browse", command=browse_template_file)
-    # template_button.grid(row=1, column=2, padx=5, pady=5)
 
     output_label = tk.Label(frame1, text="Output File:")
     output_label.grid(row=2, column=0, padx=5, pady=5)
