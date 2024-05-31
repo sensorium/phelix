@@ -1,33 +1,3 @@
-""" Creating a Simple GUI for Preset Generation
-Here's how you could create a simple GUI for the preset generation script:
-
-1. Choose a GUI Framework:
-
-Tkinter: Built-in Python library, good for simple UIs.
-PyQt: Cross-platform, more features and flexibility.
-Kivy: Supports touch interactions and mobile development.
-2. Design the GUI Layout:
-
-Input Fields:
-Template file path
-Output file path
-Preset name
-Number of presets
-Buttons:
-Generate Presets
-Browse for files
-Progress Bar:
-Shows progress of preset generation
-Output Area:
-Displays messages and logs
-3. Implement the Functionality:
-
-Connect input fields to variables.
-Bind button clicks to functions.
-Use the generate_multiple_presets_from_template function from your script.
-Update the progress bar and output area during generation.
-4. Example Code (Tkinter): """
-
 import subprocess
 import os
 import glob
@@ -42,6 +12,8 @@ CONFIG_FILE = "startup_config.json"
 
 # config dictionary
 config = {}
+
+# Initialize global variables
 template_entry = None
 output_entry = None
 name_entry = None
@@ -83,7 +55,7 @@ def load_config_from_file():
         initialdir="./", title="Select Config File", filetypes=(("json files", "*.json"), ("All files", "*.*"))
     )
     config = load_config(config_file)
-    load_config_into_ui(config)
+    return config
 
 
 # load config from file
@@ -156,7 +128,12 @@ def save_ui_to_config(config):
 #     load_config_into_ui(config)
 
 
-def generate_presets(template_entry, output_entry, name_entry, num_presets_entry, output_area):
+def generate_presets():
+    global output_area
+    global template_entry
+    global output_entry
+    global name_entry
+    global num_presets_entry
 
     template_file = template_entry.get()
     output_file = output_entry.get()
