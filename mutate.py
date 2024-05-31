@@ -108,7 +108,7 @@ def add_random_parameter_to_controller(preset_dict):
         print(params_not_in_controller)
         print(random_param)
         block_dict = load_block_dictionary_from_file(preset_dict, dsp_name, block_name)
-        print(block_dict["Ranges"][random_param])
+        # print(block_dict["Ranges"][random_param])
         preset_dict["data"]["tone"]["controller"][dsp_name][block_name][random_param] = {}
         preset_dict["data"]["tone"]["controller"][dsp_name][block_name][random_param] = deepcopy(
             block_dict["Ranges"][random_param]
@@ -426,6 +426,7 @@ def replace_dsp_block_parameters(block_dict, preset_dict, block_num, dsp_name):
 def load_block_dictionary(block_filename):
     with open(os.path.expanduser(block_filename), "r") as f:
         block_dict = json.load(f)
+        print("loaded " + block_filename)
     return block_dict
 
 

@@ -95,7 +95,7 @@ def initialize_preset_with_random_blocks(preset_dict, dsp_name):
             new_block_dict = loadRandomBlockParamsForOneBlockNoCabNoSplitCheckAmps(num_amps)
             num_amps = increment_amp_count_if_amp_block(num_amps, new_block_dict)
             preset_dict["data"]["tone"][dsp_name][destination_block_name] = new_block_dict["Defaults"]
-            print_with_stdout_write("   loaded " + destination_block_name + " " + new_block_dict["Defaults"]["@model"])
+            # print("       loaded " + destination_block_name + " " + new_block_dict["Defaults"]["@model"])
 
             path_num = random.randint(0, 1)
             set_path_and_position_for_block(
@@ -170,7 +170,7 @@ def chooseSplit():
     ]
     weights = [0.5, 0.25, 0.25]
     split_file = "".join(random.choices(splits_file_list, weights, k=1))
-    print_with_stdout_write(split_file)
+    # print("       loading " + split_file)
     return mutate.load_block_dictionary(mutate.BLOCKS_PATH + "/Split/" + split_file + ".json")
 
 
@@ -187,7 +187,7 @@ def randomly_activate_or_deactivate_blocks(preset_dict, dsp_name):
 
 
 def generate_preset_from_saved_blocks(preset_dict, dsp_name):
-    print_with_stdout_write(dsp_name)
+    print("   generating " + dsp_name)
     initialize_preset_with_random_blocks(preset_dict, dsp_name)
     mutate.mutate_parameter_values_for_all_snapshots(preset_dict)
     addCabs(preset_dict, dsp_name)
@@ -195,12 +195,12 @@ def generate_preset_from_saved_blocks(preset_dict, dsp_name):
 
 
 def set_preset_name(preset_dict, preset_name):
-    print_with_stdout_write("Preset name: " + preset_name)
+    print("Preset name: " + preset_name)
     preset_dict["data"]["meta"]["name"] = preset_name
 
 
 def replace_parameters_with_pedal_controllers(preset_dict, pedalnum):
-    print_with_stdout_write("insert pedal")
+    print("adding pedal controllers")
     for i in range(mutate.NUM_PEDAL_PARAMS):
         mutate.choose_random_pedal_parameter_and_ranges(preset_dict, pedalnum)
 
@@ -209,12 +209,13 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
     with open(template_name, "r") as f:
         preset_dict = json.load(f)
 
-        print_with_stdout_write("generating")
+        print("generating")
+        set_preset_name(preset_dict, preset_name)
+
         generate_preset_from_saved_blocks(preset_dict, "dsp0")
         generate_preset_from_saved_blocks(preset_dict, "dsp1")
 
         choose_series_or_parallel_dsp_configuration(preset_dict)
-        set_preset_name(preset_dict, preset_name)
 
         while mutate.count_parameters_in_controller(preset_dict) > 64:
             mutate.remove_one_random_controller_parameter(preset_dict)
