@@ -258,7 +258,7 @@ tab1.columnconfigure(0, weight=1)
 tab1.columnconfigure(1, weight=1)
 tab1.columnconfigure(2, weight=1)
 
-template_label = tk.Label(tab1, text="Template File:")
+template_label = tk.Label(tab1, text="Preset Template File:")
 template_label.grid(row=1, column=0, padx=5, pady=5)
 template_entry = tk.Entry(tab1)
 template_entry.config(width=40)
@@ -266,7 +266,7 @@ template_entry.grid(row=1, column=1, padx=5, pady=5)
 template_button = tk.Button(tab1, text="Browse", command=browse_template_file)
 template_button.grid(row=1, column=2, padx=5, pady=5)
 
-output_label = tk.Label(tab1, text="Output File:")
+output_label = tk.Label(tab1, text="Preset Output Filename:")
 output_label.grid(row=2, column=0, padx=5, pady=5)
 output_entry = tk.Entry(tab1)
 output_entry.config(width=40)
@@ -274,7 +274,8 @@ output_entry.grid(row=2, column=1, padx=5, pady=5)
 output_button = tk.Button(tab1, text="Browse", command=browse_output_file)
 output_button.grid(row=2, column=2, padx=5, pady=5)
 
-name_label = tk.Label(tab1, text="Preset Name:")
+
+name_label = tk.Label(tab1, text="Preset Name (optional):")
 name_label.grid(row=3, column=0, padx=5, pady=5)
 name_entry = tk.Entry(tab1)
 name_entry.config(width=40)
@@ -286,9 +287,43 @@ num_presets_entry = tk.Entry(tab1)
 num_presets_entry.config(width=40)
 num_presets_entry.grid(row=4, column=1, padx=5, pady=5)
 
+# # Create inner grid for Load/Save Config
+# inner_grid_1 = tk.Frame(tab1)
+# inner_grid_1.grid(row=5, column=1, sticky="nsew")
+# inner_grid_1.rowconfigure(0, weight=1)
+# # inner_grid_1.rowconfigure(1, weight=1)
+# inner_grid_1.columnconfigure(0, weight=1)
+# inner_grid_1.columnconfigure(1, weight=1)
+
+# # Place load_button and save_button in the same row with equal column weights
+# load_button = tk.Button(inner_grid_1, text="Load Config", command=load_config_from_file)
+# load_button.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
+
+# save_button = tk.Button(inner_grid_1, text="Save Config", command=save_config_to_file)
+# save_button.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
+
+
+# Create menu bar
+menubar = tk.Menu(window)
+filemenu = tk.Menu(menubar, tearoff=0)
+filemenu.add_command(label="Load Config", command=load_config_from_file)
+filemenu.add_command(label="Save Config", command=save_config_to_file)
+menubar.add_cascade(label="File", menu=filemenu)
+window.config(menu=menubar)
+
+# # Load Config button
+# load_button = tk.Button(tab1, text="Load Config", command=load_config_from_file)
+# load_button.grid(row=5, column=0, padx=5, pady=5)
+
+# # Save config button
+# save_button = tk.Button(tab1, text="Save Config", command=save_config_to_file)
+# save_button.grid(row=5, column=2, padx=5, pady=5)
+
+
 # Generate button
 generate_button = tk.Button(tab1, text="Generate Presets", command=lambda: generate_presets(output_area))
-generate_button.grid(row=5, column=0, columnspan=3, padx=5, pady=5)
+generate_button.grid(row=6, column=0, columnspan=3, padx=5, pady=5)
+# generate_button.grid(row=6, column=0, padx=5, pady=5)
 
 # # # Progress bar
 # # progress_bar = tk.ttk.Progressbar(window, orient="horizontal", length=200, mode="determinate")
