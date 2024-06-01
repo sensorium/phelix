@@ -7,7 +7,7 @@ import tkinter as tk
 from tkinter import Tk, Text, ttk, filedialog, END, BOTH, TRUE
 
 from buildpreset import generate_multiple_presets_from_template
-from mutate import mutations
+from mutate import generate_multiple_mutations_from_template
 
 CONFIG_FILE = "startup_config.json"
 
@@ -154,24 +154,44 @@ def generate_presets(output_area):
     print("Preset generation complete!")
 
 
-def browse_template_file():
-    template_entry.delete(0, "end")
-    template_file = filedialog.askopenfilename(
+def browse_open_hlx_file(hlx_entry, field_title):
+    hlx_entry.delete(0, "end")
+    hlx_file = filedialog.askopenfilename(
         initialdir="./",
-        title="Select Template File",
+        title=field_title,
         filetypes=(("HLX files", "*.hlx"), ("All files", "*.*")),
     )
-    template_entry.insert(0, template_file)
+    hlx_entry.insert(0, hlx_file)
 
 
-def browse_output_file():
-    output_entry.delete(0, "end")
+def browse_save_hlx_file(hlx_entry, field_title):
+    hlx_entry.delete(0, "end")
     output_file = filedialog.asksaveasfilename(
         initialdir="./",
-        title="Select Output File",
+        title=field_title,
         filetypes=(("HLX files", "*.hlx"), ("All files", "*.*")),
     )
-    output_entry.insert(0, output_file)
+    hlx_entry.insert(0, output_file)
+
+
+# def browse_template_file():
+#     template_entry.delete(0, "end")
+#     template_file = filedialog.askopenfilename(
+#         initialdir="./",
+#         title="Select Template File",
+#         filetypes=(("HLX files", "*.hlx"), ("All files", "*.*")),
+#     )
+#     template_entry.insert(0, template_file)
+
+
+# def browse_output_file():
+#     output_entry.delete(0, "end")
+#     output_file = filedialog.asksaveasfilename(
+#         initialdir="./",
+#         title="Select Output File",
+#         filetypes=(("HLX files", "*.hlx"), ("All files", "*.*")),
+#     )
+#     output_entry.insert(0, output_file)
 
 
 # Function to show a specific frame
@@ -193,17 +213,67 @@ def clear_output_area():
     output_area.delete("1.0", "end")
 
 
-# Function to save the output area to a file
-def save_output_area():
-    output_file = filedialog.asksaveasfilename(
-        initialdir="./", title="Save Output", filetypes=(("Text files", "*.txt"), ("All files", "*.*"))
-    )
-    if output_file:
-        with open(output_file, "w") as f:
-            f.write(output_area.get("1.0", "end"))
+# def m_generate_presets(output_area):
+#     # global output_area
+#     global m_template_entry
+#     global m_output_entry
+#     global m_name_entry
+#     global m_num_presets_entry
+
+#     m_template_file = m_template_entry.get()
+#     m_output_file = m_output_entry.get()
+#     m_preset_name = m_name_entry.get()
+#     m_num_presets = int(m_num_presets_entry.get())
+
+#     # Create the args dictionary
+#     m_args = {
+#         "template_file": m_template_file,
+#         "output_file": m_output_file,
+#         "preset_name": m_preset_name,
+#         "num_presets": m_num_presets,
+#     }
+
+#     # Convert args dictionary to JSON string
+#     m_args_json = json.dumps(m_args)
+
+#     print("about to mutate")
+
+#     # Specify the command to run the script
+#     command = ["python3", "mutate.py", m_args_json]
+
+#     # Create a subprocess using Popen
+#     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+#     # Read the output from the subprocess
+#     m_output, _ = process.communicate()
+
+#     # Decode the output to a string
+#     m_output = m_output.decode("utf-8")
+
+#     print("mutate ran")
+
+#     # print(output)
+
+#     # Output to output_area
+#     output_area.insert(END, "Generating presets...\n")
+#     output_area.insert(END, f"Template file: {m_template_file}\n")
+#     output_area.insert(END, f"Output file: {m_output_file}\n")
+#     output_area.insert(END, f"Preset name: {m_preset_name}\n")
+#     output_area.insert(END, f"Number of presets: {m_num_presets}\n")
+
+#     # Update the output_area with the captured output
+#     # output_area.delete("1.0", "end")
+#     output_area.insert("end", m_output)
+#     # Update progress bar and output area
+#     # progress_bar["value"] = 100
+#     output_area.insert(tk.END, "\nPreset generation complete!\n")
+#     output_area.see(tk.END)
+
+#     print("Preset mutation complete!")
 
 
 window = tk.Tk()
+window.title("Preset Generator")
 
 # Create the tab widget
 tabs = ttk.Notebook(window)
@@ -222,56 +292,29 @@ tabs.pack(fill="both", expand=True)
 # Configure the tab widget to allow clicking on the labels to switch tabs
 tabs.enable_traversal()
 
-
-# Add a button to tab 1
-# button1 = tk.Button(tab1, text="Button for Tab 1")
-# button1.pack()
-
-# Add a button to tab 2
-button2 = tk.Button(tab2, text="Button for Tab 2")
-button2.pack()
-# def create_gui():
-# global output_area
-# global template_entry
-# global output_entry
-# global name_entry
-# global num_presets_entry
-# global tab1
-# global tab2
-
-# # Create main window
-# window = tk.Tk()
-# # window.title("Preset Generator")
-
-# # Tab Widget
-# tabs = ttk.Notebook(window)
-# # Create tabs
-# tab1 = ttk.Frame(tabs)
-# tab2 = ttk.Frame(tabs)
-# tabs.add(tab1, text="Generate")
-# tabs.add(tab2, text="Mutate")
-# tabs.pack(fill=BOTH, expand=TRUE)
-# # Configure the tab widget to allow clicking on the labels to switch tabs
-# tabs.enable_traversal()
-
+# -----------------------------------------------
 tab1.columnconfigure(0, weight=1)
 tab1.columnconfigure(1, weight=1)
 tab1.columnconfigure(2, weight=1)
 
-template_label = tk.Label(tab1, text="Preset Template File:")
+template_label = tk.Label(tab1, text="Input Preset File:")
 template_label.grid(row=1, column=0, padx=5, pady=5)
 template_entry = tk.Entry(tab1)
 template_entry.config(width=40)
 template_entry.grid(row=1, column=1, padx=5, pady=5)
-template_button = tk.Button(tab1, text="Browse", command=browse_template_file)
+template_button = tk.Button(
+    tab1, text="Browse", command=lambda: browse_open_hlx_file(template_entry, "Select Input Preset")
+)
 template_button.grid(row=1, column=2, padx=5, pady=5)
 
-output_label = tk.Label(tab1, text="Preset Output Filename:")
+output_label = tk.Label(tab1, text="Output Preset File:")
 output_label.grid(row=2, column=0, padx=5, pady=5)
 output_entry = tk.Entry(tab1)
 output_entry.config(width=40)
 output_entry.grid(row=2, column=1, padx=5, pady=5)
-output_button = tk.Button(tab1, text="Browse", command=browse_output_file)
+output_button = tk.Button(
+    tab1, text="Browse", command=lambda: browse_save_hlx_file(output_entry, "Select Output File")
+)
 output_button.grid(row=2, column=2, padx=5, pady=5)
 
 
@@ -287,21 +330,6 @@ num_presets_entry = tk.Entry(tab1)
 num_presets_entry.config(width=40)
 num_presets_entry.grid(row=4, column=1, padx=5, pady=5)
 
-# # Create inner grid for Load/Save Config
-# inner_grid_1 = tk.Frame(tab1)
-# inner_grid_1.grid(row=5, column=1, sticky="nsew")
-# inner_grid_1.rowconfigure(0, weight=1)
-# # inner_grid_1.rowconfigure(1, weight=1)
-# inner_grid_1.columnconfigure(0, weight=1)
-# inner_grid_1.columnconfigure(1, weight=1)
-
-# # Place load_button and save_button in the same row with equal column weights
-# load_button = tk.Button(inner_grid_1, text="Load Config", command=load_config_from_file)
-# load_button.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
-
-# save_button = tk.Button(inner_grid_1, text="Save Config", command=save_config_to_file)
-# save_button.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
-
 
 # Create menu bar
 menubar = tk.Menu(window)
@@ -310,14 +338,6 @@ filemenu.add_command(label="Load Config", command=load_config_from_file)
 filemenu.add_command(label="Save Config", command=save_config_to_file)
 menubar.add_cascade(label="File", menu=filemenu)
 window.config(menu=menubar)
-
-# # Load Config button
-# load_button = tk.Button(tab1, text="Load Config", command=load_config_from_file)
-# load_button.grid(row=5, column=0, padx=5, pady=5)
-
-# # Save config button
-# save_button = tk.Button(tab1, text="Save Config", command=save_config_to_file)
-# save_button.grid(row=5, column=2, padx=5, pady=5)
 
 
 # Generate button
@@ -333,6 +353,47 @@ generate_button.grid(row=6, column=0, columnspan=3, padx=5, pady=5)
 output_area = tk.Text(tab1)
 output_area.grid(row=7, column=0, columnspan=3, padx=5, pady=5)
 
+
+# # Fields in frame2
+# tab2.columnconfigure(0, weight=1)
+# tab2.columnconfigure(1, weight=1)
+# tab2.columnconfigure(2, weight=1)
+
+# m_template_label = tk.Label(tab2, text="Mutate Template File:")
+# m_template_label.grid(row=1, column=0, padx=5, pady=5)
+# m_template_entry = tk.Entry(tab2)
+# m_template_entry.config(width=40)
+# m_template_entry.grid(row=1, column=1, padx=5, pady=5)
+# m_template_button = tk.Button(tab2, text="Browse", command=m_browse_template_file)
+# m_template_button.grid(row=1, column=2, padx=5, pady=5)
+
+# m_output_label = tk.Label(tab2, text="Mutation Output Filename:")
+# m_output_label.grid(row=2, column=0, padx=5, pady=5)
+# m_output_entry = tk.Entry(tab2)
+# m_output_entry.config(width=40)
+# m_output_entry.grid(row=2, column=1, padx=5, pady=5)
+# m_output_button = tk.Button(tab2, text="Browse", command=browse_output_file)
+# m_output_button.grid(row=2, column=2, padx=5, pady=5)
+
+# # Output area
+# m_output_area = tk.Text(tab2)
+# m_output_area.grid(row=7, column=0, columnspan=3, padx=5, pady=5)
+
+# # Mutate button
+# m_generate_button = tk.Button(tab2, text="Mutate Preset", command=lambda: m_generate_presets(m_output_area))
+# m_generate_button.grid(row=6, column=0, columnspan=3, padx=5, pady=5)
+# mutate_label = tk.Label(tab2, text="Mutation Type:")
+# mutate_label.grid(row=0, column=0, padx=5, pady=5)
+# mutate_combo = tk.ttk.Combobox(tab2, values=mutations.mutate_types)
+# mutate_combo.grid(row=0, column=1, padx=5, pady=5)
+
+# num_mutations_label = tk.Label(tab2, text="Number of Mutations:")
+# num_mutations_label.grid(row=1, column=0, padx=5, pady=5)
+# num_mutations_entry = tk.Entry(tab2)
+# num_mutations_entry.grid(row=1, column=1, padx=5, pady=5)
+
+# mutate_button = tk.Button(tab2, text="Mutate", command=lambda: mutations(mutate_args))
+# mutate_button.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
 # # Fields in frame2 to run mutate.mutations()
 # # mutate_button = tk.Button(tab2, text="Mutate", command=lambda: mutations(output_area))

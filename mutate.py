@@ -584,11 +584,11 @@ def mutate_dictionary(preset_dict, snapshot_src_num, postfix_num):
     set_led_colours(preset_dict)
 
 
-def mutate_preset_from_source_snapshot(preset_filename, snapshot_src_num, new_preset_filename, postfix_num):
-    with open(preset_filename, "r") as f:
+def mutate_preset_from_source_snapshot(template_file, snapshot_src_num, output_file, postfix_num):
+    with open(template_file, "r") as f:
         preset_dict = json.load(f)
         mutate_dictionary(preset_dict, snapshot_src_num, postfix_num)
-        with open(new_preset_filename, "w") as f:
+        with open(output_file, "w") as f:
             json.dump(preset_dict, f, indent=4)
 
 
@@ -596,11 +596,23 @@ MUTATION_RATE = 0.1
 fraction_move = 0.1
 
 
-def mutations(num):
-    for i in range(num):
+# def mutations(num):
+#     for i in range(num):
+#         mutate_preset_from_source_snapshot(
+#             "presets/test/aGenerated1.hlx",
+#             6,
+#             "presets/test/aGenerated1+" + str(i + 1) + ".hlx",
+#             (i + 1),
+#         )
+
+
+def generate_multiple_mutations_from_template(args):
+    preset_name_base = args.get("preset_name_base")
+    for i in range(args.get("num_presets")):
+        preset_name = preset_name_base + chr(ord("a") + (i % 26))
         mutate_preset_from_source_snapshot(
-            "presets/test/aGenerated1.hlx",
-            6,
-            "presets/test/aGenerated1+" + str(i + 1) + ".hlx",
-            (i + 1),
+            args.get("template_file"),
+            args.get("snapshot_src_num"),
+            args.get("output_file")[:-4] + str(i + 1) + ".hlx",
+            args.get("postfix_num"),
         )
