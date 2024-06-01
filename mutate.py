@@ -63,13 +63,7 @@ def choose_random_pedal_parameter_and_ranges(preset_dict, pedalnum):
         randparam = choose_random_controller_param_excluding_bools_and_mic(preset_dict, randdsp, randblock)
         if randparam != "none":
             model_name = preset_dict["data"]["tone"][randdsp][randblock]["@model"]
-            print(
-                "setting pedal for " + randdsp,
-                randblock,
-                model_name,
-                randparam,
-                pedalnum,
-            )
+            print("setting pedal " + str(pedalnum) + " control for " + randdsp, randblock, model_name, randparam)
             pedal_param = preset_dict["data"]["tone"]["controller"][randdsp][randblock][randparam]
             pedal_param["@controller"] = pedalnum
             new_max = random.uniform(pedal_param["@min"], pedal_param["@max"])
@@ -318,8 +312,9 @@ def remove_one_random_controller_parameter(preset_dict):
             # remove param from controller
             if randparam in preset_dict["data"]["tone"]["controller"][randdsp][randblock]:
                 del preset_dict["data"]["tone"]["controller"][randdsp][randblock][randparam]
-
-            print("deleted " + randblock + " " + randparam)
+            model_name = preset_dict["data"]["tone"][randdsp][randblock]["@model"]
+            print("removed controller for " + randparam + " in " + model_name + ", " + randdsp + " " + randblock)
+            # print("removed controller for " + randdsp + " " + randblock + " " + randparam)
 
 
 def duplicate_snapshot(preset_dict, snapshot_src, snapshot_dst):
@@ -580,7 +575,7 @@ def mutate_dictionary(preset_dict, snapshot_src_num, postfix_num):
     duplicate_snapshot_to_all(preset_dict, snapshot_src_name)
     choose_some_new_params_for_snapshot_control(preset_dict)
     mutate_parameter_values_for_all_snapshots(preset_dict)
-    toggle_some_block_states(preset_dict, fraction_change_block_states)
+    toggle_some_block_states(preset_dict, MUTATION_RATE)
     modify_some_pedal_controls(preset_dict, 2, 5)
     mutate_all_pedal_ranges(preset_dict)
     rearrange_block_positions(preset_dict, fraction_move)
@@ -589,9 +584,7 @@ def mutate_dictionary(preset_dict, snapshot_src_num, postfix_num):
     set_led_colours(preset_dict)
 
 
-def mutate_preset_from_source_snapshot(
-    preset_filename, snapshot_src_num, new_preset_filename, fraction_change_block_states, fraction_move, postfix_num
-):
+def mutate_preset_from_source_snapshot(preset_filename, snapshot_src_num, new_preset_filename, postfix_num):
     with open(preset_filename, "r") as f:
         preset_dict = json.load(f)
         mutate_dictionary(preset_dict, snapshot_src_num, postfix_num)
@@ -599,7 +592,7 @@ def mutate_preset_from_source_snapshot(
             json.dump(preset_dict, f, indent=4)
 
 
-fraction_change_block_states = 0.1
+MUTATION_RATE = 0.1
 fraction_move = 0.1
 
 
@@ -609,7 +602,5 @@ def mutations(num):
             "presets/test/aGenerated1.hlx",
             6,
             "presets/test/aGenerated1+" + str(i + 1) + ".hlx",
-            fraction_change_block_states,
-            fraction_move,
             (i + 1),
         )

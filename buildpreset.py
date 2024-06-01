@@ -134,6 +134,9 @@ def add_controller_and_dsp_keys_if_missing(preset_dict, dsp_name):
         preset_dict["data"]["tone"]["controller"] = {}
     if dsp_name not in preset_dict["data"]["tone"]["controller"]:
         preset_dict["data"]["tone"]["controller"][dsp_name] = {}
+        for snapshot_num in range(mutate.NUM_SNAPSHOTS):
+            snapshot_name = "snapshot" + str(snapshot_num)
+            preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp_name] = {}
 
 
 def increment_amp_count_if_amp_block(num_amps, block_dict):
@@ -187,7 +190,7 @@ def randomly_activate_or_deactivate_blocks(preset_dict, dsp_name):
 
 
 def generate_preset_from_saved_blocks(preset_dict, dsp_name):
-    print("   generating " + dsp_name)
+    print("\nGenerating " + dsp_name + "...")
     initialize_preset_with_random_blocks(preset_dict, dsp_name)
     mutate.mutate_parameter_values_for_all_snapshots(preset_dict)
     addCabs(preset_dict, dsp_name)
@@ -200,7 +203,7 @@ def set_preset_name(preset_dict, preset_name):
 
 
 def replace_parameters_with_pedal_controllers(preset_dict, pedalnum):
-    print("adding pedal controllers")
+    print("Adding pedal controls...")
     for i in range(mutate.NUM_PEDAL_PARAMS):
         mutate.choose_random_pedal_parameter_and_ranges(preset_dict, pedalnum)
 
@@ -209,7 +212,7 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
     with open(template_name, "r") as f:
         preset_dict = json.load(f)
 
-        print("generating")
+        print("\nGenerating preset from template " + template_name + "...")
         set_preset_name(preset_dict, preset_name)
 
         generate_preset_from_saved_blocks(preset_dict, "dsp0")
@@ -217,8 +220,11 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
 
         choose_series_or_parallel_dsp_configuration(preset_dict)
 
+        print("\nReducing number of snapshot and pedal controlled parameters to maximum 64...")
         while mutate.count_parameters_in_controller(preset_dict) > 64:
             mutate.remove_one_random_controller_parameter(preset_dict)
+
+        print()
 
         replace_parameters_with_pedal_controllers(preset_dict, 2)
 
