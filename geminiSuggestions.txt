@@ -1,219 +1,46 @@
-getRandDspAndBlock	choose_random_dsp_and_block	Clarifies the purpose of selecting a random DSP and block.
-getRandControllerParam	choose_random_controller_param	Makes it clear that the function selects a random controller parameter.
-getRandControllerParamNoBoolNoMic	choose_random_controller_param_excluding_bools_and_mic	Provides more specific information about the parameter selection criteria.
-setRandPedalParamAndRanges	set_random_pedal_parameter_and_ranges	Clearly indicates the function's purpose of setting a random pedal parameter and its ranges.
-setLedColours	set_led_colors	Uses the correct spelling of "colors" and clarifies the function's purpose.
-putRandomParamInController	add_random_parameter_to_controller	More accurately describes the function's action of adding a parameter to the controller.
-chooseParamValuesForOneBlock	set_parameter_values_for_one_block	Clearly states the function's purpose of setting parameter values for a specific block.
-chooseParamValuesForAllSnapshots	set_parameter_values_for_all_snapshots	More accurately describes the function's action of setting parameter values for all snapshots.
-chooseParamValueAround	generate_random_parameter_value	More accurately describes the function's purpose of generating a random parameter value within a specific range.
-chooseCategory	select_block_category	More accurately describes the function's purpose of selecting a block category.
-chooseAnyBlockFileExceptCabOrSplit	choose_random_block_file_excluding_cab_or_split	More accurately describes the function's purpose of selecting a random block file excluding cab or split blocks.
-chooseAnyBlockSplitOrCabInDsps	choose_random_block_split_or_cab_in_dsps	More accurately describes the function's purpose of selecting a random block, split, or cab in the DSPs.
-changeSomePedalControls	modify_some_pedal_controls	More accurately describes the function's purpose of modifying some pedal controls.
-changeSomeSnapshotControllers	modify_some_snapshot_controllers	More accurately describes the function's purpose of modifying some snapshot controllers.
-changeBlockStates	toggle_block_states	More accurately describes the function's purpose of toggling block states.
-changeSeriesOrParallelDsps	change_series_or_parallel_dsps	More accurately describes the function's purpose of changing the series or parallel configuration of the DSPs.
-findPedalParam	locate_pedal_parameter	More accurately describes the function's purpose of locating a specific pedal parameter.
-findBlockInController	locate_block_in_controller	More accurately describes the function's purpose of locating a specific block in the controller.
-findBlockParamInController	locate_block_parameter_in_controller	More accurately describes the function's purpose of locating a specific block parameter in the controller.
-countParamsInController	count_parameters_in_controller	More accurately describes the function's purpose of counting the number of parameters in the controller.
-delRandomParamControl	remove_random_parameter_control	More accurately describes the function's purpose of removing a random parameter control.
-copySnapshot	duplicate_snapshot	More accurately describes the function's purpose of duplicating a snapshot.
-copySnapshotToAll	duplicate_snapshot_to_all	More accurately describes the function's purpose of duplicating a snapshot to all other snapshots.
-findUnusedBlockNameInDsp	find_unused_block_name_in_dsp	More accurately describes the function's purpose of finding an unused block name in a specific DSP.
-moveBlockPositions	rearrange_block_positions	More accurately describes the function's purpose of rearranging block positions.
-moveBlocks	move_blocks	More accurately describes the function's purpose of moving blocks.
-replaceBlockDefaultParams	replace_block_default_parameters	More accurately describes the function's purpose of replacing block default parameters.
-loadBlockDict	load_block_dictionary	More accurately describes the function's purpose of loading a block dictionary from a file.
-insertBlockParamsIntoAllSnapshots	insert_block_parameters_into_all_snapshots	More accurately describes the function's purpose of inserting block parameters into all snapshots.
-swapSomeBlocksAndSplitsFromFile	swap_some_blocks_and_splits_from_file	More accurately describes the function's purpose of swapping some blocks and splits from a file.
-swapBlockFromFile	swap_block_from_file	More accurately describes the function's purpose of swapping a block from a file.
-swapSplitFromFile	swap_split_from_file	More accurately describes the function's purpose of swapping a split from a file.
-mutateName	modify_preset_name	More accurately describes the function's purpose of modifying the preset name.
-mutateAllPedalRanges	modify_all_pedal_ranges	More accurately describes the function's purpose of modifying all pedal ranges.
-mutateOneSetOfPedalRanges	modify_one_set_of_pedal_ranges	More accurately describes the function's purpose of modifying one set of pedal ranges.
-loadBlockDictFromFile	load_block_dictionary_from_file	More accurately describes the function's purpose of loading a block dictionary from a file.
-load_block_params	load_block_parameters	More accurately describes the function's purpose of loading block parameters from a file.
-addParamToAllSnapshots	add_parameter_to_all_snapshots	More accurately describes the function's purpose of adding a parameter to all snapshots.
 
-
-
-
-
-
-
-
-from copy import deepcopy
-import json
-import random
-import os
-
-NUM_SNAPSHOTS = 8
-NUM_SLOTS_PER_DSP = 16
-NUM_PEDAL_PARAMS = 16
-BLOCKS_PATH = "blocks/test"
-
-
-def countNumControllersSetTo2(preset_dict):
-    # ... (function remains unchanged)
-
-
-def chooseParamValuesForOneBlock(preset_dict, snapshot_num, dsp_name, block_name, fraction_new):
-    # ... (function remains unchanged)
-
-
-def chooseParamValuesForAllSnapshots(preset_dict):
-    # ... (function remains unchanged)
-
-
-def countParamControls(preset_dict):
-    # ... (function remains unchanged)
-
-
-def setLedColours(preset_dict):
-    # ... (function remains unchanged)
-
-
-def getRandDspAndBlock(preset_dict):
-    # ... (function remains unchanged)
-
-
-def getRandControllerParam(preset_dict, dsp_name, block):
-    # ... (function remains unchanged)
-
-
-def getRandControllerParamNoBoolNoMic(preset_dict, dsp_name, block):
-    # ... (function remains unchanged)
-
-
-def delRandomParamControl(preset_dict):
-    # ... (function remains unchanged)
-
-
-def changeSomePedalControls(preset_dict, pedalnum, max_changes):
-    # ... (function remains unchanged)
-
-
-def setRandPedalParamAndRanges(preset_dict, pedalnum):
-    # ... (function remains unchanged)
-
-
-def chooseParamValueAround(mean, p_min, p_max):
-    # ... (function remains unchanged)
-
-
-def copySnapshot(preset_dict, snapshot_src, snapshot_dst):
-    # ... (function remains unchanged)
-
-
-def copySnapshotToAll(preset_dict, snapshot_src):
-    # ... (function remains unchanged)
-
-
-def changeBlockStates(preset_dict, change_fraction):
-    # ... (function remains unchanged)
-
-
-def findUnusedBlockNameInDsp(preset_dict, dsp_name):
-    # ... (function remains unchanged)
-
-
-def moveBlockPositions(preset_dict, fraction_move):
-    # ... (function remains unchanged)
-
-
-def moveBlocks(preset_dict, dsp_blockname_to_dsp_path_pos):
-    # ... (function remains unchanged)
-
-
-# replace block default params with extracted block params, given blockNumber and dsp_name
-def replaceBlockDefaultParams(block_dict, preset_dict, block_num, dsp_name):
-    # ... (function remains unchanged)
-
-
-# load extracted block parameters from a json file, return a dictionary
-def loadBlockDict(block_filename):
-    # ... (function remains unchanged)
-
-
-def chooseCategory() -> str:
-    # ... (function remains unchanged)
-
-
-def chooseAnyBlockFileExceptCabOrSplit():
-    # ... (function remains unchanged)
-
-
-def chooseBlockFileInCategory(category_folder):
-    # ... (function remains unchanged)
-
-
-def insertBlockParamsIntoAllSnapshots(preset_dict, dsp_name, destination_block_name, new_block_dict):
-    # ... (function remains unchanged)
-
-
-def swapSomeBlocksAndSplitsFromFile(preset_dict, change_fraction):
-    # ... (function remains unchanged)
-
-
-def swapBlockFromFile(preset_dict, dsp_name, block_name):
-    # ... (function remains unchanged)
-
-
-def swapSplitFromFile(preset_dict, dsp_name, block_name):
-    # ... (function remains unchanged)
-
-
-def mutateName(preset_dict):
-    # ... (function remains unchanged)
-
-
-def mutateAllPedalRanges(preset_dict):
-    # ... (function remains unchanged)
-
-
-def mutateOneSetOfPedalRanges(preset_dict, dsp_name, block_or_split_name, param_name):
-    # ... (function remains unchanged)
-
-
-def loadBlockDictFromFile(preset_dict, dsp_name, block_or_split_name):
-    # ... (function remains unchanged)
-
-
-def seriesOrParallelPaths(preset_dict):
-    # ... (function remains unchanged)
-
-
-def changeSeriesOrParallelPaths(preset_dict, change_fraction):
-    # ... (function remains unchanged)
-
-
-def load_block_params(block_filename):
-    # ... (function remains unchanged)
-
-
-def chooseAnyBlockInDictionary(preset_dict):
-    # ... (function remains unchanged)
-
-
-def addParamToAllSnapshots(preset_dict, dsp_name, block_name, random_param):
-    # ... (function remains unchanged)
-
-
-def setRandomParamControl(preset_dict):
-    # ... (function remains unchanged)
-
-
-def changeSomeSnapshotControllers(preset_dict):
-    # ... (function remains unchanged)
-
-
-def mutateSnapshot(preset_dict, snapshot_src_num, fraction_change_block_states, fraction_move):
-    # ... (function remains unchanged)
-
-
-def mutatePresetSnapshotParams(
-    preset_filename, snapshot_num, new_preset_filename, fraction_change_block_states, fraction_move
-):
-    # ... (function remains unchanged)
+  Suggested File Structure for Improved Manageability
+Here's a proposed file structure that would improve the manageability of your project:
+
+buildpreset/
+├── __init__.py
+├── main.py
+├── mutate.py
+├── utils.py
+├── blocks/
+│   ├── __init__.py
+│   ├── cab.py
+│   ├── split.py
+│   ├── amp.py
+│   ├── ... (other block types)
+├── templates/
+│   ├── __init__.py
+│   ├── template1.json
+│   ├── template2.json
+│   ├── ... (other templates)
+├── output/
+│   ├── __init__.py
+│   ├── preset1.hlx
+│   ├── preset2.hlx
+│   ├── ... (generated presets)
+Explanation:
+
+init.py files in each subfolder serve as entry points and can be used to import specific functions or classes from that module.
+main.py remains the main entry point for the script, handling command-line arguments and orchestrating the overall process.
+mutate.py contains functions related to mutating preset parameters and block configurations.
+utils.py houses utility functions used throughout the project, such as loading JSON files, printing messages, etc.
+blocks/ folder contains subfolders for different block types (e.g., cab, split, amp). Each subfolder can have its own Python file (e.g., cab.py) to encapsulate logic specific to that block type.
+templates/ folder stores the JSON template files used to generate presets.
+output/ folder stores the generated preset files.
+Benefits:
+
+Modularization: Breaking down the code into smaller, focused modules improves readability, maintainability, and reusability.
+Organization: Grouping related files together makes it easier to navigate and understand the project structure.
+Separation of Concerns: Different modules can handle specific tasks, making it easier to identify and modify individual parts of the code.
+Scalability: As the project grows, adding new features or block types becomes more manageable with a well-defined structure.
+Additional Considerations:
+
+You can further subdivide modules based on functionality or complexity.
+Consider using a package manager like pip to manage dependencies and simplify installation.
+Implement unit tests to ensure the correctness of individual modules and functions.
+By adopting this file structure, you'll create a more organized, maintainable, and scalable project that's easier to understand and modify in the future.

@@ -6,10 +6,9 @@ import tkinter as tk
 
 from tkinter import Tk, Text, ttk, filedialog, END, BOTH, TRUE
 
-from buildpreset import generate_multiple_presets_from_template
+from main import generate_multiple_presets_from_template
 from mutate import generate_multiple_mutations_from_template
 
-CONFIG_FILE = "startup_config.json"
 
 # config dictionary
 config = {}
@@ -118,10 +117,8 @@ def generate_presets(output_area):
     # Convert args dictionary to JSON string
     args_json = json.dumps(args)
 
-    print("about to run buildpreset")
-
     # Specify the command to run the script
-    command = ["python3", "buildpreset.py", args_json]
+    command = ["python3", "main.py", args_json]
 
     # Create a subprocess using Popen
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -131,8 +128,6 @@ def generate_presets(output_area):
 
     # Decode the output to a string
     output = output.decode("utf-8")
-
-    print("buildpreset ran")
 
     # print(output)
 
@@ -213,63 +208,64 @@ def clear_output_area():
     output_area.delete("1.0", "end")
 
 
-# def m_generate_presets(output_area):
-#     # global output_area
-#     global m_template_entry
-#     global m_output_entry
-#     global m_name_entry
-#     global m_num_presets_entry
+m_template_entry = None
+m_output_entry = None
+m_name_entry = None
+m_num_presets_entry = None
+m_output_area = None
 
-#     m_template_file = m_template_entry.get()
-#     m_output_file = m_output_entry.get()
-#     m_preset_name = m_name_entry.get()
-#     m_num_presets = int(m_num_presets_entry.get())
 
-#     # Create the args dictionary
-#     m_args = {
-#         "template_file": m_template_file,
-#         "output_file": m_output_file,
-#         "preset_name": m_preset_name,
-#         "num_presets": m_num_presets,
-#     }
+def m_generate_presets(output_area):
 
-#     # Convert args dictionary to JSON string
-#     m_args_json = json.dumps(m_args)
+    global m_template_entry
+    global m_output_entry
+    global m_name_entry
+    global m_num_presets_entry
 
-#     print("about to mutate")
+    m_template_file = m_template_entry.get()
+    m_output_file = m_output_entry.get()
+    m_preset_name = m_name_entry.get()
+    m_num_presets = int(m_num_presets_entry.get())
 
-#     # Specify the command to run the script
-#     command = ["python3", "mutate.py", m_args_json]
+    # Create the args dictionary
+    m_args = {
+        "template_file": m_template_file,
+        "output_file": m_output_file,
+        "preset_name": m_preset_name,
+        "num_presets": m_num_presets,
+    }
 
-#     # Create a subprocess using Popen
-#     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    # Convert args dictionary to JSON string
+    m_args_json = json.dumps(m_args)
 
-#     # Read the output from the subprocess
-#     m_output, _ = process.communicate()
+    # Specify the command to run the script
+    command = ["python3", "mutate.py", m_args_json]
 
-#     # Decode the output to a string
-#     m_output = m_output.decode("utf-8")
+    # Create a subprocess using Popen
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-#     print("mutate ran")
+    # Read the output from the subprocess
+    m_output, _ = process.communicate()
 
-#     # print(output)
+    # Decode the output to a string
+    m_output = m_output.decode("utf-8")
 
-#     # Output to output_area
-#     output_area.insert(END, "Generating presets...\n")
-#     output_area.insert(END, f"Template file: {m_template_file}\n")
-#     output_area.insert(END, f"Output file: {m_output_file}\n")
-#     output_area.insert(END, f"Preset name: {m_preset_name}\n")
-#     output_area.insert(END, f"Number of presets: {m_num_presets}\n")
+    # Output to output_area
+    output_area.insert(END, "Generating presets...\n")
+    output_area.insert(END, f"Template file: {m_template_file}\n")
+    output_area.insert(END, f"Output file: {m_output_file}\n")
+    output_area.insert(END, f"Preset name: {m_preset_name}\n")
+    output_area.insert(END, f"Number of presets: {m_num_presets}\n")
 
-#     # Update the output_area with the captured output
-#     # output_area.delete("1.0", "end")
-#     output_area.insert("end", m_output)
-#     # Update progress bar and output area
-#     # progress_bar["value"] = 100
-#     output_area.insert(tk.END, "\nPreset generation complete!\n")
-#     output_area.see(tk.END)
+    # Update the output_area with the captured output
+    # output_area.delete("1.0", "end")
+    output_area.insert("end", m_output)
+    # Update progress bar and output area
+    # progress_bar["value"] = 100
+    output_area.insert(tk.END, "\nPreset generation complete!\n")
+    output_area.see(tk.END)
 
-#     print("Preset mutation complete!")
+    print("Preset mutation complete!")
 
 
 window = tk.Tk()
