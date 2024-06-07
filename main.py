@@ -44,17 +44,19 @@ def load_random_block_dictionary_excluding_cabs_and_splits_checking_amps():
     global num_amps
     while True:
         block_dict = file.load_block_dictionary(choose.choose_random_block_file_excluding_cab_or_split())
-        if not block_dict["Defaults"]["@model"].startswith("HD2_Amp") or num_amps < 1:
+        if num_amps == 0 or not block_dict["Defaults"]["@model"].startswith("HD2_Amp"):
             break
         else:
-            num_amps += 1
+            num_amps -= 1
     return block_dict
 
 
 # insert param keys into each snapshot in preset
 def populate_preset_with_random_blocks(preset):
+    global num_amps
     for dsp in ["dsp0", "dsp1"]:
         print("\nPopulating " + dsp + "...")
+        num_amps = 0
         add_controller_and_snapshot_keys_if_missing(preset, dsp)
 
         for slot in preset["data"]["tone"][dsp]:
@@ -91,7 +93,7 @@ def set_preset_name(preset_dict, preset_name):
 
 def swap_some_snapshot_controls_to_pedal(preset_dict, pedal_control_num):
     print("Swapping some snapshot controls to pedal...")
-    for i in range(constants.NUM_PEDAL_PARAMS):
+    for _ in range(constants.NUM_PEDAL_PARAMS):
         choose.choose_random_controlled_parameter_and_ranges(preset_dict, pedal_control_num)
 
 

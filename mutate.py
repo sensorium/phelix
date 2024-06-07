@@ -56,7 +56,7 @@ def get_mutated_parameter_value(preset_dict, dsp_name, block_name, parameter, pm
 def mutate_parameter_values_for_one_block(preset_dict, snapshot_num, dsp, slot, fraction_new):
     snapshot_name = "snapshot" + str(snapshot_num)
     controllers_block_dict = preset_dict["data"]["tone"]["controller"][dsp][slot]
-    model_name = preset_dict["data"]["tone"][dsp][slot]["@model"]
+    #    model_name = preset_dict["data"]["tone"][dsp][slot]["@model"]
 
     # print("looking for " + model_name)
     # ###################
@@ -182,10 +182,10 @@ def duplicate_snapshot_to_all(preset_dict, snapshot_src):
             duplicate_snapshot(preset_dict, snapshot_src, snapshot_dst)
 
 
-def find_unused_slot_in_dsp(preset_dict, dsp_name):
+def find_unused_slot_in_dsp(preset, dsp, slot_type):
     for i in range(constants.NUM_SLOTS_PER_DSP):
-        slot = "block" + str(i)
-        if slot not in preset_dict["data"]["tone"][dsp_name]:
+        slot = slot_type + str(i)
+        if slot not in preset["data"]["tone"][dsp]:
             break
     return slot
 
@@ -226,46 +226,39 @@ def rearrange_block_positions(preset, fraction_move):
                     vacant_dsp_path_pos.append([dsp, from_path, from_pos])
 
                     from_dsp_slot_to_dsp_path_pos.append([dsp, slot, new_dsp_path_pos])
+                    # check if it's an Amp, if so, move its Cab with it... must call before the amp block is moved
+                    if preset["data"]["tone"][dsp][slot]["@model"].startswith("HD2_Amp"):
+                        from_cab_slot = preset["data"]["tone"][dsp][slot]["@cab"]
+                        to_dsp = new_dsp_path_pos[0]
+                        if dsp != to_dsp:
+                            move_cab(preset, dsp, slot, from_cab_slot, to_dsp)
+
     # print(from_dsp_slot_to_dsp_path_pos)
     move_blocks(preset, from_dsp_slot_to_dsp_path_pos)
 
 
-def move_blocks(preset_dict, from_dsp_slot_to_dsp_path_pos):
+# must call before the amp block is moved
+def move_cab(preset, from_dsp, amp_slot, from_slot, to_dsp):
+    to_slot = find_unused_slot_in_dsp(preset, to_dsp, "cab")
+    move_slot(preset, from_dsp, from_slot, to_dsp, to_slot, "cab")
+    # register cab with amp
+    preset["data"]["tone"][from_dsp][amp_slot]["@cab"] = to_slot
+
+
+def move_blocks(preset, from_dsp_slot_to_dsp_path_pos):
     for item in from_dsp_slot_to_dsp_path_pos:
         from_dsp = item[0]
         from_slot = item[1]
-        from_path = preset_dict["data"]["tone"][from_dsp][from_slot]["@path"]
-        from_position = preset_dict["data"]["tone"][from_dsp][from_slot]["@position"]
+        from_path = preset["data"]["tone"][from_dsp][from_slot]["@path"]
+        from_position = preset["data"]["tone"][from_dsp][from_slot]["@position"]
         to_dsp = item[2][0]
         to_path = item[2][1]
         to_pos = item[2][2]
-        to_slot = find_unused_slot_in_dsp(preset_dict, to_dsp)
+        to_slot = find_unused_slot_in_dsp(preset, to_dsp, "block")
 
-        # move default block
-        preset_dict["data"]["tone"][to_dsp][to_slot] = {}
-        preset_dict["data"]["tone"][to_dsp][to_slot] = preset_dict["data"]["tone"][from_dsp].pop(from_slot)
-        preset_dict["data"]["tone"][to_dsp][to_slot]["@path"] = to_path
-        preset_dict["data"]["tone"][to_dsp][to_slot]["@position"] = to_pos
-
-        # move controller block
-        preset_dict["data"]["tone"]["controller"][to_dsp][to_slot] = {}
-        preset_dict["data"]["tone"]["controller"][to_dsp][to_slot] = preset_dict["data"]["tone"]["controller"][
-            from_dsp
-        ].pop(from_slot)
-
-        # move snapshot block
-        for snapshot_num in range(constants.NUM_SNAPSHOTS):
-            snapshot_name = "snapshot" + str(snapshot_num)
-            # move bypass state name
-            preset_dict["data"]["tone"][snapshot_name]["blocks"][to_dsp][to_slot] = {}
-            preset_dict["data"]["tone"][snapshot_name]["blocks"][to_dsp][to_slot] = preset_dict["data"]["tone"][
-                snapshot_name
-            ]["blocks"][from_dsp].pop(from_slot)
-            # move snapshot controller block
-            preset_dict["data"]["tone"][snapshot_name]["controllers"][to_dsp][to_slot] = {}
-            preset_dict["data"]["tone"][snapshot_name]["controllers"][to_dsp][to_slot] = preset_dict["data"]["tone"][
-                snapshot_name
-            ]["controllers"][from_dsp].pop(from_slot)
+        move_slot(preset, from_dsp, from_slot, to_dsp, to_slot, "block")
+        preset["data"]["tone"][to_dsp][to_slot]["@path"] = to_path
+        preset["data"]["tone"][to_dsp][to_slot]["@position"] = to_pos
 
         print(
             "Moved",
@@ -279,6 +272,40 @@ def move_blocks(preset_dict, from_dsp_slot_to_dsp_path_pos):
             to_path,
             to_pos,
         )
+
+
+def move_slot(preset, from_dsp, from_slot, to_dsp, to_slot, slot_type):
+    move_default_slot(preset, from_dsp, from_slot, to_dsp, to_slot)
+    move_controller_slot(preset, from_dsp, from_slot, to_dsp, to_slot)
+    move_snapshot_slot(preset, from_dsp, from_slot, to_dsp, to_slot, slot_type)
+
+
+def move_default_slot(preset, from_dsp, from_slot, to_dsp, to_slot):
+    preset["data"]["tone"][to_dsp][to_slot] = {}
+    preset["data"]["tone"][to_dsp][to_slot] = preset["data"]["tone"][from_dsp].pop(from_slot)
+
+
+def move_controller_slot(preset, from_dsp, from_slot, to_dsp, to_slot):
+    preset["data"]["tone"]["controller"][to_dsp][to_slot] = {}
+    preset["data"]["tone"]["controller"][to_dsp][to_slot] = preset["data"]["tone"]["controller"][from_dsp].pop(
+        from_slot
+    )
+
+
+def move_snapshot_slot(preset, from_dsp, from_slot, to_dsp, to_slot, slot_type):
+    for snapshot_num in range(constants.NUM_SNAPSHOTS):
+        snapshot_name = "snapshot" + str(snapshot_num)
+        # move bypass state name (not for cabs)
+        if slot_type == "block":
+            preset["data"]["tone"][snapshot_name]["blocks"][to_dsp][to_slot] = {}
+            preset["data"]["tone"][snapshot_name]["blocks"][to_dsp][to_slot] = preset["data"]["tone"][snapshot_name][
+                "blocks"
+            ][from_dsp].pop(from_slot)
+        # move snapshot controller block
+        preset["data"]["tone"][snapshot_name]["controllers"][to_dsp][to_slot] = {}
+        preset["data"]["tone"][snapshot_name]["controllers"][to_dsp][to_slot] = preset["data"]["tone"][snapshot_name][
+            "controllers"
+        ][from_dsp].pop(from_slot)
 
 
 def swap_some_blocks_and_splits_from_file(preset_dict, change_fraction):
@@ -387,9 +414,9 @@ fraction_move = 0.1
 
 
 def generate_multiple_mutations_from_template(args):
-    preset_name_base = args.get("preset_name_base")
+    # preset_name_base = args.get("preset_name_base")
     for i in range(args.get("num_presets")):
-        preset_name = preset_name_base + chr(ord("a") + (i % 26))
+        # preset_name = preset_name_base + chr(ord("a") + (i % 26))
         mutate_preset_from_source_snapshot(
             args.get("template_file"),
             args.get("snapshot_src_num"),
