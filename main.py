@@ -111,6 +111,12 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
         print("finished populating")
         addCabs(preset_dict)
 
+        print()
+        print("about to mutate")
+        mutate.mutate_parameter_values_for_all_snapshots(preset_dict)
+        print("finished mutating")
+        print()
+
         mutate.rearrange_block_positions(preset_dict, 1.0)
 
         choose.choose_series_or_parallel_dsp_configuration(preset_dict)
@@ -119,11 +125,6 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
         while utils.count_parameters_in_controller(preset_dict) > 64:
             choose.remove_one_random_controller_parameter(preset_dict)
 
-        print()
-        print("about to mutate")
-        mutate.mutate_parameter_values_for_all_snapshots(preset_dict)
-        print("finished mutating")
-        print()
         swap_some_snapshot_controls_to_pedal(preset_dict, constants.PEDAL_2)
         mutate.toggle_some_block_states(preset_dict, 0.5)
 
