@@ -45,9 +45,12 @@ def load_random_block_dictionary_excluding_cabs_and_splits_checking_amps():
     while True:
         block_dict = file.load_block_dictionary(choose.choose_random_block_file_excluding_cab_or_split())
         if num_amps == 0 or not block_dict["Defaults"]["@model"].startswith("HD2_Amp"):
+            if block_dict["Defaults"]["@model"].startswith("HD2_Amp"):
+                num_amps += 1
             break
-        else:
-            num_amps -= 1
+        # else:
+        #     num_amps += 1
+    print("num_amps = " + str(num_amps))
     return block_dict
 
 

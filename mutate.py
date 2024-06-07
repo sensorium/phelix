@@ -20,35 +20,37 @@ def get_mutated_parameter_value(preset_dict, dsp_name, block_name, parameter, pm
 
     # do the right thing for the kind of parameter
     if isinstance(pmin, bool):
-        result = random.choice([True, False])
+        return random.choice([True, False])
     elif (block_name.startswith("block") or block_name.startswith("cab")) and parameter == "Level":
-        lowest = ((pmax - pmin) * 0.2) + pmin
-        mode = ((pmax - pmin) * 0.8) + pmin  # choose level from 0.2 to max, peak around 0.8 of max range
-        result = random.triangular(lowest, pmax, mode)
+        return _extracted_from_get_mutated_parameter_value_8(pmax, pmin, 0.8)
     elif parameter == "Time":  # choose times at the short end
         # mode = ((pmax-pmin) * 0.1) + pmin
         # result = random.triangular(pmin, pmax, mode)
         closer_to_one_for_lower_num = 0.95 + (0.75 - 0.95) * (pmax - 2) / (8 - 2)
-        result = min(pmax, random.expovariate(closer_to_one_for_lower_num))
+        return min(pmax, random.expovariate(closer_to_one_for_lower_num))
         # print("setting Time, max "+str(pmax),str(result))
     elif parameter == "Mix":  # choose mix around middle
-        lowest = ((pmax - pmin) * 0.2) + pmin  # choose mix from 0.2 to max, peak around 0.5 of max range
-        mode = ((pmax - pmin) * 0.5) + pmin
-        result = random.triangular(lowest, pmax, mode)
+        return _extracted_from_get_mutated_parameter_value_8(pmax, pmin, 0.5)
     elif parameter == "Feedback":  # choose feedback around middle
         mode = ((pmax - pmin) * 0.5) + pmin
-        result = random.triangular(pmin, pmax, mode)
+        return random.triangular(pmin, pmax, mode)
     elif (
         defaults_block["@model"].startswith("HD2_Reverb")
         or defaults_block["@model"].startswith("VIC")
         or defaults_block["@model"].startswith("Victoria")
     ) and parameter == "Decay":
         mode = ((pmax - pmin) * 0.05) + pmin
-        result = random.triangular(pmin, pmax, mode)
+        return random.triangular(pmin, pmax, mode)
         # result = min(pmax, random.expovariate(0.5))
     else:
-        result = random.uniform(pmin, pmax)  # switch choices are rounded to nearest integer in helix
-    return result
+        return random.uniform(pmin, pmax)
+
+
+# TODO Rename this here and in `get_mutated_parameter_value`
+def _extracted_from_get_mutated_parameter_value_8(pmax, pmin, arg2):
+    lowest = ((pmax - pmin) * 0.2) + pmin
+    mode = (pmax - pmin) * arg2 + pmin
+    return random.triangular(lowest, pmax, mode)
 
 
 # chooses and stores parameter values for one block into a single snapshot
@@ -150,14 +152,10 @@ def toggle_some_block_states(preset_dict, change_fraction):
         for dsp_name in ["dsp0", "dsp1"]:
             if dsp_name in snapshot_blocks:
                 for block_name in snapshot_blocks[dsp_name]:
-                    if block_name.startswith(("block", "cab")):
-                        if random.uniform(0, 1) < change_fraction:  # change state
-                            current_state = snapshot_blocks[dsp_name][block_name]
-                            new_state = not current_state
-                            snapshot_blocks[dsp_name][block_name] = new_state
-                            # print(
-                            #     f"{snapshot_name} changed state of {dsp_name} {block_name} from {current_state} to {new_state}"
-                            # )
+                    if block_name.startswith("block") and random.uniform(0, 1) < change_fraction:
+                        current_state = snapshot_blocks[dsp_name][block_name]
+                        new_state = not current_state
+                        snapshot_blocks[dsp_name][block_name] = new_state
 
 
 def toggle_series_or_parallel_dsps(preset_dict, change_fraction):
@@ -191,6 +189,8 @@ def find_unused_slot_in_dsp(preset, dsp, slot_type):
 
 
 def rearrange_block_positions(preset, fraction_move):
+    cabs_from_dsp_amp_slot_to_dsp = []
+
     # find block positions
     found_dsp_path_pos = []
     for dsp in ["dsp0", "dsp1"]:
@@ -228,21 +228,27 @@ def rearrange_block_positions(preset, fraction_move):
                     from_dsp_slot_to_dsp_path_pos.append([dsp, slot, new_dsp_path_pos])
                     # check if it's an Amp, if so, move its Cab with it... must call before the amp block is moved
                     if preset["data"]["tone"][dsp][slot]["@model"].startswith("HD2_Amp"):
-                        from_cab_slot = preset["data"]["tone"][dsp][slot]["@cab"]
+
                         to_dsp = new_dsp_path_pos[0]
                         if dsp != to_dsp:
-                            move_cab(preset, dsp, slot, from_cab_slot, to_dsp)
+                            cabs_from_dsp_amp_slot_to_dsp.append([dsp, slot, to_dsp])
 
+    move_cabs(preset, cabs_from_dsp_amp_slot_to_dsp)
     # print(from_dsp_slot_to_dsp_path_pos)
     move_blocks(preset, from_dsp_slot_to_dsp_path_pos)
 
 
 # must call before the amp block is moved
-def move_cab(preset, from_dsp, amp_slot, from_slot, to_dsp):
-    to_slot = find_unused_slot_in_dsp(preset, to_dsp, "cab")
-    move_slot(preset, from_dsp, from_slot, to_dsp, to_slot, "cab")
-    # register cab with amp
-    preset["data"]["tone"][from_dsp][amp_slot]["@cab"] = to_slot
+def move_cabs(preset, cabs_from_dsp_amp_slot_to_dsp):
+    for item in cabs_from_dsp_amp_slot_to_dsp:
+        from_dsp = item[0]
+        amp_slot = item[1]
+        to_dsp = item[2]
+        from_slot = preset["data"]["tone"][from_dsp][amp_slot]["@cab"]
+        to_slot = find_unused_slot_in_dsp(preset, to_dsp, "cab")
+        move_slot(preset, from_dsp, from_slot, to_dsp, to_slot, "cab")
+        # register cab with amp
+        preset["data"]["tone"][from_dsp][amp_slot]["@cab"] = to_slot
 
 
 def move_blocks(preset, from_dsp_slot_to_dsp_path_pos):
