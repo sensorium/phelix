@@ -15,40 +15,64 @@ def set_led_colours(preset_dict):
         preset_dict["data"]["tone"][snapshot_name]["@ledcolor"] = str(snapshot_num + 1)
 
 
-def get_mutated_parameter_value(preset_dict, dsp_name, block_name, parameter, pmin, pmax):
-    defaults_block = preset_dict["data"]["tone"][dsp_name][block_name]
+def get_mutated_parameter_value(preset, dsp, slot, parameter, pmin, pmax):
+    defaults_block = preset["data"]["tone"][dsp][slot]
+    parameter_settings = {
+        "Level": lambda: (
+            random_triangle(pmax, pmin, 0.8, 0.0)
+            if (slot.startswith("block") or slot.startswith("cab"))
+            else random.uniform(pmin, pmax)
+        ),
+        "Time": lambda: min(pmax, random.expovariate(0.95 + (0.75 - 0.95) * (pmax - 2) / (8 - 2))),
+        "Mix": lambda: random_triangle(pmax, pmin, 0.5, 0.0),
+        "Feedback": lambda: random_triangle(pmax, pmin, 0.5, 0.0),
+        "Decay": lambda: (
+            random_triangle(pmax, pmin, 0.05, 0.0)
+            if defaults_block["@model"].startswith(("HD2_Reverb", "VIC", "Victoria"))
+            else random.uniform(pmin, pmax)
+        ),
+    }
 
-    # do the right thing for the kind of parameter
     if isinstance(pmin, bool):
         return random.choice([True, False])
-    elif (block_name.startswith("block") or block_name.startswith("cab")) and parameter == "Level":
-        return get_triangular_random(pmax, pmin, 0.8, 0.0)
-    elif parameter == "Time":  # choose times at the short end
-        # mode = ((pmax-pmin) * 0.1) + pmin
-        # result = random.triangular(pmin, pmax, mode)
-        closer_to_one_for_lower_num = 0.95 + (0.75 - 0.95) * (pmax - 2) / (8 - 2)
-        return min(pmax, random.expovariate(closer_to_one_for_lower_num))
-        # print("setting Time, max "+str(pmax),str(result))
-    elif parameter == "Mix":  # choose mix around middle
-        return get_triangular_random(pmax, pmin, 0.5, 0.0)
-    elif parameter == "Feedback":  # choose feedback around middle
-        return get_triangular_random(pmax, pmin, 0.5, 0.0)
-        # mode = ((pmax - pmin) * 0.5) + pmin
-        # return random.triangular(pmin, pmax, mode)
-    elif (
-        defaults_block["@model"].startswith("HD2_Reverb")
-        or defaults_block["@model"].startswith("VIC")
-        or defaults_block["@model"].startswith("Victoria")
-    ) and parameter == "Decay":
-        return get_triangular_random(pmax, pmin, 0.05, 0.0)
-        # mode = ((pmax - pmin) * 0.05) + pmin
-        # return random.triangular(pmin, pmax, mode)
-        # result = min(pmax, random.expovariate(0.5))
     else:
-        return random.uniform(pmin, pmax)
+        return parameter_settings.get(parameter, lambda: random.uniform(pmin, pmax))()
 
 
-def get_triangular_random(pmax, pmin, mode_fraction, lowest_fraction):
+# def get_mutated_parameter_value(preset_dict, dsp_name, block_name, parameter, pmin, pmax):
+#     defaults_block = preset_dict["data"]["tone"][dsp_name][block_name]
+
+#     # do the right thing for the kind of parameter
+#     if isinstance(pmin, bool):
+#         return random.choice([True, False])
+#     elif (block_name.startswith("block") or block_name.startswith("cab")) and parameter == "Level":
+#         return get_triangular_random(pmax, pmin, 0.8, 0.0)
+#     elif parameter == "Time":  # choose times at the short end
+#         # mode = ((pmax-pmin) * 0.1) + pmin
+#         # result = random.triangular(pmin, pmax, mode)
+#         closer_to_one_for_lower_num = 0.95 + (0.75 - 0.95) * (pmax - 2) / (8 - 2)
+#         return min(pmax, random.expovariate(closer_to_one_for_lower_num))
+#         # print("setting Time, max "+str(pmax),str(result))
+#     elif parameter == "Mix":  # choose mix around middle
+#         return get_triangular_random(pmax, pmin, 0.5, 0.0)
+#     elif parameter == "Feedback":  # choose feedback around middle
+#         return get_triangular_random(pmax, pmin, 0.5, 0.0)
+#         # mode = ((pmax - pmin) * 0.5) + pmin
+#         # return random.triangular(pmin, pmax, mode)
+#     elif (
+#         defaults_block["@model"].startswith("HD2_Reverb")
+#         or defaults_block["@model"].startswith("VIC")
+#         or defaults_block["@model"].startswith("Victoria")
+#     ) and parameter == "Decay":
+#         return get_triangular_random(pmax, pmin, 0.05, 0.0)
+#         # mode = ((pmax - pmin) * 0.05) + pmin
+#         # return random.triangular(pmin, pmax, mode)
+#         # result = min(pmax, random.expovariate(0.5))
+#     else:
+#         return random.uniform(pmin, pmax)
+
+
+def random_triangle(pmax, pmin, mode_fraction, lowest_fraction):
     lowest = ((pmax - pmin) * lowest_fraction) + pmin
     mode = (pmax - pmin) * mode_fraction + pmin
     return random.triangular(lowest, pmax, mode)
@@ -56,8 +80,8 @@ def get_triangular_random(pmax, pmin, mode_fraction, lowest_fraction):
 
 # chooses and stores parameter values for one block into a single snapshot
 #
-def mutate_parameter_values_for_one_block(preset_dict, snapshot_num, dsp, slot, fraction_new):
-    snapshot_name = "snapshot" + str(snapshot_num)
+def mutate_parameter_values_for_one_block(preset_dict, snapshot_name, dsp, slot, fraction_new):
+    # snapshot_name = "snapshot" + str(snapshot_num)
     controllers_block_dict = preset_dict["data"]["tone"]["controller"][dsp][slot]
     #    model_name = preset_dict["data"]["tone"][dsp][slot]["@model"]
 
@@ -121,12 +145,12 @@ def mix_values(fraction_new, pmin, pmax, result, prev_result):
     # print(pmin, pmax, prev_result, result_mix_constrained)
 
 
-def mutate_parameter_values_for_all_snapshots(preset_dict):
-    for snapshot_num in range(constants.NUM_SNAPSHOTS):
-        snapshot_name = "snapshot" + str(snapshot_num)
-        for dsp_name in ["dsp0", "dsp1"]:
-            for block_name in preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp_name]:
-                mutate_parameter_values_for_one_block(preset_dict, snapshot_num, dsp_name, block_name, 1.0)
+def mutate_parameter_values_for_all_snapshots(preset):
+    for n in range(constants.NUM_SNAPSHOTS):
+        # snapshot_name = "snapshot" + str(n)
+        for dsp in ["dsp0", "dsp1"]:
+            for slot in preset["data"]["tone"][snapshot_name(n)]["controllers"][dsp]:
+                mutate_parameter_values_for_one_block(preset, snapshot_name(n), dsp, slot, 1.0)
 
 
 def mutate_parameter_value(mean, p_min, p_max):
@@ -140,10 +164,10 @@ def mutate_parameter_value(mean, p_min, p_max):
 
 def swap_some_control_destinations(preset_dict, control_num, max_changes):
     num_changes = random.randint(0, max_changes)
-    choose.choose_and_remove_controls(preset_dict, control_num, num_changes)
+    choose.random_remove_controls(preset_dict, control_num, num_changes)
     for _ in range(num_changes):
         # set another param to pedalnum
-        choose.choose_random_controlled_parameter_and_ranges(preset_dict, control_num)
+        choose.random_controlled_parameter_and_ranges(preset_dict, control_num)
 
 
 def toggle_some_block_states(preset_dict, change_fraction):
@@ -330,7 +354,7 @@ def swap_block_from_file(preset_dict, dsp_name, block_name):
     print("Swapping block from file")
     path = preset_dict["data"]["tone"][dsp_name][block_name]["@path"]
     pos = preset_dict["data"]["tone"][dsp_name][block_name]["@position"]
-    new_block_dict = file.load_block_dictionary(choose.choose_random_block_file_excluding_cab_or_split())
+    new_block_dict = file.load_block_dictionary(choose.random_block_file_excluding_cab_or_split())
     preset_dict["data"]["tone"][dsp_name][block_name] = new_block_dict["Defaults"]
     preset_dict["data"]["tone"][dsp_name][block_name]["@path"] = path
     preset_dict["data"]["tone"][dsp_name][block_name]["@position"] = pos
@@ -342,10 +366,10 @@ def swap_block_from_file(preset_dict, dsp_name, block_name):
 
 def swap_split_from_file(preset, dsp, slot):
     print("swapping split from file")
-    pos = preset["data"]["tone"][dsp][slot]["@position"]
-    split_dict = file.load_block_dictionary(choose.choose_block_file_in_category("Split"))
+    keep_position = preset["data"]["tone"][dsp][slot]["@position"]
+    split_dict = file.load_block_dictionary(choose.random_block_file_in_category("Split"))
     utils.add_block_to_preset(preset, dsp, slot, split_dict)
-    preset["data"]["tone"][dsp][slot]["@position"] = pos
+    preset["data"]["tone"][dsp][slot]["@position"] = keep_position
     for snapshot_num in range(constants.NUM_SNAPSHOTS):
         mutate_parameter_values_for_one_block(preset, snapshot_num, dsp, slot, 1.0)
 
@@ -382,20 +406,23 @@ def mutate_one_set_of_pedal_ranges(preset_dict, dsp_name, block_or_split_name, p
         param["@max"] = new_max
 
 
-def mutate_dictionary(preset_dict, snapshot_src_num, postfix_num):
-    increment_preset_name(preset_dict, postfix_num)
-    snapshot_src_name = "snapshot" + str(snapshot_src_num)
-    duplicate_snapshot_to_all(preset_dict, snapshot_src_name)
-    choose.choose_some_new_params_for_snapshot_control(preset_dict)
-    mutate_parameter_values_for_all_snapshots(preset_dict)
-    mutate_all_default_blocks(preset_dict, constants.MUTATION_RATE)
-    swap_some_control_destinations(preset_dict, constants.PEDAL_2, 10)
-    mutate_all_pedal_ranges(preset_dict)
-    rearrange_block_positions(preset_dict, constants.FRACTION_MOVE)
-    swap_some_blocks_and_splits_from_file(preset_dict, 0.1)
-    toggle_some_block_states(preset_dict, constants.MUTATION_RATE)
-    toggle_series_or_parallel_dsps(preset_dict, 0.2)
-    set_led_colours(preset_dict)
+def snapshot_name(snapshot_num):
+    return "snapshot" + str(snapshot_num)
+
+
+def mutate_dictionary(preset, snapshot_src_num, postfix_num):
+    increment_preset_name(preset, postfix_num)
+    duplicate_snapshot_to_all(preset, snapshot_name(snapshot_src_num))
+    choose.random_new_params_for_snapshot_control(preset)
+    mutate_parameter_values_for_all_snapshots(preset)
+    mutate_all_default_blocks(preset, constants.MUTATION_RATE)
+    swap_some_control_destinations(preset, constants.PEDAL_2, 10)
+    mutate_all_pedal_ranges(preset)
+    rearrange_block_positions(preset, constants.FRACTION_MOVE)
+    swap_some_blocks_and_splits_from_file(preset, 0.1)
+    toggle_some_block_states(preset, constants.MUTATION_RATE)
+    toggle_series_or_parallel_dsps(preset, constants.TOGGLE_RATE)
+    set_led_colours(preset)
 
 
 def mutate_preset_from_source_snapshot(template_file, snapshot_src_num, output_file, postfix_num):

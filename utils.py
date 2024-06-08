@@ -75,3 +75,10 @@ def add_parameter_to_all_snapshots(preset_dict, dsp_name, block_name, random_par
             snapshot_dict[random_param] = deepcopy(
                 preset_dict["data"]["tone"]["controller"][dsp_name][block_name][random_param]
             )
+
+
+def remove_parameter_from_controller(preset, dsp, slot, param):
+    if param in preset["data"]["tone"]["controller"][dsp][slot]:
+        del preset["data"]["tone"]["controller"][dsp][slot][param]
+    model_name = preset["data"]["tone"][dsp][slot]["@model"]
+    print("removed controller for " + param + " in " + model_name + ", " + dsp + " " + slot)

@@ -28,7 +28,7 @@ def addCabs(preset):
             cabs_used += 1
             preset["data"]["tone"][dsp][amp]["@cab"] = cab_slot
             # load a random cab
-            cab_dict = file.load_block_dictionary(choose.choose_block_file_in_category("Cab"))
+            cab_dict = file.load_block_dictionary(choose.random_block_file_in_category("Cab"))
             # delete cab path and position, if they exist
             if "@path" in cab_dict["Defaults"]:
                 del cab_dict["Defaults"]["@path"]
@@ -40,7 +40,7 @@ def addCabs(preset):
 def load_random_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amps):
 
     while True:
-        block_dict = file.load_block_dictionary(choose.choose_random_block_file_excluding_cab_or_split())
+        block_dict = file.load_block_dictionary(choose.random_block_file_excluding_cab_or_split())
         if num_amps == 0 or not block_dict["Defaults"]["@model"].startswith("HD2_Amp"):
             if block_dict["Defaults"]["@model"].startswith("HD2_Amp"):
                 num_amps += 1
@@ -64,7 +64,7 @@ def populate_preset_with_random_blocks(preset):
             if slot.startswith("block"):
                 new_dict, num_amps = load_random_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amps)
             elif slot.startswith("split"):
-                new_dict = file.load_block_dictionary(choose.choose_block_file_in_category("Split"))
+                new_dict = file.load_block_dictionary(choose.random_block_file_in_category("Split"))
 
             utils.add_block_to_preset(preset, dsp, slot, new_dict)
 
@@ -93,7 +93,7 @@ def set_preset_name(preset_dict, preset_name):
 def swap_some_snapshot_controls_to_pedal(preset_dict, pedal_control_num):
     print("\nSwapping some snapshot controls to pedal...")
     for _ in range(constants.NUM_PEDAL_PARAMS):
-        choose.choose_random_controlled_parameter_and_ranges(preset_dict, pedal_control_num)
+        choose.random_controlled_parameter_and_ranges(preset_dict, pedal_control_num)
 
 
 def generate_preset_from_template_file(template_name, save_name, preset_name):
@@ -115,7 +115,7 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
 
         mutate.rearrange_block_positions(preset_dict, 1.0)
 
-        choose.choose_series_or_parallel_dsp_configuration(preset_dict)
+        choose.random_series_or_parallel_dsp_configuration(preset_dict)
 
         print("\nPruning controls to maximum 64...")
         while utils.count_parameters_in_controller(preset_dict) > 64:
