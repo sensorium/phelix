@@ -75,59 +75,59 @@ def populate_preset_with_random_blocks(preset):
         preset["data"]["tone"][dsp]["split"]["@position"] = split_position
 
 
-def add_controller_and_snapshot_keys_if_missing(preset_dict, dsp_name):
-    if "controller" not in preset_dict["data"]["tone"]:
-        preset_dict["data"]["tone"]["controller"] = {}
-    if dsp_name not in preset_dict["data"]["tone"]["controller"]:
-        preset_dict["data"]["tone"]["controller"][dsp_name] = {}
+def add_controller_and_snapshot_keys_if_missing(preset, dsp):
+    if "controller" not in preset["data"]["tone"]:
+        preset["data"]["tone"]["controller"] = {}
+    if dsp not in preset["data"]["tone"]["controller"]:
+        preset["data"]["tone"]["controller"][dsp] = {}
         for snapshot_num in range(constants.NUM_SNAPSHOTS):
-            snapshot_name = "snapshot" + str(snapshot_num)
-            preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp_name] = {}
+            snapshot_name = f"snapshot{snapshot_num}"
+            preset["data"]["tone"][snapshot_name]["controllers"][dsp] = {}
 
 
-def set_preset_name(preset_dict, preset_name):
+def set_preset_name(preset, preset_name):
     print("Preset name: " + preset_name)
-    preset_dict["data"]["meta"]["name"] = preset_name
+    preset["data"]["meta"]["name"] = preset_name
 
 
-def swap_some_snapshot_controls_to_pedal(preset_dict, pedal_control_num):
+def swap_some_snapshot_controls_to_pedal(preset, pedal_control_num):
     print("\nSwapping some snapshot controls to pedal...")
     for _ in range(constants.NUM_PEDAL_PARAMS):
-        choose.random_controlled_parameter_and_ranges(preset_dict, pedal_control_num)
+        choose.random_controlled_parameter_and_ranges(preset, pedal_control_num)
 
 
 def generate_preset_from_template_file(template_name, save_name, preset_name):
     with open(template_name, "r") as f:
-        preset_dict = json.load(f)
+        preset = json.load(f)
 
         print("\nGenerating preset from template " + template_name + "...")
-        set_preset_name(preset_dict, preset_name)
+        set_preset_name(preset, preset_name)
 
-        populate_preset_with_random_blocks(preset_dict)
+        populate_preset_with_random_blocks(preset)
         # print("finished populating")
-        addCabs(preset_dict)
+        addCabs(preset)
 
         print()
         # print("about to mutate")
-        mutate.mutate_parameter_values_for_all_snapshots(preset_dict)
+        mutate.mutate_parameter_values_for_all_snapshots(preset)
         # print("finished mutating")
         print()
 
-        mutate.rearrange_block_positions(preset_dict, 1.0)
+        mutate.rearrange_block_positions(preset, 1.0)
 
-        choose.random_series_or_parallel_dsp_configuration(preset_dict)
+        choose.random_series_or_parallel_dsp_configuration(preset)
 
         print("\nPruning controls to maximum 64...")
-        while utils.count_parameters_in_controller(preset_dict) > 64:
-            choose.remove_one_random_controller_parameter(preset_dict)
+        while utils.count_parameters_in_controller(preset) > 64:
+            choose.remove_one_random_controller_parameter(preset)
 
-        swap_some_snapshot_controls_to_pedal(preset_dict, constants.PEDAL_2)
-        mutate.toggle_some_block_states(preset_dict, 0.5)
+        swap_some_snapshot_controls_to_pedal(preset, constants.PEDAL_2)
+        mutate.toggle_some_block_states(preset, 0.5)
 
-        mutate.set_led_colours(preset_dict)
+        utils.set_led_colours(preset)
 
         with open(save_name, "w") as json_file:
-            json.dump(preset_dict, json_file, indent=4)
+            json.dump(preset, json_file, indent=4)
 
 
 # def generate_multiple_presets_from_template(args):

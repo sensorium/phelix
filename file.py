@@ -11,8 +11,8 @@ def load_block_dictionary(block_filepath):
     return block_dict
 
 
-def reload_unpruned_block_dictionary(preset_dict, dsp_name, any_slot_name):
-    block_filename = preset_dict["data"]["tone"][dsp_name][any_slot_name]["@model"] + ".json"
+def reload_unpruned_block_dictionary(preset, dsp, any_slot_name):
+    block_filename = preset["data"]["tone"][dsp][any_slot_name]["@model"] + ".json"
     block_folder = None
     for root, _, files in os.walk(constants.BLOCKS_PATH):
         if block_filename in files:
@@ -21,3 +21,8 @@ def reload_unpruned_block_dictionary(preset_dict, dsp_name, any_slot_name):
     # print("Reloading " + block_folder + "/" + block_filename)
     block_dict = load_block_dictionary(block_folder + "/" + block_filename)
     return block_dict
+
+
+def save_debug_hlx(preset):
+    with open("debug.hlx", "w") as json_file:
+        json.dump(preset, json_file, indent=4)

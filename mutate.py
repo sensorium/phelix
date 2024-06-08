@@ -8,13 +8,6 @@ import utils
 import choose
 
 
-def set_led_colours(preset_dict):
-    for snapshot_num in range(constants.NUM_SNAPSHOTS):
-        snapshot_name = "snapshot" + str(snapshot_num)
-        # snapshot ledcolor
-        preset_dict["data"]["tone"][snapshot_name]["@ledcolor"] = str(snapshot_num + 1)
-
-
 def get_mutated_parameter_value(preset, dsp, slot, parameter, pmin, pmax):
     defaults_block = preset["data"]["tone"][dsp][slot]
     parameter_settings = {
@@ -39,39 +32,6 @@ def get_mutated_parameter_value(preset, dsp, slot, parameter, pmin, pmax):
         return parameter_settings.get(parameter, lambda: random.uniform(pmin, pmax))()
 
 
-# def get_mutated_parameter_value(preset_dict, dsp_name, block_name, parameter, pmin, pmax):
-#     defaults_block = preset_dict["data"]["tone"][dsp_name][block_name]
-
-#     # do the right thing for the kind of parameter
-#     if isinstance(pmin, bool):
-#         return random.choice([True, False])
-#     elif (block_name.startswith("block") or block_name.startswith("cab")) and parameter == "Level":
-#         return get_triangular_random(pmax, pmin, 0.8, 0.0)
-#     elif parameter == "Time":  # choose times at the short end
-#         # mode = ((pmax-pmin) * 0.1) + pmin
-#         # result = random.triangular(pmin, pmax, mode)
-#         closer_to_one_for_lower_num = 0.95 + (0.75 - 0.95) * (pmax - 2) / (8 - 2)
-#         return min(pmax, random.expovariate(closer_to_one_for_lower_num))
-#         # print("setting Time, max "+str(pmax),str(result))
-#     elif parameter == "Mix":  # choose mix around middle
-#         return get_triangular_random(pmax, pmin, 0.5, 0.0)
-#     elif parameter == "Feedback":  # choose feedback around middle
-#         return get_triangular_random(pmax, pmin, 0.5, 0.0)
-#         # mode = ((pmax - pmin) * 0.5) + pmin
-#         # return random.triangular(pmin, pmax, mode)
-#     elif (
-#         defaults_block["@model"].startswith("HD2_Reverb")
-#         or defaults_block["@model"].startswith("VIC")
-#         or defaults_block["@model"].startswith("Victoria")
-#     ) and parameter == "Decay":
-#         return get_triangular_random(pmax, pmin, 0.05, 0.0)
-#         # mode = ((pmax - pmin) * 0.05) + pmin
-#         # return random.triangular(pmin, pmax, mode)
-#         # result = min(pmax, random.expovariate(0.5))
-#     else:
-#         return random.uniform(pmin, pmax)
-
-
 def random_triangle(pmax, pmin, mode_fraction, lowest_fraction):
     lowest = ((pmax - pmin) * lowest_fraction) + pmin
     mode = (pmax - pmin) * mode_fraction + pmin
@@ -80,43 +40,31 @@ def random_triangle(pmax, pmin, mode_fraction, lowest_fraction):
 
 # chooses and stores parameter values for one block into a single snapshot
 #
-def mutate_parameter_values_for_one_block(preset_dict, snapshot_name, dsp, slot, fraction_new):
-    # snapshot_name = "snapshot" + str(snapshot_num)
-    controllers_block_dict = preset_dict["data"]["tone"]["controller"][dsp][slot]
-    #    model_name = preset_dict["data"]["tone"][dsp][slot]["@model"]
-
-    # print("looking for " + model_name)
-    # ###################
-
-    # with open("debug.hlx", "w") as json_file:
-    #     json.dump(preset_dict, json_file, indent=4)
-
-    #     ################
-
-    unpruned_block_ranges = file.reload_unpruned_block_dictionary(preset_dict, dsp, slot)["Ranges"]
-
+def mutate_parameter_values_for_one_block(preset, snapshot_name, dsp, slot, fraction_new):
+    controllers_block_dict = preset["data"]["tone"]["controller"][dsp][slot]
+    unpruned_block_ranges = file.reload_unpruned_block_dictionary(preset, dsp, slot)["Ranges"]
+    # model_name = preset["data"]["tone"][dsp][slot]["@model"]
     # print("mutating", dsp, slot, model_name)
     for parameter in unpruned_block_ranges:
         if not parameter.startswith("@"):
             pmin = unpruned_block_ranges[parameter]["@min"]
             pmax = unpruned_block_ranges[parameter]["@max"]
-            result = get_mutated_parameter_value(preset_dict, dsp, slot, parameter, pmin, pmax)
-
+            result = get_mutated_parameter_value(preset, dsp, slot, parameter, pmin, pmax)
         if parameter in controllers_block_dict:
             # print("  about to mutate " + parameter)
-            prev_result = preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp][slot][parameter]["@value"]
+            prev_result = preset["data"]["tone"][snapshot_name]["controllers"][dsp][slot][parameter]["@value"]
             result_mix = mix_values(fraction_new, pmin, pmax, result, prev_result)
-            preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp][slot][parameter]["@value"] = result_mix
+            preset["data"]["tone"][snapshot_name]["controllers"][dsp][slot][parameter]["@value"] = result_mix
 
 
-def mutate_default_block(preset_dict, dsp_name, slot_name, fraction_new):
-    defaults_block = preset_dict["data"]["tone"][dsp_name][slot_name]
-    unpruned_block_ranges = file.reload_unpruned_block_dictionary(preset_dict, dsp_name, slot_name)["Ranges"]
+def mutate_default_block(preset, dsp, slot, fraction_new):
+    defaults_block = preset["data"]["tone"][dsp][slot]
+    unpruned_block_ranges = file.reload_unpruned_block_dictionary(preset, dsp, slot)["Ranges"]
     for parameter in defaults_block:
         if not parameter.startswith("@"):
             pmin = unpruned_block_ranges[parameter]["@min"]
             pmax = unpruned_block_ranges[parameter]["@max"]
-            result = get_mutated_parameter_value(preset_dict, dsp_name, slot_name, parameter, pmin, pmax)
+            result = get_mutated_parameter_value(preset, dsp, slot, parameter, pmin, pmax)
             if isinstance(result, bool):
                 defaults_block[parameter] = result
             else:
@@ -128,11 +76,11 @@ def mutate_default_block(preset_dict, dsp_name, slot_name, fraction_new):
                 defaults_block[parameter] = result_mix_constrained
 
 
-def mutate_all_default_blocks(preset_dict, fraction_new):
-    for dsp_name in ["dsp0", "dsp1"]:
-        for slot_name in preset_dict["data"]["tone"][dsp_name]:
-            if slot_name.startswith(("cab", "split", "block")):
-                mutate_default_block(preset_dict, dsp_name, slot_name, fraction_new)
+def mutate_all_default_blocks(preset, fraction_new):
+    for dsp in ["dsp0", "dsp1"]:
+        for slot in preset["data"]["tone"][dsp]:
+            if slot.startswith(("cab", "split", "block")):
+                mutate_default_block(preset, dsp, slot, fraction_new)
 
 
 def mix_values(fraction_new, pmin, pmax, result, prev_result):
@@ -146,11 +94,11 @@ def mix_values(fraction_new, pmin, pmax, result, prev_result):
 
 
 def mutate_parameter_values_for_all_snapshots(preset):
-    for n in range(constants.NUM_SNAPSHOTS):
-        # snapshot_name = "snapshot" + str(n)
+    for i in range(constants.NUM_SNAPSHOTS):
+        snapshot_name = snapshot_name(i)
         for dsp in ["dsp0", "dsp1"]:
-            for slot in preset["data"]["tone"][snapshot_name(n)]["controllers"][dsp]:
-                mutate_parameter_values_for_one_block(preset, snapshot_name(n), dsp, slot, 1.0)
+            for slot in preset["data"]["tone"][snapshot_name]["controllers"][dsp]:
+                mutate_parameter_values_for_one_block(preset, snapshot_name, dsp, slot, 1.0)
 
 
 def mutate_parameter_value(mean, p_min, p_max):
@@ -162,47 +110,46 @@ def mutate_parameter_value(mean, p_min, p_max):
     return p
 
 
-def swap_some_control_destinations(preset_dict, control_num, max_changes):
+def swap_some_control_destinations(preset, control_num, max_changes):
     num_changes = random.randint(0, max_changes)
-    choose.random_remove_controls(preset_dict, control_num, num_changes)
+    choose.random_remove_controls(preset, control_num, num_changes)
     for _ in range(num_changes):
-        # set another param to pedalnum
-        choose.random_controlled_parameter_and_ranges(preset_dict, control_num)
+        choose.random_controlled_parameter_and_ranges(preset, control_num)
 
 
-def toggle_some_block_states(preset_dict, change_fraction):
+def toggle_some_block_states(preset, change_fraction):
     for snapshot_num in range(constants.NUM_SNAPSHOTS):
         snapshot_name = f"snapshot{snapshot_num}"
-        snapshot_blocks = preset_dict["data"]["tone"][snapshot_name]["blocks"]
-        for dsp_name in ["dsp0", "dsp1"]:
-            if dsp_name in snapshot_blocks:
-                for block_name in snapshot_blocks[dsp_name]:
-                    if block_name.startswith("block") and random.uniform(0, 1) < change_fraction:
-                        current_state = snapshot_blocks[dsp_name][block_name]
+        snapshot_blocks = preset["data"]["tone"][snapshot_name]["blocks"]
+        for dsp in ["dsp0", "dsp1"]:
+            if dsp in snapshot_blocks:
+                for slot in snapshot_blocks[dsp]:
+                    if slot.startswith("block") and random.uniform(0, 1) < change_fraction:
+                        current_state = snapshot_blocks[dsp][slot]
                         new_state = not current_state
-                        snapshot_blocks[dsp_name][block_name] = new_state
+                        snapshot_blocks[dsp][slot] = new_state
 
 
-def toggle_series_or_parallel_dsps(preset_dict, change_fraction):
+def toggle_series_or_parallel_dsps(preset, change_fraction):
     if random.uniform(0, 1) < change_fraction:  # change state
         print("toggling series or parallel dsps")
-        current = preset_dict["data"]["tone"]["dsp0"]["outputA"]["@output"]
+        current = preset["data"]["tone"]["dsp0"]["outputA"]["@output"]
         if current == 1:
-            preset_dict["data"]["tone"]["dsp0"]["outputA"]["@output"] = 2
+            preset["data"]["tone"]["dsp0"]["outputA"]["@output"] = 2
         else:
-            preset_dict["data"]["tone"]["dsp0"]["outputA"]["@output"] = 1
+            preset["data"]["tone"]["dsp0"]["outputA"]["@output"] = 1
 
 
-def duplicate_snapshot(preset_dict, snapshot_src, snapshot_dst):
-    preset_dict["data"]["tone"][snapshot_dst] = deepcopy(preset_dict["data"]["tone"][snapshot_src])
-    preset_dict["data"]["tone"][snapshot_dst]["@name"] = snapshot_dst
+def duplicate_snapshot(preset, snapshot_src, snapshot_dst):
+    preset["data"]["tone"][snapshot_dst] = deepcopy(preset["data"]["tone"][snapshot_src])
+    preset["data"]["tone"][snapshot_dst]["@name"] = snapshot_dst
 
 
-def duplicate_snapshot_to_all(preset_dict, snapshot_src):
+def duplicate_snapshot_to_all(preset, snapshot_src):
     for snapshot_num in range(constants.NUM_SNAPSHOTS):
-        snapshot_dst = "snapshot" + str(snapshot_num)
+        snapshot_dst = f"snapshot{snapshot_num}"
         if snapshot_dst != snapshot_src:
-            duplicate_snapshot(preset_dict, snapshot_src, snapshot_dst)
+            duplicate_snapshot(preset, snapshot_src, snapshot_dst)
 
 
 def find_unused_slot_in_dsp(preset, dsp, slot_type):
@@ -325,7 +272,7 @@ def move_controller_slot(preset, from_dsp, from_slot, to_dsp, to_slot):
 
 def move_snapshot_slot(preset, from_dsp, from_slot, to_dsp, to_slot, slot_type):
     for snapshot_num in range(constants.NUM_SNAPSHOTS):
-        snapshot_name = "snapshot" + str(snapshot_num)
+        snapshot_name = f"snapshot{snapshot_num}"
         # move bypass state name (not for cabs)
         if slot_type == "block":
             preset["data"]["tone"][snapshot_name]["blocks"][to_dsp][to_slot] = {}
@@ -339,29 +286,29 @@ def move_snapshot_slot(preset, from_dsp, from_slot, to_dsp, to_slot, slot_type):
         ][from_dsp].pop(from_slot)
 
 
-def swap_some_blocks_and_splits_from_file(preset_dict, change_fraction):
-    for dsp_name in ["dsp0", "dsp1"]:
-        for block_name in preset_dict["data"]["tone"][dsp_name]:
-            if block_name.startswith("block"):
+def swap_some_blocks_and_splits_from_file(preset, change_fraction):
+    for dsp in ["dsp0", "dsp1"]:
+        for slot in preset["data"]["tone"][dsp]:
+            if slot.startswith("block"):
                 if random.uniform(0, 1) < change_fraction:  # change state
-                    swap_block_from_file(preset_dict, dsp_name, block_name)
-            if block_name.startswith("split"):
+                    swap_block_from_file(preset, dsp, slot)
+            if slot.startswith("split"):
                 if random.uniform(0, 1) < change_fraction:  # change state
-                    swap_split_from_file(preset_dict, dsp_name, block_name)
+                    swap_split_from_file(preset, dsp, slot)
 
 
-def swap_block_from_file(preset_dict, dsp_name, block_name):
+def swap_block_from_file(preset, dsp, slot):
     print("Swapping block from file")
-    path = preset_dict["data"]["tone"][dsp_name][block_name]["@path"]
-    pos = preset_dict["data"]["tone"][dsp_name][block_name]["@position"]
+    path = preset["data"]["tone"][dsp][slot]["@path"]
+    pos = preset["data"]["tone"][dsp][slot]["@position"]
     new_block_dict = file.load_block_dictionary(choose.random_block_file_excluding_cab_or_split())
-    preset_dict["data"]["tone"][dsp_name][block_name] = new_block_dict["Defaults"]
-    preset_dict["data"]["tone"][dsp_name][block_name]["@path"] = path
-    preset_dict["data"]["tone"][dsp_name][block_name]["@position"] = pos
-    utils.add_block_to_snapshots(preset_dict, dsp_name, block_name, new_block_dict)
-    preset_dict["data"]["tone"]["controller"][dsp_name][block_name] = new_block_dict["Ranges"]
+    preset["data"]["tone"][dsp][slot] = new_block_dict["Defaults"]
+    preset["data"]["tone"][dsp][slot]["@path"] = path
+    preset["data"]["tone"][dsp][slot]["@position"] = pos
+    utils.add_block_to_snapshots(preset, dsp, slot, new_block_dict)
+    preset["data"]["tone"]["controller"][dsp][slot] = new_block_dict["Ranges"]
     for snapshot_num in range(constants.NUM_SNAPSHOTS):
-        mutate_parameter_values_for_one_block(preset_dict, snapshot_num, dsp_name, block_name, 1.0)
+        mutate_parameter_values_for_one_block(preset, snapshot_num, dsp, slot, 1.0)
 
 
 def swap_split_from_file(preset, dsp, slot):
@@ -374,29 +321,29 @@ def swap_split_from_file(preset, dsp, slot):
         mutate_parameter_values_for_one_block(preset, snapshot_num, dsp, slot, 1.0)
 
 
-def increment_preset_name(preset_dict, postfix_num):
-    name = preset_dict["data"]["meta"]["name"]
+def increment_preset_name(preset, postfix_num):
+    name = preset["data"]["meta"]["name"]
     name = name + str(postfix_num)
-    preset_dict["data"]["meta"]["name"] = name
+    preset["data"]["meta"]["name"] = name
     print("Preset name: " + name)
 
 
-def mutate_all_pedal_ranges(preset_dict):
-    for dsp_name in ["dsp0", "dsp1"]:
-        for block_split_cab_name in preset_dict["data"]["tone"]["controller"][dsp_name]:
-            params = preset_dict["data"]["tone"]["controller"][dsp_name][block_split_cab_name]
+def mutate_all_pedal_ranges(preset):
+    for dsp in ["dsp0", "dsp1"]:
+        for block_split_cab_name in preset["data"]["tone"]["controller"][dsp]:
+            params = preset["data"]["tone"]["controller"][dsp][block_split_cab_name]
             if any(params[param]["@controller"] == 2 for param in params):
                 for param in params:
                     if params[param]["@controller"] == 2:
-                        mutate_one_set_of_pedal_ranges(preset_dict, dsp_name, block_split_cab_name, param)
+                        mutate_one_set_of_pedal_ranges(preset, dsp, block_split_cab_name, param)
                 break
 
 
-def mutate_one_set_of_pedal_ranges(preset_dict, dsp_name, block_or_split_name, param_name):
-    param = preset_dict["data"]["tone"]["controller"][dsp_name][block_or_split_name][param_name]
+def mutate_one_set_of_pedal_ranges(preset, dsp, block_or_split_name, param_name):
+    param = preset["data"]["tone"]["controller"][dsp][block_or_split_name][param_name]
     if not isinstance(param["@min"], bool):  # don't want to pedal bools
         # get original ranges from file
-        block_dict = file.reload_unpruned_block_dictionary(preset_dict, dsp_name, block_or_split_name)
+        block_dict = file.reload_unpruned_block_dictionary(preset, dsp, block_or_split_name)
         pmin = block_dict["Ranges"][param_name]["@min"]
         pmax = block_dict["Ranges"][param_name]["@max"]
         # print(pedalParam["@min"], pmin, pmax)
@@ -407,7 +354,7 @@ def mutate_one_set_of_pedal_ranges(preset_dict, dsp_name, block_or_split_name, p
 
 
 def snapshot_name(snapshot_num):
-    return "snapshot" + str(snapshot_num)
+    return f"snapshot{snapshot_num}"
 
 
 def mutate_dictionary(preset, snapshot_src_num, postfix_num):
@@ -422,15 +369,15 @@ def mutate_dictionary(preset, snapshot_src_num, postfix_num):
     swap_some_blocks_and_splits_from_file(preset, 0.1)
     toggle_some_block_states(preset, constants.MUTATION_RATE)
     toggle_series_or_parallel_dsps(preset, constants.TOGGLE_RATE)
-    set_led_colours(preset)
+    utils.set_led_colours(preset)
 
 
 def mutate_preset_from_source_snapshot(template_file, snapshot_src_num, output_file, postfix_num):
     with open(template_file, "r") as f:
-        preset_dict = json.load(f)
-        mutate_dictionary(preset_dict, snapshot_src_num, postfix_num)
+        preset = json.load(f)
+        mutate_dictionary(preset, snapshot_src_num, postfix_num)
         with open(output_file, "w") as f:
-            json.dump(preset_dict, f, indent=4)
+            json.dump(preset, f, indent=4)
 
 
 # def mutations(num):
