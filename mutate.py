@@ -22,7 +22,7 @@ def get_mutated_parameter_value(preset_dict, dsp_name, block_name, parameter, pm
     if isinstance(pmin, bool):
         return random.choice([True, False])
     elif (block_name.startswith("block") or block_name.startswith("cab")) and parameter == "Level":
-        return _extracted_from_get_mutated_parameter_value_8(pmax, pmin, 0.8)
+        return get_triangular_random(pmax, pmin, 0.8, 0.0)
     elif parameter == "Time":  # choose times at the short end
         # mode = ((pmax-pmin) * 0.1) + pmin
         # result = random.triangular(pmin, pmax, mode)
@@ -30,26 +30,27 @@ def get_mutated_parameter_value(preset_dict, dsp_name, block_name, parameter, pm
         return min(pmax, random.expovariate(closer_to_one_for_lower_num))
         # print("setting Time, max "+str(pmax),str(result))
     elif parameter == "Mix":  # choose mix around middle
-        return _extracted_from_get_mutated_parameter_value_8(pmax, pmin, 0.5)
+        return get_triangular_random(pmax, pmin, 0.5, 0.0)
     elif parameter == "Feedback":  # choose feedback around middle
-        mode = ((pmax - pmin) * 0.5) + pmin
-        return random.triangular(pmin, pmax, mode)
+        return get_triangular_random(pmax, pmin, 0.5, 0.0)
+        # mode = ((pmax - pmin) * 0.5) + pmin
+        # return random.triangular(pmin, pmax, mode)
     elif (
         defaults_block["@model"].startswith("HD2_Reverb")
         or defaults_block["@model"].startswith("VIC")
         or defaults_block["@model"].startswith("Victoria")
     ) and parameter == "Decay":
-        mode = ((pmax - pmin) * 0.05) + pmin
-        return random.triangular(pmin, pmax, mode)
+        return get_triangular_random(pmax, pmin, 0.05, 0.0)
+        # mode = ((pmax - pmin) * 0.05) + pmin
+        # return random.triangular(pmin, pmax, mode)
         # result = min(pmax, random.expovariate(0.5))
     else:
         return random.uniform(pmin, pmax)
 
 
-# TODO Rename this here and in `get_mutated_parameter_value`
-def _extracted_from_get_mutated_parameter_value_8(pmax, pmin, arg2):
-    lowest = ((pmax - pmin) * 0.2) + pmin
-    mode = (pmax - pmin) * arg2 + pmin
+def get_triangular_random(pmax, pmin, mode_fraction, lowest_fraction):
+    lowest = ((pmax - pmin) * lowest_fraction) + pmin
+    mode = (pmax - pmin) * mode_fraction + pmin
     return random.triangular(lowest, pmax, mode)
 
 
@@ -326,7 +327,7 @@ def swap_some_blocks_and_splits_from_file(preset_dict, change_fraction):
 
 
 def swap_block_from_file(preset_dict, dsp_name, block_name):
-    print("swapping block from file")
+    print("Swapping block from file")
     path = preset_dict["data"]["tone"][dsp_name][block_name]["@path"]
     pos = preset_dict["data"]["tone"][dsp_name][block_name]["@position"]
     new_block_dict = file.load_block_dictionary(choose.choose_random_block_file_excluding_cab_or_split())
@@ -387,12 +388,12 @@ def mutate_dictionary(preset_dict, snapshot_src_num, postfix_num):
     duplicate_snapshot_to_all(preset_dict, snapshot_src_name)
     choose.choose_some_new_params_for_snapshot_control(preset_dict)
     mutate_parameter_values_for_all_snapshots(preset_dict)
-    mutate_all_default_blocks(preset_dict, MUTATION_RATE)
+    mutate_all_default_blocks(preset_dict, constants.MUTATION_RATE)
     swap_some_control_destinations(preset_dict, constants.PEDAL_2, 10)
     mutate_all_pedal_ranges(preset_dict)
-    rearrange_block_positions(preset_dict, fraction_move)
+    rearrange_block_positions(preset_dict, constants.FRACTION_MOVE)
     swap_some_blocks_and_splits_from_file(preset_dict, 0.1)
-    toggle_some_block_states(preset_dict, MUTATION_RATE)
+    toggle_some_block_states(preset_dict, constants.MUTATION_RATE)
     toggle_series_or_parallel_dsps(preset_dict, 0.2)
     set_led_colours(preset_dict)
 
@@ -403,10 +404,6 @@ def mutate_preset_from_source_snapshot(template_file, snapshot_src_num, output_f
         mutate_dictionary(preset_dict, snapshot_src_num, postfix_num)
         with open(output_file, "w") as f:
             json.dump(preset_dict, f, indent=4)
-
-
-MUTATION_RATE = 0.1
-fraction_move = 0.1
 
 
 # def mutations(num):

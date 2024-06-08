@@ -37,11 +37,8 @@ def addCabs(preset):
             utils.add_block_to_preset(preset, dsp, cab_slot, cab_dict)
 
 
-num_amps = 0
+def load_random_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amps):
 
-
-def load_random_block_dictionary_excluding_cabs_and_splits_checking_amps():
-    global num_amps
     while True:
         block_dict = file.load_block_dictionary(choose.choose_random_block_file_excluding_cab_or_split())
         if num_amps == 0 or not block_dict["Defaults"]["@model"].startswith("HD2_Amp"):
@@ -51,12 +48,11 @@ def load_random_block_dictionary_excluding_cabs_and_splits_checking_amps():
         # else:
         #     num_amps += 1
     print("num_amps = " + str(num_amps))
-    return block_dict
+    return block_dict, num_amps
 
 
 # insert param keys into each snapshot in preset
 def populate_preset_with_random_blocks(preset):
-    global num_amps
     for dsp in ["dsp0", "dsp1"]:
         print("\nPopulating " + dsp + "...")
         num_amps = 0
@@ -66,7 +62,7 @@ def populate_preset_with_random_blocks(preset):
             if not slot.startswith(("block", "split")):
                 continue
             if slot.startswith("block"):
-                new_dict = load_random_block_dictionary_excluding_cabs_and_splits_checking_amps()
+                new_dict, num_amps = load_random_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amps)
             elif slot.startswith("split"):
                 new_dict = file.load_block_dictionary(choose.choose_block_file_in_category("Split"))
 
@@ -95,7 +91,7 @@ def set_preset_name(preset_dict, preset_name):
 
 
 def swap_some_snapshot_controls_to_pedal(preset_dict, pedal_control_num):
-    print("Swapping some snapshot controls to pedal...")
+    print("\nSwapping some snapshot controls to pedal...")
     for _ in range(constants.NUM_PEDAL_PARAMS):
         choose.choose_random_controlled_parameter_and_ranges(preset_dict, pedal_control_num)
 
@@ -108,13 +104,13 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
         set_preset_name(preset_dict, preset_name)
 
         populate_preset_with_random_blocks(preset_dict)
-        print("finished populating")
+        # print("finished populating")
         addCabs(preset_dict)
 
         print()
-        print("about to mutate")
+        # print("about to mutate")
         mutate.mutate_parameter_values_for_all_snapshots(preset_dict)
-        print("finished mutating")
+        # print("finished mutating")
         print()
 
         mutate.rearrange_block_positions(preset_dict, 1.0)

@@ -18,7 +18,7 @@ def add_block_to_controller(preset, dsp, slot, block_dict):
 
 
 def add_block_to_snapshots(preset_dict, dsp_name, destination_slot, block_dict):
-    print("Adding block to snapshots")
+    # print("Adding block to snapshots")
     for snapshot_num in range(constants.NUM_SNAPSHOTS):
         snapshot_name = "snapshot" + str(snapshot_num)
         preset_dict["data"]["tone"][snapshot_name]["controllers"][dsp_name][destination_slot] = deepcopy(
