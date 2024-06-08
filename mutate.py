@@ -95,7 +95,7 @@ def mix_values(fraction_new, pmin, pmax, result, prev_result):
 
 def mutate_parameter_values_for_all_snapshots(preset):
     for i in range(constants.NUM_SNAPSHOTS):
-        snapshot_name = snapshot_name(i)
+        snapshot_name = snapshot(i)
         for dsp in ["dsp0", "dsp1"]:
             for slot in preset["data"]["tone"][snapshot_name]["controllers"][dsp]:
                 mutate_parameter_values_for_one_block(preset, snapshot_name, dsp, slot, 1.0)
@@ -353,13 +353,13 @@ def mutate_one_set_of_pedal_ranges(preset, dsp, block_or_split_name, param_name)
         param["@max"] = new_max
 
 
-def snapshot_name(snapshot_num):
+def snapshot(snapshot_num):
     return f"snapshot{snapshot_num}"
 
 
 def mutate_dictionary(preset, snapshot_src_num, postfix_num):
     increment_preset_name(preset, postfix_num)
-    duplicate_snapshot_to_all(preset, snapshot_name(snapshot_src_num))
+    duplicate_snapshot_to_all(preset, snapshot(snapshot_src_num))
     choose.random_new_params_for_snapshot_control(preset)
     mutate_parameter_values_for_all_snapshots(preset)
     mutate_all_default_blocks(preset, constants.MUTATION_RATE)
