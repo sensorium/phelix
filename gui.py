@@ -6,8 +6,8 @@ import tkinter as tk
 
 from tkinter import Tk, Text, ttk, filedialog, END, BOTH, TRUE
 
-from main import generate_multiple_presets_from_template
-from mutate import generate_multiple_mutations_from_template
+# from main import generate_multiple_presets_from_template
+# from mutate import generate_multiple_mutations_from_template
 
 
 # config dictionary
@@ -42,15 +42,13 @@ def load_config_from_file():
     config_file = filedialog.askopenfilename(
         initialdir="./", title="Select Config File", filetypes=(("json files", "*.json"), ("All files", "*.*"))
     )
-    config = load_config(config_file)
-    return config
+    return load_config(config_file)
 
 
 # load config from file
 def load_config(config_file):
     with open(config_file, "r") as f:
-        config = json.load(f)
-    return config
+        return json.load(f)
 
 
 # save config to file
@@ -169,103 +167,69 @@ def browse_save_hlx_file(hlx_entry, field_title):
     hlx_entry.insert(0, output_file)
 
 
-# def browse_template_file():
-#     template_entry.delete(0, "end")
-#     template_file = filedialog.askopenfilename(
-#         initialdir="./",
-#         title="Select Template File",
-#         filetypes=(("HLX files", "*.hlx"), ("All files", "*.*")),
-#     )
-#     template_entry.insert(0, template_file)
-
-
-# def browse_output_file():
-#     output_entry.delete(0, "end")
-#     output_file = filedialog.asksaveasfilename(
-#         initialdir="./",
-#         title="Select Output File",
-#         filetypes=(("HLX files", "*.hlx"), ("All files", "*.*")),
-#     )
-#     output_entry.insert(0, output_file)
-
-
-# Function to show a specific frame
-current_frame = None
-
-
-# Function to show a specific frame
-def show_frame(frame):
-    global current_frame
-    if current_frame is not None:
-        current_frame.pack_forget()
-    current_frame = frame
-    frame.pack(fill="both", expand=True)
-    # frame.lift()  # Bring the focused tab to the front
-
-
 # Function to clear the output area
 def clear_output_area():
     output_area.delete("1.0", "end")
 
 
-m_template_entry = None
-m_output_entry = None
-m_name_entry = None
-m_num_presets_entry = None
-m_output_area = None
+# m_template_entry = None
+# m_output_entry = None
+# m_name_entry = None
+# m_num_presets_entry = None
+# m_output_area = None
 
 
-def m_generate_presets(output_area):
+# def m_generate_presets(output_area):
 
-    global m_template_entry
-    global m_output_entry
-    global m_name_entry
-    global m_num_presets_entry
+#     global m_template_entry
+#     global m_output_entry
+#     global m_name_entry
+#     global m_num_presets_entry
 
-    m_template_file = m_template_entry.get()
-    m_output_file = m_output_entry.get()
-    m_preset_name = m_name_entry.get()
-    m_num_presets = int(m_num_presets_entry.get())
+#     m_template_file = m_template_entry.get()
+#     m_output_file = m_output_entry.get()
+#     m_preset_name = m_name_entry.get()
+#     m_num_presets = int(m_num_presets_entry.get())
 
-    # Create the args dictionary
-    m_args = {
-        "template_file": m_template_file,
-        "output_file": m_output_file,
-        "preset_name": m_preset_name,
-        "num_presets": m_num_presets,
-    }
+#     # Create the args dictionary
+#     m_args = {
+#         "template_file": m_template_file,
+#         "output_file": m_output_file,
+#         "preset_name": m_preset_name,
+#         "num_presets": m_num_presets,
+#     }
 
-    # Convert args dictionary to JSON string
-    m_args_json = json.dumps(m_args)
+#     # Convert args dictionary to JSON string
+#     m_args_json = json.dumps(m_args)
 
-    # Specify the command to run the script
-    command = ["python3", "mutate.py", m_args_json]
+#     # Specify the command to run the script
+#     command = ["python3", "mutate.py", m_args_json]
 
-    # Create a subprocess using Popen
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+#     # Create a subprocess using Popen
+#     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-    # Read the output from the subprocess
-    m_output, _ = process.communicate()
+#     # Read the output from the subprocess
+#     m_output, _ = process.communicate()
 
-    # Decode the output to a string
-    m_output = m_output.decode("utf-8")
+#     # Decode the output to a string
+#     m_output = m_output.decode("utf-8")
 
-    # Output to output_area
-    output_area.insert(END, "Generating presets...\n")
-    output_area.insert(END, f"Template file: {m_template_file}\n")
-    output_area.insert(END, f"Output file: {m_output_file}\n")
-    output_area.insert(END, f"Preset name: {m_preset_name}\n")
-    output_area.insert(END, f"Number of presets: {m_num_presets}\n")
+#     # Output to output_area
+#     output_area.insert(END, "Generating presets...\n")
+#     output_area.insert(END, f"Template file: {m_template_file}\n")
+#     output_area.insert(END, f"Output file: {m_output_file}\n")
+#     output_area.insert(END, f"Preset name: {m_preset_name}\n")
+#     output_area.insert(END, f"Number of presets: {m_num_presets}\n")
 
-    # Update the output_area with the captured output
-    # output_area.delete("1.0", "end")
-    output_area.insert("end", m_output)
-    # Update progress bar and output area
-    # progress_bar["value"] = 100
-    output_area.insert(tk.END, "\nPreset generation complete!\n")
-    output_area.see(tk.END)
+#     # Update the output_area with the captured output
+#     # output_area.delete("1.0", "end")
+#     output_area.insert("end", m_output)
+#     # Update progress bar and output area
+#     # progress_bar["value"] = 100
+#     output_area.insert(tk.END, "\nPreset generation complete!\n")
+#     output_area.see(tk.END)
 
-    print("Preset mutation complete!")
+#     print("Preset mutation complete!")
 
 
 window = tk.Tk()

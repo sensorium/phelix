@@ -1,6 +1,7 @@
 from copy import deepcopy
 import json
 import random
+import sys
 
 import constants
 import file
@@ -376,6 +377,7 @@ def mutate_preset_from_source_snapshot(template_file, snapshot_src_num, output_f
     with open(template_file, "r") as f:
         preset = json.load(f)
         mutate_dictionary(preset, snapshot_src_num, postfix_num)
+        print("mutate")
         with open(output_file, "w") as f:
             json.dump(preset, f, indent=4)
 
@@ -400,3 +402,15 @@ def generate_multiple_mutations_from_template(args):
             args.get("output_file")[:-4] + str(i + 1) + ".hlx",
             args.get("postfix_num"),
         )
+
+
+def mutate_main():
+    print("hey!")
+    # Parse the JSON string argument
+    args = json.loads(sys.argv[1])
+
+    generate_multiple_mutations_from_template(args)
+
+
+if __name__ == "__mutate_main__":
+    mutate_main()
