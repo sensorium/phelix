@@ -30,20 +30,20 @@ def call_generate_presets():
     messagebox.showinfo("Generate Presets", output.decode("utf-8"))
 
 
-def call_generate_mutations():
-    template_file = template_entry.get()
-    output_file = output_entry.get()
-    mutation_type = mutation_type_entry.get()
-    num_mutations = int(num_mutations_entry.get())
+mutate_args = {
+    "template_file": "",
+    "snapshot_src_num": "",
+    "output_file": "",
+    "num_presets": 0,
+    "postfix_num": 0,
+}
 
-    command = [
-        "python3",
-        "/Users/timbarrass/Documents/phelix/mutate.py",
-        template_file,
-        output_file,
-        mutation_type,
-        str(num_mutations),
-    ]
+
+def call_generate_mutations():
+    # Convert args dictionary to JSON string
+    mutate_args_json = json.dumps(mutate_args)
+    # Specify the command to run the script
+    command = ["python3", "generate_multiple_mutations_from_template", mutate_args_json]
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     output, _ = process.communicate()
 
