@@ -166,6 +166,10 @@ def generate_multiple_presets_from_template(args):
 #         )
 
 
+def test(s1, s2):
+    print(s1, s2)
+
+
 def main():
     # Parse the JSON string argument
     args = json.loads(sys.argv[1])

@@ -404,6 +404,10 @@ def generate_multiple_mutations_from_template(args):
         )
 
 
+def mtest(s1, s2):
+    print(s1, s2)
+
+
 def mutate_main():
     print("hey!")
     # Parse the JSON string argument
