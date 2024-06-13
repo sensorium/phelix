@@ -1,6 +1,7 @@
 import os
 import json
 import constants
+import utils
 
 
 # load extracted block parameters from a json file, return a dictionary
@@ -11,8 +12,8 @@ def load_block_dictionary(block_filepath):
     return block_dict
 
 
-def reload_unpruned_block_dictionary(preset, dsp, any_slot_name):
-    block_filename = preset["data"]["tone"][dsp][any_slot_name]["@model"] + ".json"
+def reload_raw_block_dictionary(preset, dsp, slot):
+    block_filename = utils.get_model_name(preset, dsp, slot) + ".json"
     block_folder = None
     for root, _, files in os.walk(constants.BLOCKS_PATH):
         if block_filename in files:

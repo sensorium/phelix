@@ -12,7 +12,7 @@ import mutate
 import choose
 
 
-def addCabs(preset):
+def add_cabs(preset):
     for dsp in ["dsp0", "dsp1"]:
         # keep track of how many cabs used
         cabs_used = 0
@@ -34,7 +34,7 @@ def addCabs(preset):
                 del cab_dict["Defaults"]["@path"]
             if "@position" in cab_dict["Defaults"]:
                 del cab_dict["Defaults"]["@position"]
-            utils.add_block_to_preset(preset, dsp, cab_slot, cab_dict)
+            utils.add_raw_block_to_preset(preset, dsp, cab_slot, cab_dict)
 
 
 def load_random_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amps):
@@ -47,7 +47,7 @@ def load_random_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amp
             break
         # else:
         #     num_amps += 1
-    print("num_amps = " + str(num_amps))
+    # print("num_amps = " + str(num_amps))
     return block_dict, num_amps
 
 
@@ -56,7 +56,7 @@ def populate_preset_with_random_blocks(preset):
     for dsp in ["dsp0", "dsp1"]:
         print("\nPopulating " + dsp + "...")
         num_amps = 0
-        add_controller_and_snapshot_keys_if_missing(preset, dsp)
+        utils.add_controller_and_snapshot_keys_if_missing(preset, dsp)
 
         for slot in preset["data"]["tone"][dsp]:
             if not slot.startswith(("block", "split")):
@@ -66,23 +66,13 @@ def populate_preset_with_random_blocks(preset):
             elif slot.startswith("split"):
                 new_dict = file.load_block_dictionary(choose.random_block_file_in_category("Split"))
 
-            utils.add_block_to_preset(preset, dsp, slot, new_dict)
+            utils.add_raw_block_to_preset(preset, dsp, slot, new_dict)
 
-        join_position = random.randint(constants.LAST_SLOT_POSITION - 3, constants.LAST_SLOT_POSITION)
+        join_position = random.randint(constants.NUM_POSITIONS_PER_PATH - 3, constants.NUM_POSITIONS_PER_PATH)
         split_position = random.randint(0, join_position - 3)
 
         preset["data"]["tone"][dsp]["join"]["@position"] = join_position
         preset["data"]["tone"][dsp]["split"]["@position"] = split_position
-
-
-def add_controller_and_snapshot_keys_if_missing(preset, dsp):
-    if "controller" not in preset["data"]["tone"]:
-        preset["data"]["tone"]["controller"] = {}
-    if dsp not in preset["data"]["tone"]["controller"]:
-        preset["data"]["tone"]["controller"][dsp] = {}
-        for snapshot_num in range(constants.NUM_SNAPSHOTS):
-            snapshot_name = f"snapshot{snapshot_num}"
-            preset["data"]["tone"][snapshot_name]["controllers"][dsp] = {}
 
 
 def set_preset_name(preset, preset_name):
@@ -105,15 +95,15 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
 
         populate_preset_with_random_blocks(preset)
         # print("finished populating")
-        addCabs(preset)
+        add_cabs(preset)
 
         print()
         # print("about to mutate")
-        mutate.mutate_parameter_values_for_all_snapshots(preset)
+        mutate.mutate_parameter_values_for_all_snapshots(preset, 1.0)
         # print("finished mutating")
         print()
 
-        mutate.rearrange_block_positions(preset, 1.0)
+        mutate.rearrange_blocks(preset, 1.0)
 
         choose.random_series_or_parallel_dsp_configuration(preset)
 
@@ -164,10 +154,6 @@ def generate_multiple_presets_from_template(args):
 #             output_file[:-4] + str(i + 1) + ".hlx",
 #             preset_name_i,
 #         )
-
-
-def test(s1, s2):
-    print(s1, s2)
 
 
 def main():
