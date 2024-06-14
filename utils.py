@@ -80,7 +80,7 @@ def list_pedal_controls(preset, controller_num):
     for dsp in ["dsp0", "dsp1"]:
         for slot in get_controller(preset, dsp):
             for parameter in get_controller_slot(preset, dsp, slot):
-                if get_controller_parameter(preset, dsp, slot, parameter)["@controller"] == controller_num:
+                if get_controller_slot_parameter(preset, dsp, slot, parameter)["@controller"] == controller_num:
                     params_with_control_set_to_pedal.append([dsp, slot, parameter])
     return params_with_control_set_to_pedal
 
@@ -114,15 +114,16 @@ def remove_parameter_from_all_snapshots(preset, dsp, slot, parameter):
         # print("remove_parameter_from_all_snapshots " + parameter + " in " + model_name + ", " + dsp + " " + slot)
 
 
-def add_parameter_to_controller(preset, dsp, slot, block_dict, parameter):
-    controller_parameter = get_controller_parameter(preset, dsp, slot, parameter)
-    controller_parameter = deepcopy(block_dict["Ranges"][parameter])
-    controller_parameter["@controller"] = 19
+def add_parameter_to_controller(preset, dsp, slot, parameter, raw_block_dict):
+    get_controller_slot(preset, dsp, slot)[parameter] = deepcopy(raw_block_dict["Ranges"][parameter])
+    # controller_parameter = get_controller_parameter(preset, dsp, slot, parameter)
+    # controller_parameter = deepcopy(raw_block_dict["Ranges"][parameter])
+    get_controller_slot_parameter(preset, dsp, slot, parameter)["@controller"] = 19
     model_name = get_model_name(preset, dsp, slot)
     print("add_parameter_to_controller " + parameter + " in " + model_name + ", " + dsp + " " + slot)
 
 
-def get_controller_parameter(preset, dsp, slot, parameter):
+def get_controller_slot_parameter(preset, dsp, slot, parameter):
     return preset["data"]["tone"]["controller"][dsp][slot][parameter]
 
 
@@ -138,6 +139,7 @@ def remove_parameter_from_controller(preset, dsp, slot, param):
 
 
 def get_model_name(preset, dsp, slot):
+    # print("get_model_name " + dsp + " " + slot)
     return preset["data"]["tone"][dsp][slot]["@model"]
 
 

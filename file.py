@@ -13,7 +13,8 @@ def load_block_dictionary(block_filepath):
 
 
 def reload_raw_block_dictionary(preset, dsp, slot):
-    block_filename = utils.get_model_name(preset, dsp, slot) + ".json"
+    # save_debug_hlx(preset)
+    block_filename = f"{utils.get_model_name(preset, dsp, slot)}.json"
     block_folder = None
     for root, _, files in os.walk(constants.BLOCKS_PATH):
         if block_filename in files:

@@ -134,9 +134,13 @@ def random_controller_to_snapshot(preset, param_list, control_num):
     random_index = random.randint(0, len(param_list) - 1)
     dsp, slot, parameter = param_list[random_index]
     # set control to snapshot
-    utils.get_controller_parameter(preset, dsp, slot, parameter)["@controller"] = constants.SNAPSHOT_CONTROL
-    model_name = preset["data"]["tone"][dsp][slot]["@model"]
-    print("set control " + control_num + " for " + dsp, slot, model_name, parameter)
+    utils.get_controller_slot_parameter(preset, dsp, slot, parameter)["@controller"] = constants.SNAPSHOT_CONTROL
+    print(
+        f"set control {str(control_num)} to snapshot {str(control_num)} for {dsp}",
+        slot,
+        utils.get_model_name(preset, dsp, slot),
+        parameter,
+    )
 
 
 def remove_one_random_controller_parameter(preset):
@@ -154,8 +158,9 @@ def remove_one_random_controller_parameter(preset):
 
 def add_random_parameter_to_controller(preset):
     dsp, slot = random_block_split_or_cab_in_dsps(preset)
-    model_name = utils.get_default_slot(preset, dsp, slot)["@model"]
-    print("add_random_parameter_to_controller from " + dsp, slot, model_name)
+    print("add_random_parameter_to_controller from", dsp, slot)
+    model_name = utils.get_model_name(preset, dsp, slot)
+    # print("add_random_parameter_to_controller from " + dsp, slot, model_name)
     raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
     params_not_in_controller = [
         param for param in raw_block_dict["Ranges"] if param not in utils.get_controller_slot(preset, dsp, slot)

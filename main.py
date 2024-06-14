@@ -19,7 +19,7 @@ def add_cabs(preset):
 
         amp_blocks_list = []
         for amp_slot in preset["data"]["tone"][dsp]:
-            if preset["data"]["tone"][dsp][amp_slot]["@model"].startswith("HD2_Amp"):
+            if utils.get_model_name(preset, dsp, amp_slot).startswith("HD2_Amp"):
                 amp_blocks_list.append(amp_slot)
 
         for amp in amp_blocks_list:
@@ -28,13 +28,13 @@ def add_cabs(preset):
             cabs_used += 1
             preset["data"]["tone"][dsp][amp]["@cab"] = cab_slot
             # load a random cab
-            cab_dict = file.load_block_dictionary(choose.random_block_file_in_category("Cab"))
+            raw_cab_dict = file.load_block_dictionary(choose.random_block_file_in_category("Cab"))
             # delete cab path and position, if they exist
-            if "@path" in cab_dict["Defaults"]:
-                del cab_dict["Defaults"]["@path"]
-            if "@position" in cab_dict["Defaults"]:
-                del cab_dict["Defaults"]["@position"]
-            utils.add_raw_block_to_preset(preset, dsp, cab_slot, cab_dict)
+            # if "@path" in cab_dict["Defaults"]:
+            #     del cab_dict["Defaults"]["@path"]
+            # if "@position" in cab_dict["Defaults"]:
+            #     del cab_dict["Defaults"]["@position"]
+            utils.add_raw_block_to_preset(preset, dsp, cab_slot, raw_cab_dict)
 
 
 def load_random_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amps):
@@ -68,7 +68,7 @@ def populate_preset_with_random_blocks(preset):
 
             utils.add_raw_block_to_preset(preset, dsp, slot, new_dict)
 
-        join_position = random.randint(constants.NUM_POSITIONS_PER_PATH - 3, constants.NUM_POSITIONS_PER_PATH)
+        join_position = random.randint(constants.NUM_POSITIONS_PER_PATH - 4, constants.NUM_POSITIONS_PER_PATH)
         split_position = random.randint(0, join_position - 3)
 
         preset["data"]["tone"][dsp]["join"]["@position"] = join_position
