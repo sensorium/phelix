@@ -103,7 +103,7 @@ def add_parameter_to_all_snapshots(preset, dsp, slot, parameter, raw_block_dict)
         if snapshot_name in preset["data"]["tone"]:
             snapshot_dict = get_snapshot_slot(preset, snapshot_num, dsp, slot)
             snapshot_dict[parameter] = deepcopy(raw_block_dict["SnapshotParams"][parameter])
-            print("add_parameter_to_all_snapshots " + parameter + " in " + model_name + ", " + dsp + " " + slot)
+            # print("add_parameter_to_all_snapshots " + parameter + " in " + model_name + ", " + dsp + " " + slot)
 
 
 def remove_parameter_from_all_snapshots(preset, dsp, slot, parameter):
