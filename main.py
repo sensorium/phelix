@@ -29,25 +29,16 @@ def add_cabs(preset):
             preset["data"]["tone"][dsp][amp]["@cab"] = cab_slot
             # load a random cab
             raw_cab_dict = file.load_block_dictionary(choose.random_block_file_in_category("Cab"))
-            # delete cab path and position, if they exist
-            # if "@path" in cab_dict["Defaults"]:
-            #     del cab_dict["Defaults"]["@path"]
-            # if "@position" in cab_dict["Defaults"]:
-            #     del cab_dict["Defaults"]["@position"]
             utils.add_raw_block_to_preset(preset, dsp, cab_slot, raw_cab_dict)
 
 
 def load_random_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amps):
-
     while True:
         block_dict = file.load_block_dictionary(choose.random_block_file_excluding_cab_or_split())
         if num_amps == 0 or not block_dict["Defaults"]["@model"].startswith("HD2_Amp"):
             if block_dict["Defaults"]["@model"].startswith("HD2_Amp"):
                 num_amps += 1
             break
-        # else:
-        #     num_amps += 1
-    # print("num_amps = " + str(num_amps))
     return block_dict, num_amps
 
 
@@ -120,18 +111,6 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
             json.dump(preset, json_file, indent=4)
 
 
-# def generate_multiple_presets_from_template(args):
-#     now = datetime.now()
-#     preset_name_base = now.strftime("%y%m%d-%H%M")
-#     for i in range(args.num_presets):
-#         preset_name = preset_name_base + chr(ord("a") + (i % 26))
-#         generate_preset_from_template_file(
-#             args.template_file,
-#             args.output_file[:-4] + str(i + 1) + ".hlx",
-#             preset_name,
-#         )
-
-
 def generate_multiple_presets_from_template(args):
     now = datetime.now()
     preset_name_base = now.strftime("%y%m%d-%H%M")
@@ -144,18 +123,6 @@ def generate_multiple_presets_from_template(args):
         )
 
 
-# def generate_multiple_presets_from_template_gui(template_file, output_file, preset_name, num_presets):
-#     now = datetime.now()
-#     preset_name_base = now.strftime("%y%m%d-%H%M")
-#     for i in range(num_presets):
-#         preset_name_i = preset_name_base + chr(ord("a") + (i % 26))
-#         generate_preset_from_template_file(
-#             template_file,
-#             output_file[:-4] + str(i + 1) + ".hlx",
-#             preset_name_i,
-#         )
-
-
 def main():
     # Parse the JSON string argument
     args = json.loads(sys.argv[1])
@@ -165,6 +132,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# generate_multiple_presets_from_template(args)
-# mutate.mutations(5)

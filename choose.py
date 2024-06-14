@@ -1,6 +1,5 @@
 import os
 import random
-from tokenize import Pointfloat
 import constants
 import utils
 import file
@@ -122,7 +121,7 @@ def random_remove_controls(preset, control_num, num_changes):
 
 def random_new_params_for_snapshot_control(preset):
     num_controllers_to_change = random.randint(0, 20)
-    for i in range(num_controllers_to_change):
+    for _ in range(num_controllers_to_change):
         remove_one_random_controller_parameter(preset)
 
     while utils.count_parameters_in_controller(preset) < 64:  # to avoid setting any twice
@@ -159,13 +158,12 @@ def remove_one_random_controller_parameter(preset):
 def add_random_parameter_to_controller(preset):
     dsp, slot = random_block_split_or_cab_in_dsps(preset)
     print("add_random_parameter_to_controller from", dsp, slot)
-    model_name = utils.get_model_name(preset, dsp, slot)
+    # model_name = utils.get_model_name(preset, dsp, slot)
     # print("add_random_parameter_to_controller from " + dsp, slot, model_name)
     raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
-    params_not_in_controller = [
+    if params_not_in_controller := [
         param for param in raw_block_dict["Ranges"] if param not in utils.get_controller_slot(preset, dsp, slot)
-    ]
-    if params_not_in_controller:
+    ]:
         random_param = random.choice(params_not_in_controller)
         print("params_not_in_controller " + str(params_not_in_controller))
         utils.add_parameter_to_controller(preset, dsp, slot, random_param, raw_block_dict)

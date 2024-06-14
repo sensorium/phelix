@@ -165,8 +165,7 @@ def find_unused_block_slots(preset):
             slot = f"block{block_num}"
             if slot not in preset["data"]["tone"][dsp]:
                 dsp_slot.append([dsp, slot])
-    dsp_slot = list(reversed(dsp_slot))
-    return dsp_slot
+    return list(reversed(dsp_slot))
 
 
 def find_used_dsp_path_pos(preset):
@@ -181,7 +180,6 @@ def find_used_dsp_path_pos(preset):
 
 
 def find_unused_dsp_path_positions(preset):
-    """Finds unused path and position combinations within each DSP."""
     used_dsp_path_positions = find_used_dsp_path_pos(preset)
     unused_dsp_path_positions = {}
     for dsp in ["dsp0", "dsp1"]:
@@ -204,7 +202,6 @@ def find_used_dsp_cab_slots(preset):
 
 
 def find_unused_dsp_cab_slots(preset):
-    """Finds unused cab slots within each DSP."""
     used_dsp_cab_slots = find_used_dsp_cab_slots(preset)
     unused_dsp_cab_slots = {}
     for dsp in ["dsp0", "dsp1"]:
@@ -230,12 +227,9 @@ def rearrange_blocks(preset, fraction_move):
         if random.uniform(0, 1) < fraction_move:
             model_name = utils.get_model_name(preset, dsp, slot)
             # update slot arrays
-            # random.shuffle(unused_slots)
-            # print(unused_slots)
             to_dsp, to_slot = unused_block_slots.pop()
             unused_block_slots.append([dsp, slot])
             # get new unused path and position on to_dsp
-
             from_path = utils.get_default_slot(preset, dsp, slot)["@path"]
             from_pos = utils.get_default_slot(preset, dsp, slot)["@position"]
             used_dsp_path_positions[dsp].remove((from_path, from_pos))
@@ -274,116 +268,13 @@ def rearrange_cab(preset, used_dsp_cab_slots, unused_dsp_cab_slots, dsp, amp_dsp
         print("  moved cab from", dsp, old_cab_slot, "to", amp_dsp, new_cab_slot)
 
 
-# when the amp gets moved, also move its cab, or make a list of cabs to move on that dsp
-
-# def rearrange_block_positions(preset, fraction_move):
-#     #cabs_from_dsp_amp_slot_to_dsp = []
-
-#     used_blocks = find_used_slots(preset, "block")
-#     used_cabs = find_used_slots(preset, "cab")
-
-#     vacant_dsp_path_pos = find_vacant_block_slots(used_blocks)
-
-#     # print(vacant_dsp_path_pos)
-
-#     choose_blocks_to_move()
-
-#                     random.shuffle(vacant_dsp_path_pos)
-#                     new_dsp_path_pos = vacant_dsp_path_pos.pop()
-#                     vacant_dsp_path_pos.append([dsp, from_path, from_pos])
-
-#                     from_dsp_slot_to_dsp_path_pos.append([dsp, slot, new_dsp_path_pos])
-#                     # check if it's an Amp, if so, move its Cab with it... must call before the amp block is moved
-#                     if utils.get_default_slot(preset, dsp, slot)["@model"].startswith("HD2_Amp"):
-
-#                         to_dsp = new_dsp_path_pos[0]
-#                         if dsp != to_dsp:
-#                             cabs_from_dsp_amp_slot_to_dsp.append([dsp, slot, to_dsp])
-
-#     move_cabs(preset, cabs_from_dsp_amp_slot_to_dsp)
-#     move_blocks(preset, from_dsp_slot_to_dsp_path_pos)
-
-
-# found_dsp_path_pos = []
-# for dsp in ["dsp0", "dsp1"]:
-#     for slot in preset["data"]["tone"][dsp]:
-#         if slot_type == "block" and slot.startswith("block"):
-#             block_dict = utils.get_default_slot(preset, dsp, slot)
-#             found_dsp_path_pos.append([dsp, block_dict["@path"], block_dict["@position"]])
-# return found_dsp_path_pos
-
-
-# def find_vacant_block_slots(found_dsp_path_pos):
-#     vacant_dsp_path_pos = []
-#     for dsp in ["dsp0", "dsp1"]:
-#         for path in (0, 1):
-#             for slot in range(constants.NUM_POSITIONS_PER_PATH):  # positions per path
-#                 if [dsp, path, slot] not in found_dsp_path_pos:
-#                     vacant_dsp_path_pos.append([dsp, path, slot])
-#     return vacant_dsp_path_pos
-
-# print(from_dsp_slot_to_dsp_path_pos)
-
-
-# cabs move with their amp
-# we have an array that contains amp blocks that need to be moved
-# we need to keep track of where the amp has moved to so the cab can be moved there
-# and so the amp can be found to link it to the new cab position
-
-
-# must call before the amp block is moved
-# def move_cabs(preset, cabs_from_dsp_amp_slot_to_dsp):
-#     for item in cabs_from_dsp_amp_slot_to_dsp:
-#         from_dsp = item[0]
-#         amp_slot = item[1]
-#         to_dsp = item[2]
-#         from_slot = utils.get_default_slot(preset, from_dsp, amp_slot)["@cab"]
-#         to_slot = find_unused_slot_in_dsp(preset, to_dsp, "cab")
-#         utils.move_slot(preset, from_dsp, from_slot, to_dsp, to_slot, "cab")
-#         # register cab with amp
-#         utils.get_default_slot(preset, from_dsp, amp_slot)["@cab"] = to_slot
-#         print("move_cabs from " + from_dsp + " " + from_slot + " " + to_dsp + " " + to_slot)
-#         print("adding cab to " + to_dsp + " " + amp_slot + " " + utils.get_model_name(preset, to_dsp, amp_slot))
-
-
-# def move_blocks(preset, from_dsp_slot_to_dsp_path_pos):
-#     for item in from_dsp_slot_to_dsp_path_pos:
-#         from_dsp = item[0]
-#         from_slot = item[1]
-#         from_path = utils.get_default_slot(preset, from_dsp, from_slot)["@path"]
-#         from_position = utils.get_default_slot(preset, from_dsp, from_slot)["@position"]
-#         to_dsp = item[2][0]
-#         to_path = item[2][1]
-#         to_pos = item[2][2]
-#         to_slot = find_unused_slot_in_dsp(preset, to_dsp, "block")
-
-#         utils.move_slot(preset, from_dsp, from_slot, to_dsp, to_slot, "block")
-#         utils.get_default_slot(preset, to_dsp, to_slot)["@path"] = to_path
-#         utils.get_default_slot(preset, to_dsp, to_slot)["@position"] = to_pos
-
-#         print(
-#             "Moved",
-#             from_dsp,
-#             from_slot,
-#             from_path,
-#             from_position,
-#             "to",
-#             to_dsp,
-#             to_slot,
-#             to_path,
-#             to_pos,
-#         )
-
-
 def swap_some_blocks_and_splits_from_file(preset, change_fraction):
     for dsp in ["dsp0", "dsp1"]:
         for slot in preset["data"]["tone"][dsp]:
-            if slot.startswith("block"):
-                if random.uniform(0, 1) < change_fraction:  # change state
-                    swap_block_from_file(preset, dsp, slot)
-            if slot.startswith("split"):
-                if random.uniform(0, 1) < change_fraction:  # change state
-                    swap_split_from_file(preset, dsp, slot)
+            if slot.startswith("block") and random.uniform(0, 1) < change_fraction:
+                swap_block_from_file(preset, dsp, slot)
+            if slot.startswith("split") and random.uniform(0, 1) < change_fraction:
+                swap_split_from_file(preset, dsp, slot)
 
 
 def swap_block_from_file(preset, dsp, slot):
@@ -467,16 +358,6 @@ def mutate_preset_from_source_snapshot(template_file, snapshot_src_num, output_f
             json.dump(preset, f, indent=4)
 
 
-# def mutations(num):
-#     for i in range(num):
-#         mutate_preset_from_source_snapshot(
-#             "presets/test/aGenerated1.hlx",
-#             6,
-#             "presets/test/aGenerated1+" + str(i + 1) + ".hlx",
-#             (i + 1),
-#         )
-
-
 def generate_multiple_mutations_from_template(args):
     # preset_name_base = args.get("preset_name_base")
     print("hey!")
@@ -497,15 +378,3 @@ if __name__ == "__main__":
 
     args_dict = json.loads(args.args_json)
     generate_multiple_mutations_from_template(args_dict)
-
-
-# def mutate_main():
-#     print("hey!")
-#     # Parse the JSON string argument
-#     args = json.loads(sys.argv[1])
-
-#     generate_multiple_mutations_from_template(args)
-
-
-# if __name__ == "__mutate_main__":
-#     mutate_main()
