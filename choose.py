@@ -89,7 +89,12 @@ def random_controlled_parameter_and_ranges(preset, control_num):
             controlled_param["@max"] = new_max
             controlled_param["@min"] = new_min
             model_name = preset["data"]["tone"][dsp][randblock]["@model"]
-            print("set controller " + str(control_num) + " to " + dsp, randblock, model_name, randparam)
+            print(
+                f"set controller {str(control_num)} to {dsp}",
+                randblock,
+                model_name,
+                randparam,
+            )
 
 
 def random_block_category() -> str:
@@ -165,7 +170,7 @@ def add_random_parameter_to_controller(preset):
         param for param in raw_block_dict["Ranges"] if param not in utils.get_controller_slot(preset, dsp, slot)
     ]:
         random_param = random.choice(params_not_in_controller)
-        print("params_not_in_controller " + str(params_not_in_controller))
+        print(f"params_not_in_controller {params_not_in_controller}")
         utils.add_parameter_to_controller(preset, dsp, slot, random_param, raw_block_dict)
         utils.add_parameter_to_all_snapshots(preset, dsp, slot, random_param, raw_block_dict)
 

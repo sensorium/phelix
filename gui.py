@@ -36,16 +36,16 @@ def load_recent_config_from_file():
     gen_tab.num_presets_entry.delete(0, END)
     gen_tab.num_presets_entry.insert(0, config["num_presets"])
 
-    mutate_tab.mutate_template_entry.delete(0, END)
-    mutate_tab.mutate_template_entry.insert(0, config["mutate_template_file"])
-    mutate_tab.mutate_output_entry.delete(0, END)
-    mutate_tab.mutate_output_entry.insert(0, config["mutate_output_file"])
-    mutate_tab.mutate_name_entry.delete(0, END)
-    mutate_tab.mutate_name_entry.insert(0, config["mutate_preset_name"])
-    mutate_tab.mutate_num_presets_entry.delete(0, END)
-    mutate_tab.mutate_num_presets_entry.insert(0, config["mutate_num_presets"])
-    mutate_tab.mutate_snapshot_src_num_entry.delete(0, END)
-    mutate_tab.mutate_snapshot_src_num_entry.insert(0, config["mutate_snapshot_src_num"])
+    mutate_tab.template_entry.delete(0, END)
+    mutate_tab.template_entry.insert(0, config["mutate_template_file"])
+    mutate_tab.output_entry.delete(0, END)
+    mutate_tab.output_entry.insert(0, config["mutate_output_file"])
+    mutate_tab.name_entry.delete(0, END)
+    mutate_tab.name_entry.insert(0, config["mutate_preset_name"])
+    mutate_tab.num_presets_entry.delete(0, END)
+    mutate_tab.num_presets_entry.insert(0, config["mutate_num_presets"])
+    mutate_tab.snapshot_src_num_entry.delete(0, END)
+    mutate_tab.snapshot_src_num_entry.insert(0, config["mutate_snapshot_src_num"])
 
 
 def load_config_from_file():
@@ -63,11 +63,11 @@ def save_config_to_file():
     config["preset_name"] = gen_tab.name_entry.get()
     config["num_presets"] = int(gen_tab.num_presets_entry.get())
 
-    config["mutate_template_file"] = mutate_tab.mutate_template_entry.get()
-    config["mutate_output_file"] = mutate_tab.mutate_output_entry.get()
-    config["mutate_preset_name"] = mutate_tab.mutate_name_entry.get()
-    config["mutate_num_presets"] = int(mutate_tab.mutate_num_presets_entry.get())
-    config["mutate_snapshot_src_num"] = int(mutate_tab.mutate_snapshot_src_num_entry.get())
+    config["mutate_template_file"] = mutate_tab.template_entry.get()
+    config["mutate_output_file"] = mutate_tab.output_entry.get()
+    config["mutate_preset_name"] = mutate_tab.name_entry.get()
+    config["mutate_num_presets"] = int(mutate_tab.num_presets_entry.get())
+    config["mutate_snapshot_src_num"] = int(mutate_tab.snapshot_src_num_entry.get())
 
     config_file = filedialog.asksaveasfilename(
         initialdir="./", title="Save Config File", filetypes=(("json files", "*.json"), ("All files", "*.*"))
@@ -178,11 +178,11 @@ class Generate:
 class Mutate:
 
     def __init__(self, parent):
-        self.mutate_template_entry = None
-        self.mutate_output_entry = None
-        self.mutate_name_entry = None
-        self.mutate_num_presets_entry = None
-        self.mutate_snapshot_src_num_entry = None
+        self.template_entry = None
+        self.output_entry = None
+        self.name_entry = None
+        self.num_presets_entry = None
+        self.snapshot_src_num_entry = None
         # self.output_area = None
         self.parent = parent
         self.frame = ttk.Frame(parent)
@@ -190,11 +190,11 @@ class Mutate:
 
     def mutate_preset(self):
         args = {
-            "template_file": self.mutate_template_entry.get(),
-            "output_file": self.mutate_output_entry.get(),
-            "snapshot_src_num": int(self.mutate_snapshot_src_num_entry.get()),
-            "preset_name": self.mutate_name_entry.get(),
-            "num_presets": int(self.mutate_num_presets_entry.get()),
+            "template_file": self.template_entry.get(),
+            "output_file": self.output_entry.get(),
+            "snapshot_src_num": int(self.snapshot_src_num_entry.get()),
+            "preset_name": self.name_entry.get(),
+            "num_presets": int(self.num_presets_entry.get()),
         }
 
         args_json = json.dumps(args)
@@ -214,45 +214,45 @@ class Mutate:
 
         template_label = tk.Label(self.frame, text="Input Preset File:")
         template_label.grid(row=1, column=0, padx=5, pady=5)
-        self.mutate_template_entry = tk.Entry(self.frame)
-        self.mutate_template_entry.config(width=80)
-        self.mutate_template_entry.grid(row=1, column=1, padx=5, pady=5)
+        self.template_entry = tk.Entry(self.frame)
+        self.template_entry.config(width=80)
+        self.template_entry.grid(row=1, column=1, padx=5, pady=5)
         template_button = tk.Button(
             self.frame,
             text="Browse",
-            command=lambda: browse_open_hlx_file(self.mutate_template_entry, "Select Input Preset"),
+            command=lambda: browse_open_hlx_file(self.template_entry, "Select Input Preset"),
         )
         template_button.grid(row=1, column=2, padx=5, pady=5)
 
+        snapshot_src_num_label = tk.Label(self.frame, text="Source Snapshot:")
+        snapshot_src_num_label.grid(row=2, column=0, padx=5, pady=5)
+        self.snapshot_src_num_entry = tk.Entry(self.frame)
+        self.snapshot_src_num_entry.config(width=10)
+        self.snapshot_src_num_entry.grid(row=2, column=1, padx=5, pady=5)
+
         output_label = tk.Label(self.frame, text="Output Preset File:")
-        output_label.grid(row=2, column=0, padx=5, pady=5)
-        self.mutate_output_entry = tk.Entry(self.frame)
-        self.mutate_output_entry.config(width=80)
-        self.mutate_output_entry.grid(row=2, column=1, padx=5, pady=5)
+        output_label.grid(row=3, column=0, padx=5, pady=5)
+        self.output_entry = tk.Entry(self.frame)
+        self.output_entry.config(width=80)
+        self.output_entry.grid(row=3, column=1, padx=5, pady=5)
         output_button = tk.Button(
             self.frame,
             text="Browse",
-            command=lambda: browse_save_hlx_file(self.mutate_output_entry, "Select Output File"),
+            command=lambda: browse_save_hlx_file(self.output_entry, "Select Output File"),
         )
-        output_button.grid(row=2, column=2, padx=5, pady=5)
+        output_button.grid(row=3, column=2, padx=5, pady=5)
 
         name_label = tk.Label(self.frame, text="Preset Name (optional):")
-        name_label.grid(row=3, column=0, padx=5, pady=5)
-        self.mutate_name_entry = tk.Entry(self.frame)
-        self.mutate_name_entry.config(width=80)
-        self.mutate_name_entry.grid(row=3, column=1, padx=5, pady=5)
+        name_label.grid(row=4, column=0, padx=5, pady=5)
+        self.name_entry = tk.Entry(self.frame)
+        self.name_entry.config(width=80)
+        self.name_entry.grid(row=4, column=1, padx=5, pady=5)
 
         num_presets_label = tk.Label(self.frame, text="Number of Presets:")
-        num_presets_label.grid(row=4, column=0, padx=5, pady=5)
-        self.mutate_num_presets_entry = tk.Entry(self.frame)
-        self.mutate_num_presets_entry.config(width=80)
-        self.mutate_num_presets_entry.grid(row=4, column=1, padx=5, pady=5)
-
-        snapshot_src_num_label = tk.Label(self.frame, text="Source Snapshot:")
-        snapshot_src_num_label.grid(row=5, column=0, padx=5, pady=5)
-        self.mutate_snapshot_src_num_entry = tk.Entry(self.frame)
-        self.mutate_snapshot_src_num_entry.config(width=10)
-        self.mutate_snapshot_src_num_entry.grid(row=5, column=1, padx=5, pady=5)
+        num_presets_label.grid(row=5, column=0, padx=5, pady=5)
+        self.num_presets_entry = tk.Entry(self.frame)
+        self.num_presets_entry.config(width=80)
+        self.num_presets_entry.grid(row=5, column=1, padx=5, pady=5)
 
         generate_button = tk.Button(self.frame, text="Mutate Preset", command=lambda: self.mutate_preset())
         generate_button.grid(row=6, column=0, columnspan=3, padx=5, pady=5)

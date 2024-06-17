@@ -150,12 +150,10 @@ def set_led_colours(preset):
         preset["data"]["tone"][snapshot_name]["@ledcolor"] = str(snapshot_num + 1)
 
 
-def add_controller_and_snapshot_keys_if_missing(preset, dsp):
-    if "controller" not in preset["data"]["tone"]:
-        preset["data"]["tone"]["controller"] = {}
-    if dsp not in preset["data"]["tone"]["controller"]:
-        controller = get_controller(preset, dsp)
-        controller = {}
+def add_dsp_controller_and_snapshot_keys_if_missing(preset):
+    for dsp in ["dsp0", "dsp1"]:
+        preset["data"]["tone"].setdefault(dsp, {})
+        preset["data"]["tone"].setdefault("controller", {}).setdefault(dsp, {})
         for snapshot_num in range(constants.NUM_SNAPSHOTS):
-            snapshot = get_snapshot(preset, snapshot_num, dsp)
-            snapshot = {}
+            snapshot_name = f"snapshot{snapshot_num}"
+            preset["data"]["tone"].setdefault(snapshot_name, {}).setdefault("controllers", {}).setdefault(dsp, {})

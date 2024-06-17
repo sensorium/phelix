@@ -47,7 +47,7 @@ def populate_preset_with_random_blocks(preset):
     for dsp in ["dsp0", "dsp1"]:
         print("\nPopulating " + dsp + "...")
         num_amps = 0
-        utils.add_controller_and_snapshot_keys_if_missing(preset, dsp)
+        utils.add_dsp_controller_and_snapshot_keys_if_missing(preset, dsp)
 
         for slot in preset["data"]["tone"][dsp]:
             if not slot.startswith(("block", "split")):

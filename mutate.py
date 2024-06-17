@@ -302,7 +302,7 @@ def increment_preset_name(preset, postfix_num):
     name = preset["data"]["meta"]["name"]
     name = name + str(postfix_num)
     preset["data"]["meta"]["name"] = name
-    print("Preset name: " + name)
+    print(f"Preset name: {name}")
 
 
 def mutate_all_pedal_ranges(preset):
@@ -336,6 +336,7 @@ def snapshot(snapshot_num):
 
 def mutate_dictionary(preset, snapshot_src_num, postfix_num):
     increment_preset_name(preset, postfix_num)
+    utils.add_dsp_controller_and_snapshot_keys_if_missing(preset)
     duplicate_snapshot_to_all(preset, snapshot(snapshot_src_num))
     choose.random_new_params_for_snapshot_control(preset)
     mutate_parameter_values_for_all_snapshots(preset, constants.MUTATION_RATE)
@@ -358,15 +359,15 @@ def mutate_preset_from_source_snapshot(template_file, snapshot_src_num, output_f
             json.dump(preset, f, indent=4)
 
 
-def generate_multiple_mutations_from_template(args):
+def generate_multiple_mutations_from_template(args_from_gui):
     # preset_name_base = args.get("preset_name_base")
     print("hey!")
-    for i in range(args.get("num_presets")):
+    for i in range(args_from_gui.get("num_presets")):
         # preset_name = preset_name_base + chr(ord("a") + (i % 26))
         mutate_preset_from_source_snapshot(
-            args.get("template_file"),
-            args.get("snapshot_src_num"),
-            args.get("output_file")[:-4] + str(i + 1) + ".hlx",
+            args_from_gui.get("template_file"),
+            args_from_gui.get("snapshot_src_num"),
+            args_from_gui.get("output_file")[:-4] + str(i + 1) + ".hlx",
             i,
         )
 
