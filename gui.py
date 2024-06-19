@@ -80,11 +80,10 @@ def save_config_to_file():
 def browse_open_hlx_file(hlx_entry, field_title):
     hlx_entry.delete(0, "end")
     hlx_file = filedialog.askopenfilename(
-        initialdir="./",
-        title=field_title,
-        filetypes=(("HLX files", "*.hlx"), ("All files", "*.*")),
+        initialdir="./", title=field_title, filetypes=(("HLX files", "*.hlx"), ("All files", "*.*"))
     )
-    hlx_entry.insert(0, hlx_file)
+    if hlx_file:
+        hlx_entry.insert(0, os.path.relpath(hlx_file))
 
 
 def browse_save_hlx_file(hlx_entry, field_title):
@@ -94,7 +93,8 @@ def browse_save_hlx_file(hlx_entry, field_title):
         title=field_title,
         filetypes=(("HLX files", "*.hlx"), ("All files", "*.*")),
     )
-    hlx_entry.insert(0, output_file)
+    if output_file:
+        hlx_entry.insert(0, os.path.relpath(output_file))
 
 
 ########### generate_tab #######################################################
