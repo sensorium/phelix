@@ -367,7 +367,7 @@ def generate_multiple_mutations_from_template(args_from_gui):
         # preset_name = preset_name_base + chr(ord("a") + (i % 26))
         mutate_preset_from_source_snapshot(
             args_from_gui.get("template_file"),
-            args_from_gui.get("snapshot_src_num"),
+            args_from_gui.get("snapshot_src_num") - 1,  # 0 indexed
             args_from_gui.get("output_file")[:-4] + str(i + 1) + ".hlx",
             i,
         )
