@@ -1,6 +1,6 @@
 import pytest
 from copy import deepcopy
-from utils import add_raw_block_default_to_dsp
+from util import add_raw_block_default_to_dsp
 
 @pytest.mark.parametrize(
     "preset, dsp, slot, raw_block_dict, expected_preset",

@@ -5,12 +5,12 @@ import random
 
 import constants
 import file
-import utils
+import util
 import choose
 
 
 def get_mutated_parameter_value(preset, dsp, slot, parameter, pmin, pmax):
-    defaults_block = utils.get_default_slot(preset, dsp, slot)
+    defaults_block = util.get_default_slot(preset, dsp, slot)
     parameter_settings = {
         "Level": lambda: (
             random_triangle(pmax, pmin, 0.8, 0.0)
@@ -45,7 +45,7 @@ def mutate_parameter_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slo
     unpruned_block_ranges = file.reload_raw_block_dictionary(preset, dsp, slot)["Ranges"]
     # model_name = utils.get_default_slot(preset, dsp, slot)["@model"]
     # print("mutating", dsp, slot, model_name)
-    for parameter in utils.get_controller_slot(preset, dsp, slot):
+    for parameter in util.get_controller_slot(preset, dsp, slot):
         # print("  about to mutate " + parameter)
         # print(get_snapshot_slot(preset, snapshot_num, dsp, slot))
         pmin = unpruned_block_ranges[parameter]["@min"]
@@ -53,15 +53,15 @@ def mutate_parameter_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slo
         result = get_mutated_parameter_value(preset, dsp, slot, parameter, pmin, pmax)
 
         # file.save_debug_hlx(preset)
-        prev_result = utils.get_snapshot_slot(preset, snapshot_num, dsp, slot)[parameter]["@value"]
+        prev_result = util.get_snapshot_slot(preset, snapshot_num, dsp, slot)[parameter]["@value"]
         result_mix = mix_values(fraction_new, pmin, pmax, result, prev_result)
-        utils.get_snapshot_slot(preset, snapshot_num, dsp, slot)[parameter]["@value"] = result_mix
+        util.get_snapshot_slot(preset, snapshot_num, dsp, slot)[parameter]["@value"] = result_mix
 
 
 def mutate_default_block(preset, dsp, slot, fraction_new):
-    defaults_block = utils.get_default_slot(preset, dsp, slot)
+    defaults_block = util.get_default_slot(preset, dsp, slot)
     unpruned_block_ranges = file.reload_raw_block_dictionary(preset, dsp, slot)["Ranges"]
-    print("mutate_default_block", dsp, slot, utils.get_model_name(preset, dsp, slot))
+    print("mutate_default_block", dsp, slot, util.get_model_name(preset, dsp, slot))
     # print(defaults_block)
     for parameter in unpruned_block_ranges:  # not all default params can be changed on the helix
         pmin = unpruned_block_ranges[parameter]["@min"]
@@ -99,7 +99,7 @@ def mutate_parameter_values_for_all_snapshots(preset, fraction_new):
     print("mutate_parameter_values_for_all_snapshots")
     for snapshot_num in range(constants.NUM_SNAPSHOTS):
         for dsp in ["dsp0", "dsp1"]:
-            for slot in utils.get_snapshot(preset, snapshot_num, dsp):
+            for slot in util.get_snapshot(preset, snapshot_num, dsp):
                 mutate_parameter_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slot, fraction_new)
 
 
@@ -174,7 +174,7 @@ def find_used_dsp_path_pos(preset):
         dsp_path_pos[dsp] = []
         for slot in preset["data"]["tone"][dsp]:
             if slot.startswith("block"):
-                slot_dict = utils.get_default_slot(preset, dsp, slot)
+                slot_dict = util.get_default_slot(preset, dsp, slot)
                 dsp_path_pos[dsp].append((slot_dict["@path"], slot_dict["@position"]))
     return dsp_path_pos
 
@@ -225,13 +225,13 @@ def rearrange_blocks(preset, fraction_move):
     # print(used_slots, unused_slots)
     for dsp, slot in used_block_slots:
         if random.uniform(0, 1) < fraction_move:
-            model_name = utils.get_model_name(preset, dsp, slot)
+            model_name = util.get_model_name(preset, dsp, slot)
             # update slot arrays
             to_dsp, to_slot = unused_block_slots.pop()
             unused_block_slots.append([dsp, slot])
             # get new unused path and position on to_dsp
-            from_path = utils.get_default_slot(preset, dsp, slot)["@path"]
-            from_pos = utils.get_default_slot(preset, dsp, slot)["@position"]
+            from_path = util.get_default_slot(preset, dsp, slot)["@path"]
+            from_pos = util.get_default_slot(preset, dsp, slot)["@position"]
             used_dsp_path_positions[dsp].remove((from_path, from_pos))
 
             random.shuffle(unused_dsp_path_positions[to_dsp])
@@ -239,11 +239,11 @@ def rearrange_blocks(preset, fraction_move):
             used_dsp_path_positions[to_dsp].append((to_path, to_pos))
 
             # actually move the block
-            utils.move_slot(preset, dsp, slot, to_dsp, to_slot, "block")
+            util.move_slot(preset, dsp, slot, to_dsp, to_slot, "block")
 
             # set new path, position
-            utils.get_default_slot(preset, to_dsp, to_slot)["@path"] = to_path
-            utils.get_default_slot(preset, to_dsp, to_slot)["@position"] = to_pos
+            util.get_default_slot(preset, to_dsp, to_slot)["@path"] = to_path
+            util.get_default_slot(preset, to_dsp, to_slot)["@position"] = to_pos
 
             print("moved", model_name, "from", dsp, slot, "to", to_dsp, to_slot)
             # if it's an amp, find an unused cab slot on to_dsp, and move it there
@@ -253,7 +253,7 @@ def rearrange_blocks(preset, fraction_move):
 
 def rearrange_cab(preset, used_dsp_cab_slots, unused_dsp_cab_slots, dsp, amp_dsp, amp_slot):
     if dsp != amp_dsp:
-        old_cab_slot = utils.get_default_slot(preset, amp_dsp, amp_slot)["@cab"]
+        old_cab_slot = util.get_default_slot(preset, amp_dsp, amp_slot)["@cab"]
         print("rearrange_cab old_cab_slot", dsp, old_cab_slot)
         # Move cab_from_slot from used to unused list
         used_dsp_cab_slots[dsp].remove(old_cab_slot)
@@ -262,9 +262,9 @@ def rearrange_cab(preset, used_dsp_cab_slots, unused_dsp_cab_slots, dsp, amp_dsp
         new_cab_slot = unused_dsp_cab_slots[amp_dsp].pop()
         used_dsp_cab_slots[amp_dsp].append(new_cab_slot)
 
-        utils.move_slot(preset, dsp, old_cab_slot, amp_dsp, new_cab_slot, "cab")
+        util.move_slot(preset, dsp, old_cab_slot, amp_dsp, new_cab_slot, "cab")
         # register the cab with its amp
-        utils.get_default_slot(preset, amp_dsp, amp_slot)["@cab"] = new_cab_slot
+        util.get_default_slot(preset, amp_dsp, amp_slot)["@cab"] = new_cab_slot
         print("  moved cab from", dsp, old_cab_slot, "to", amp_dsp, new_cab_slot)
 
 
@@ -279,22 +279,22 @@ def swap_some_blocks_and_splits_from_file(preset, change_fraction):
 
 def swap_block_from_file(preset, dsp, slot):
     print("Swapping block from file")
-    path = utils.get_default_slot(preset, dsp, slot)["@path"]
-    pos = utils.get_default_slot(preset, dsp, slot)["@position"]
+    path = util.get_default_slot(preset, dsp, slot)["@path"]
+    pos = util.get_default_slot(preset, dsp, slot)["@position"]
     raw_block_dict = file.load_block_dictionary(choose.random_block_file_excluding_cab_or_split())
-    utils.add_raw_block_to_preset(preset, dsp, slot, raw_block_dict)
-    utils.get_default_slot(preset, dsp, slot)["@path"] = path
-    utils.get_default_slot(preset, dsp, slot)["@position"] = pos
+    util.add_raw_block_to_preset(preset, dsp, slot, raw_block_dict)
+    util.get_default_slot(preset, dsp, slot)["@path"] = path
+    util.get_default_slot(preset, dsp, slot)["@position"] = pos
     for snapshot_num in range(constants.NUM_SNAPSHOTS):
         mutate_parameter_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slot, 1.0)
 
 
 def swap_split_from_file(preset, dsp, slot):
     print("swapping split from file")
-    keep_position = utils.get_default_slot(preset, dsp, slot)["@position"]
+    keep_position = util.get_default_slot(preset, dsp, slot)["@position"]
     split_dict = file.load_block_dictionary(choose.random_block_file_in_category("Split"))
-    utils.add_raw_block_to_preset(preset, dsp, slot, split_dict)
-    utils.get_default_slot(preset, dsp, slot)["@position"] = keep_position
+    util.add_raw_block_to_preset(preset, dsp, slot, split_dict)
+    util.get_default_slot(preset, dsp, slot)["@position"] = keep_position
     mutate_parameter_values_for_all_snapshots(preset, 1.0)
 
 
@@ -307,8 +307,8 @@ def increment_preset_name(preset, postfix_num):
 
 def mutate_all_pedal_ranges(preset):
     for dsp in ["dsp0", "dsp1"]:
-        for slot in utils.get_controller(preset, dsp):
-            block = utils.get_controller(preset, dsp)[slot]
+        for slot in util.get_controller(preset, dsp):
+            block = util.get_controller(preset, dsp)[slot]
             if any(block[param]["@controller"] == 2 for param in block):
                 for parameter in block:
                     if block[parameter]["@controller"] == 2:
@@ -317,7 +317,7 @@ def mutate_all_pedal_ranges(preset):
 
 
 def mutate_one_set_of_pedal_ranges(preset, dsp, slot, parameter):
-    param = utils.get_controller(preset, dsp)[slot][parameter]
+    param = util.get_controller(preset, dsp)[slot][parameter]
     if not isinstance(param["@min"], bool):  # don't want to pedal bools
         # get original ranges from file
         raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
@@ -336,7 +336,9 @@ def snapshot(snapshot_num):
 
 def mutate_dictionary(preset, snapshot_src_num, postfix_num):
     increment_preset_name(preset, postfix_num)
-    utils.add_dsp_controller_and_snapshot_keys_if_missing(preset)
+    swap_some_blocks_and_splits_from_file(preset, constants.MUTATION_RATE)
+    util.prune_controllers(preset)
+    util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
     duplicate_snapshot_to_all(preset, snapshot(snapshot_src_num))
     choose.random_new_params_for_snapshot_control(preset)
     mutate_parameter_values_for_all_snapshots(preset, constants.MUTATION_RATE)
@@ -344,10 +346,9 @@ def mutate_dictionary(preset, snapshot_src_num, postfix_num):
     swap_some_control_destinations(preset, constants.PEDAL_2, 10)
     mutate_all_pedal_ranges(preset)
     rearrange_blocks(preset, constants.FRACTION_MOVE)
-    swap_some_blocks_and_splits_from_file(preset, 0.1)
     toggle_some_block_states(preset, constants.MUTATION_RATE)
     toggle_series_or_parallel_dsps(preset, constants.TOGGLE_RATE)
-    utils.set_led_colours(preset)
+    util.set_led_colours(preset)
 
 
 def mutate_preset_from_source_snapshot(template_file, snapshot_src_num, output_file, postfix_num):

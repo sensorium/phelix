@@ -1,0 +1,35 @@
+{
+    "SnapshotParams": {
+        "BalanceB": {
+            "@fs_enabled": false,
+            "@value": 0.5
+        },
+        "BalanceA": {
+            "@fs_enabled": false,
+            "@value": 0.5
+        }
+    },
+    "Ranges": {
+        "BalanceB": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "BalanceA": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        }
+    },
+    "Defaults": {
+        "@model": "HD2_AppDSPFlowSplitY",
+        "BalanceA": 0.5,
+        "@no_snapshot_bypass": false,
+        "bypass": false,
+        "@position": 1,
+        "@enabled": true,
+        "BalanceB": 0.5
+    }
+}

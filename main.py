@@ -7,19 +7,18 @@ import sys
 
 import constants
 import file
-import utils
+import util
 import mutate
 import choose
 
 
 def add_cabs(preset):
     for dsp in ["dsp0", "dsp1"]:
-        # keep track of how many cabs used
         cabs_used = 0
 
         amp_blocks_list = []
         for amp_slot in preset["data"]["tone"][dsp]:
-            if utils.get_model_name(preset, dsp, amp_slot).startswith("HD2_Amp"):
+            if util.get_model_name(preset, dsp, amp_slot).startswith("HD2_Amp"):
                 amp_blocks_list.append(amp_slot)
 
         for amp in amp_blocks_list:
@@ -29,7 +28,7 @@ def add_cabs(preset):
             preset["data"]["tone"][dsp][amp]["@cab"] = cab_slot
             # load a random cab
             raw_cab_dict = file.load_block_dictionary(choose.random_block_file_in_category("Cab"))
-            utils.add_raw_block_to_preset(preset, dsp, cab_slot, raw_cab_dict)
+            util.add_raw_block_to_preset(preset, dsp, cab_slot, raw_cab_dict)
 
 
 def load_random_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amps):
@@ -47,7 +46,7 @@ def populate_preset_with_random_blocks(preset):
     for dsp in ["dsp0", "dsp1"]:
         print("\nPopulating " + dsp + "...")
         num_amps = 0
-        utils.add_dsp_controller_and_snapshot_keys_if_missing(preset, dsp)
+        util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
 
         for slot in preset["data"]["tone"][dsp]:
             if not slot.startswith(("block", "split")):
@@ -57,7 +56,7 @@ def populate_preset_with_random_blocks(preset):
             elif slot.startswith("split"):
                 new_dict = file.load_block_dictionary(choose.random_block_file_in_category("Split"))
 
-            utils.add_raw_block_to_preset(preset, dsp, slot, new_dict)
+            util.add_raw_block_to_preset(preset, dsp, slot, new_dict)
 
         join_position = random.randint(constants.NUM_POSITIONS_PER_PATH - 4, constants.NUM_POSITIONS_PER_PATH)
         split_position = random.randint(0, join_position - 3)
@@ -98,14 +97,12 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
 
         choose.random_series_or_parallel_dsp_configuration(preset)
 
-        print("\nPruning controls to maximum 64...")
-        while utils.count_parameters_in_controller(preset) > 64:
-            choose.remove_one_random_controller_parameter(preset)
+        util.prune_controllers(preset)
 
         swap_some_snapshot_controls_to_pedal(preset, constants.PEDAL_2)
         mutate.toggle_some_block_states(preset, 0.5)
 
-        utils.set_led_colours(preset)
+        util.set_led_colours(preset)
 
         with open(save_name, "w") as json_file:
             json.dump(preset, json_file, indent=4)

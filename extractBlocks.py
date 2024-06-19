@@ -37,4 +37,4 @@ def extractControls(preset_path, category, preset_name):
         extractBlocksFromPath(preset_dict, "dsp1", full_path)
 
 
-extractControls("presets/test", "Amp", "amps28-30.hlx")
+extractControls("../phelix-out/sources", "Amp", "AmpsMatchMand.hlx")
