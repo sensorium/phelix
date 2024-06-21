@@ -97,7 +97,7 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
 
         choose.random_series_or_parallel_dsp_configuration(preset)
 
-        util.prune_controllers(preset)
+        choose.prune_controllers(preset)
 
         swap_some_snapshot_controls_to_pedal(preset, constants.PEDAL_2)
         mutate.toggle_some_block_states(preset, 0.5)

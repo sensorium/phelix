@@ -56,7 +56,7 @@ def load_config_from_file():
         return json.load(f)
 
 
-def save_config_to_file():
+def save_config_to_file(event=None):
     # save values from UI to config
     config["template_file"] = gen_tab.template_entry.get()
     config["output_file"] = gen_tab.output_entry.get()

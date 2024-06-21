@@ -20,20 +20,20 @@ def random_block_file_in_category(category_folder):
     return filepath
 
 
-def random_block_split_or_cab_in_dsps(preset):
-    dsp = random.choice(["dsp0", "dsp1"])
-    slot = random.choice(list(preset["data"]["tone"][dsp].keys()))
+def random_block_split_or_cab_in_default_dsps(preset):
+    dsp = random.choice(util.get_available_default_dsps(preset))
+    slot = random.choice(list(util.get_default_dsp(preset, dsp).keys()))
     if slot.startswith(("block", "split", "cab")):
         return dsp, slot
     else:
-        return random_block_split_or_cab_in_dsps(preset)
+        return random_block_split_or_cab_in_default_dsps(preset)
 
 
-def random_dsp_and_block(preset):
+def random_controller_dsp_and_block(preset):
     # returns a random block, or "none" if there are no blocks
     found_blocks = []
-    for dsp in ["dsp0", "dsp1"]:
-        for slot in util.get_controller(preset, dsp):
+    for dsp in util.get_controller(preset):
+        for slot in util.get_controller_dsp(preset, dsp):
             found_blocks.append((dsp, slot))
     rand_dsp_and_block = ["none", "none"]
     if len(found_blocks) > 0:
@@ -45,7 +45,7 @@ def random_controller_param(preset, dsp, slot):
     # returns a random param, or "none" if there are no params
     # print("getRandControllerParam for "+dsp+" "+block)
     params = []
-    for param in util.get_controller(preset, dsp)[slot]:
+    for param in util.get_controller_dsp(preset, dsp)[slot]:
         params.append(param)
         # print("append to getRandControllerParam choices " +param)
     randparam = "none"
@@ -57,10 +57,10 @@ def random_controller_param(preset, dsp, slot):
 def random_controller_param_excluding_bools_and_mic(preset, dsp, slot):
     # returns a random param (but not one with a boolean value), or "none" if there are no params
     params = []
-    for param in util.get_controller_slot(preset, dsp, slot):
+    for param in util.get_controller_dsp_slot(preset, dsp, slot):
         if (
             not isinstance(
-                util.get_controller_slot(preset, dsp, slot)[param]["@min"],
+                util.get_controller_dsp_slot(preset, dsp, slot)[param]["@min"],
                 bool,
             )
             and param != "Mic"
@@ -74,14 +74,14 @@ def random_controller_param_excluding_bools_and_mic(preset, dsp, slot):
 
 
 def random_controlled_parameter_and_ranges(preset, control_num):
-    dsp, randblock = random_dsp_and_block(preset)
+    dsp, randblock = random_controller_dsp_and_block(preset)
     if randblock != "none":
         if control_num == constants.PEDAL_2:
             randparam = random_controller_param_excluding_bools_and_mic(preset, dsp, randblock)
         else:
             randparam = random_controller_param(preset, dsp, randblock)
         if randparam != "none":
-            controlled_param = util.get_controller(preset, dsp)[randblock][randparam]
+            controlled_param = util.get_controller_dsp(preset, dsp)[randblock][randparam]
             controlled_param["@controller"] = control_num
             new_max = random.uniform(controlled_param["@min"], controlled_param["@max"])
             new_min = random.uniform(controlled_param["@min"], controlled_param["@max"])
@@ -128,7 +128,7 @@ def random_new_params_for_snapshot_control(preset):
     num_controllers_to_change = random.randint(0, 20)
     for _ in range(num_controllers_to_change):
         remove_one_random_controller_parameter(preset)
-    util.grow_controllers(preset)
+    grow_controllers(preset)
 
 
 def random_controller_to_snapshot(preset, param_list, control_num):
@@ -136,7 +136,7 @@ def random_controller_to_snapshot(preset, param_list, control_num):
     random_index = random.randint(0, len(param_list) - 1)
     dsp, slot, parameter = param_list[random_index]
     # set control to snapshot
-    util.get_controller_slot_parameter(preset, dsp, slot, parameter)["@controller"] = constants.SNAPSHOT_CONTROL
+    util.get_controller_dsp_slot_parameter(preset, dsp, slot, parameter)["@controller"] = constants.SNAPSHOT_CONTROL
     print(
         f"set control {str(control_num)} to snapshot {str(control_num)} for {dsp}",
         slot,
@@ -147,7 +147,7 @@ def random_controller_to_snapshot(preset, param_list, control_num):
 
 def remove_one_random_controller_parameter(preset):
     # delete a param if the random choice exists
-    randdsp, randblock = random_dsp_and_block(preset)
+    randdsp, randblock = random_controller_dsp_and_block(preset)
     if randblock != "none":
         randparam = random_controller_param(preset, randdsp, randblock)
         if randparam != "none":
@@ -159,12 +159,16 @@ def remove_one_random_controller_parameter(preset):
 
 
 def add_random_parameter_to_controller(preset):
-    dsp, slot = random_block_split_or_cab_in_dsps(preset)
+    dsp, slot = random_block_split_or_cab_in_default_dsps(preset)
     # model_name = utils.get_model_name(preset, dsp, slot)
-    print("add_random_parameter_to_controller from " + dsp, slot, util.get_model_name(preset, dsp, slot))
+    print(
+        f"add_random_parameter_to_controller from {dsp}",
+        slot,
+        util.get_model_name(preset, dsp, slot),
+    )
     raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
     if params_not_in_controller := [
-        param for param in raw_block_dict["Ranges"] if param not in util.get_controller_slot(preset, dsp, slot)
+        param for param in raw_block_dict["Ranges"] if param not in util.get_controller_dsp_slot(preset, dsp, slot)
     ]:
         random_param = random.choice(params_not_in_controller)
         print(f"params_not_in_controller {params_not_in_controller}")
@@ -174,3 +178,15 @@ def add_random_parameter_to_controller(preset):
 
 def random_series_or_parallel_dsp_configuration(preset):
     preset["data"]["tone"]["dsp0"]["outputA"]["@output"] = random.choice([1, 2])
+
+
+def prune_controllers(preset):
+    print("\nPruning controls to maximum 64...")
+    while util.count_parameters_in_controller(preset) > constants.MAXIMUM_CONTROLLERS:
+        remove_one_random_controller_parameter(preset)
+
+
+def grow_controllers(preset):
+    print("\nGrowing controls to maximum 64...")
+    while util.count_parameters_in_controller(preset) < constants.MAXIMUM_CONTROLLERS:  # to avoid setting any twice
+        add_random_parameter_to_controller(preset)
