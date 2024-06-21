@@ -10,19 +10,23 @@
         },
         "Master": {
             "@fs_enabled": false,
-            "@value": 1
+            "@value": 0.5
         },
         "Treble": {
             "@fs_enabled": false,
-            "@value": 0.5
+            "@value": 0.31999993324279785
         },
         "Drive": {
             "@fs_enabled": false,
-            "@value": 0.5
+            "@value": 0.38999998569488525
+        },
+        "Resonance": {
+            "@fs_enabled": false,
+            "@value": 0.46000003814697266
         },
         "ChVol": {
             "@fs_enabled": false,
-            "@value": 0.5
+            "@value": 0.8600000143051147
         },
         "Ripple": {
             "@fs_enabled": false,
@@ -30,7 +34,7 @@
         },
         "Bass": {
             "@fs_enabled": false,
-            "@value": 0.5
+            "@value": 0.6200000047683716
         },
         "BiasX": {
             "@fs_enabled": false,
@@ -42,19 +46,15 @@
         },
         "Mid": {
             "@fs_enabled": false,
-            "@value": 0.5
-        },
-        "NFB": {
-            "@fs_enabled": false,
-            "@value": 0.5
+            "@value": 0.5499999523162842
         },
         "Presence": {
             "@fs_enabled": false,
-            "@value": 0.5
+            "@value": 0.25
         },
-        "Depth": {
+        "Aggression": {
             "@fs_enabled": false,
-            "@value": 0.5
+            "@value": 1
         }
     },
     "Ranges": {
@@ -88,6 +88,12 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
+        "Resonance": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
         "ChVol": {
             "@min": 0,
             "@max": 1,
@@ -124,47 +130,41 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "NFB": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
         "Presence": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Depth": {
+        "Aggression": {
             "@min": 0,
-            "@max": 1,
+            "@max": 2,
             "@controller": 19,
             "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "Depth": 0.5,
+        "Resonance": 0.46000003814697266,
         "@enabled": true,
         "@bypassvolume": 1,
-        "Mid": 0.5,
+        "Mid": 0.5499999523162842,
         "BiasX": 0.5,
         "Bias": 0.5,
         "@type": 3,
         "Hum": 0.5,
-        "Treble": 0.5,
+        "Treble": 0.31999993324279785,
         "@cab": "cab0",
-        "@model": "HD2_AmpLine6Elmsley",
-        "Drive": 0.5,
-        "Master": 1,
-        "ChVol": 0.5,
+        "@model": "HD2_AmpRevvGenPurple",
+        "Drive": 0.38999998569488525,
+        "Master": 0.5,
+        "ChVol": 0.8600000143051147,
         "@path": 0,
-        "Presence": 0.5,
+        "Presence": 0.25,
         "Ripple": 0.5,
         "@position": 0,
-        "NFB": 0.5,
+        "Aggression": 1,
         "@no_snapshot_bypass": false,
         "Sag": 0.5,
-        "Bass": 0.5
+        "Bass": 0.6200000047683716
     }
 }

@@ -1,36 +1,28 @@
 {
     "SnapshotParams": {
-        "Boost": {
-            "@fs_enabled": false,
-            "@value": 0
-        },
         "Presence": {
             "@fs_enabled": false,
-            "@value": 0.2999999523162842
-        },
-        "Bass": {
-            "@fs_enabled": false,
-            "@value": 0.5399999618530273
-        },
-        "BiasX": {
-            "@fs_enabled": false,
-            "@value": 0.5
-        },
-        "ChVol": {
-            "@fs_enabled": false,
-            "@value": 0.4500000476837158
+            "@value": 0.10000002384185791
         },
         "Sag": {
             "@fs_enabled": false,
             "@value": 0.5
         },
+        "Bass": {
+            "@fs_enabled": false,
+            "@value": 0.6200000047683716
+        },
         "Treble": {
             "@fs_enabled": false,
-            "@value": 0.4700000286102295
+            "@value": 0.3500000238418579
+        },
+        "ChVol": {
+            "@fs_enabled": false,
+            "@value": 0.4500000476837158
         },
         "Drive": {
             "@fs_enabled": false,
-            "@value": 0.6000000238418579
+            "@value": 0.3799999952316284
         },
         "HumSwitch": {
             "@fs_enabled": false,
@@ -38,39 +30,15 @@
         },
         "Mid": {
             "@fs_enabled": false,
-            "@value": 0.5499999523162842
+            "@value": 0.3799999952316284
         },
-        "Bias": {
+        "Boost": {
             "@fs_enabled": false,
-            "@value": 0.5
+            "@value": 0
         }
     },
     "Ranges": {
-        "Boost": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
         "Presence": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Bass": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "BiasX": {
-            "@min": 0,
-            "@max": 1,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "ChVol": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
@@ -82,7 +50,19 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
+        "Bass": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
         "Treble": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "ChVol": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
@@ -106,7 +86,7 @@
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Bias": {
+        "Boost": {
             "@min": 0,
             "@max": 1,
             "@controller": 19,
@@ -114,24 +94,22 @@
         }
     },
     "Defaults": {
-        "Bias": 0.5,
-        "@model": "HD2_AmpLine6Aristocrat",
-        "Treble": 0.4700000286102295,
-        "@position": 0,
+        "Treble": 0.3500000238418579,
+        "@model": "HD2_AmpLine6Clarity",
+        "@position": 1,
         "@no_snapshot_bypass": false,
         "Boost": 0,
-        "Drive": 0.6000000238418579,
+        "Drive": 0.3799999952316284,
         "ChVol": 0.4500000476837158,
         "@enabled": true,
         "@path": 0,
         "@type": 3,
         "HumSwitch": true,
-        "Bass": 0.5399999618530273,
-        "BiasX": 0.5,
-        "Mid": 0.5499999523162842,
+        "Bass": 0.6200000047683716,
+        "Mid": 0.3799999952316284,
         "@bypassvolume": 1,
-        "@cab": "cab0",
-        "Presence": 0.2999999523162842,
+        "@cab": "cab1",
+        "Presence": 0.10000002384185791,
         "Sag": 0.5
     }
 }
