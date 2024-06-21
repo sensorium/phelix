@@ -120,8 +120,9 @@ def random_block_category() -> str:
 
 def random_remove_controls(preset, control_num, num_changes):
     controlled_param_list = util.list_pedal_controls(preset, control_num)
-    for _ in range(num_changes):
-        random_controller_to_snapshot(preset, controlled_param_list, control_num)
+    if len(controlled_param_list) != 0:
+        for _ in range(num_changes):
+            random_controller_to_snapshot(preset, controlled_param_list, control_num)
 
 
 def random_new_params_for_snapshot_control(preset):

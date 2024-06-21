@@ -267,6 +267,7 @@ def rearrange_cab(preset, used_dsp_cab_slots, unused_dsp_cab_slots, dsp, amp_dsp
 
 
 def swap_some_blocks_and_splits_from_file(preset, change_fraction):
+    print("Swapping some blocks and splits from file")
     for dsp in util.get_available_default_dsps(preset):
         for slot in util.get_default_dsp(preset, dsp):
             if slot.startswith("block") and random.uniform(0, 1) < change_fraction:
@@ -334,10 +335,15 @@ def snapshot(snapshot_num):
 
 def mutate_dictionary(preset, snapshot_src_num, postfix_num):
     increment_preset_name(preset, postfix_num)
+
+    util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
+    util.populate_missing_controller_from_defaults(preset)
+    # util.populate_all_snapshot_controllers_from_defaults(preset)
+    util.populate_missing_snapshot_controllers_from_defaults(preset, snapshot_src_num)
+    duplicate_snapshot_to_all(preset, snapshot(snapshot_src_num))
     swap_some_blocks_and_splits_from_file(preset, constants.MUTATION_RATE)
     choose.prune_controllers(preset)
-    util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
-    duplicate_snapshot_to_all(preset, snapshot(snapshot_src_num))
+
     choose.random_new_params_for_snapshot_control(preset)
     mutate_parameter_values_for_all_snapshots(preset, constants.MUTATION_RATE)
     mutate_all_default_blocks(preset, constants.MUTATION_RATE)
@@ -347,6 +353,12 @@ def mutate_dictionary(preset, snapshot_src_num, postfix_num):
     toggle_some_block_states(preset, constants.MUTATION_RATE)
     toggle_series_or_parallel_dsps(preset, constants.TOGGLE_RATE)
     util.set_led_colours(preset)
+
+
+# if there are no snapshots (controllers) start with default values as source for snapshots
+# allow to distribute blocks to both dsps and all paths, even if only one is used in the source
+# check what happens with splits and joins (positions)
+# add volume and other missing units
 
 
 def mutate_preset_from_source_snapshot(template_file, snapshot_src_num, output_file, postfix_num):
