@@ -191,3 +191,15 @@ def grow_controllers(preset):
     print("\nGrowing controls to maximum 64...")
     while util.count_parameters_in_controller(preset) < constants.MAXIMUM_CONTROLLERS:  # to avoid setting any twice
         add_random_parameter_to_controller(preset)
+
+
+def move_split_and_join(preset, dsp):
+    join_position = random.randint(constants.NUM_POSITIONS_PER_PATH - 4, constants.NUM_POSITIONS_PER_PATH)
+    split_position = random.randint(0, join_position - 3)
+    preset["data"]["tone"][dsp]["join"]["@position"] = join_position
+    preset["data"]["tone"][dsp]["split"]["@position"] = split_position
+
+
+def move_splits_and_joins(preset):
+    for dsp in util.get_available_default_dsps(preset):
+        move_split_and_join(preset, dsp)

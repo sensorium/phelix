@@ -1,0 +1,184 @@
+{
+    "SnapshotParams": {
+        "Rotor3Level": {
+            "@fs_enabled": false,
+            "@value": 1
+        },
+        "Separation": {
+            "@fs_enabled": false,
+            "@value": 0.5
+        },
+        "SlowSpeed": {
+            "@fs_enabled": false,
+            "@value": 0.7000000476837158
+        },
+        "Drive": {
+            "@fs_enabled": false,
+            "@value": 0.2200000286102295
+        },
+        "LowCut": {
+            "@fs_enabled": false,
+            "@value": 19.899999618530273
+        },
+        "RotorFcDrift": {
+            "@fs_enabled": false,
+            "@value": 0.5
+        },
+        "Speed": {
+            "@fs_enabled": false,
+            "@value": false
+        },
+        "Mix": {
+            "@fs_enabled": false,
+            "@value": 1
+        },
+        "Headroom": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "FastSpeed": {
+            "@fs_enabled": false,
+            "@value": 0.6499999761581421
+        },
+        "Wobble": {
+            "@fs_enabled": false,
+            "@value": 0.5
+        },
+        "RampTime": {
+            "@fs_enabled": false,
+            "@value": 0.25
+        },
+        "Level": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "HighCut": {
+            "@fs_enabled": false,
+            "@value": 20100
+        },
+        "Rotor2Level": {
+            "@fs_enabled": false,
+            "@value": 1
+        }
+    },
+    "Ranges": {
+        "Rotor3Level": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Separation": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "SlowSpeed": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Drive": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "LowCut": {
+            "@min": 19.899999618530273,
+            "@max": 500,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "RotorFcDrift": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Speed": {
+            "@min": false,
+            "@max": true,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Mix": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Headroom": {
+            "@min": -12,
+            "@max": 12,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "FastSpeed": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Wobble": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "RampTime": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Level": {
+            "@min": -60,
+            "@max": 6,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "HighCut": {
+            "@min": 500,
+            "@max": 20100,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Rotor2Level": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        }
+    },
+    "Defaults": {
+        "RampTime": 0.25,
+        "FastSpeed": 0.6499999761581421,
+        "@enabled": true,
+        "Wobble": 0.5,
+        "@type": 0,
+        "Rotor3Level": 1,
+        "RotorFcDrift": 0.5,
+        "Rotor2Level": 1,
+        "Speed": false,
+        "SyncSelect1": 6,
+        "SyncSelect2": 6,
+        "@model": "HD2_Rotary3Rotor",
+        "@stereo": true,
+        "Drive": 0.2200000286102295,
+        "LowCut": 19.899999618530273,
+        "@path": 0,
+        "Level": 0,
+        "Mix": 1,
+        "HighCut": 20100,
+        "Separation": 0.5,
+        "@position": 1,
+        "Headroom": 0,
+        "@no_snapshot_bypass": false,
+        "SlowSpeed": 0.7000000476837158,
+        "TempoSync1": false,
+        "TempoSync2": false
+    }
+}

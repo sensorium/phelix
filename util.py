@@ -185,43 +185,60 @@ def add_dsp_controller_and_snapshot_keys_if_missing(preset):
             preset["data"]["tone"].setdefault(snapshot_name, {}).setdefault("controllers", {}).setdefault(dsp, {})
 
 
-def populate_controller_dsp_slot_from_defaults(preset, dsp, slot):
+def populate_controller_dsp_slot_from_raw_default(preset, dsp, slot):
     controller_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)["Ranges"]
     get_controller_dsp_slot(preset, dsp, slot).update(controller_block_dict)
     # print("populate_controller_from_defaults " + get_model_name(preset, dsp, slot) + ", " + dsp + " " + slot)
 
 
-def populate_missing_controller_from_defaults(preset):
+def populate_missing_controller_slots_from_raw_defaults(preset):
     for dsp in get_available_default_dsps(preset):
         for slot in get_default_dsp(preset, dsp):
             if slot not in get_controller_dsp(preset, dsp) and slot.startswith(("block", "split", "cab")):
                 get_controller_dsp(preset, dsp)[slot] = {}
-                populate_controller_dsp_slot_from_defaults(preset, dsp, slot)
+                populate_controller_dsp_slot_from_raw_default(preset, dsp, slot)
 
 
-def populate_missing_snapshot_controllers_from_defaults(preset, snapshot_num):
+def populate_missing_snapshot_controllers_from_raw_defaults(preset, snapshot_num):
     for dsp in get_available_default_dsps(preset):
         for slot in get_default_dsp(preset, dsp):
             if slot not in get_snapshot_controllers_dsp(preset, snapshot_num, dsp) and slot.startswith(
                 ("block", "split", "cab")
             ):
-                # print(
-                #     "  populate_snapshot_controllers_from_defaults: Snapshot"
-                #     + str(snapshot_num)
-                #     + " "
-                #     + get_model_name(preset, dsp, slot)
-                #     + ", "
-                #     + dsp
-                #     + " "
-                #     + slot
-                # )
-
                 get_snapshot_controllers_dsp(preset, snapshot_num, dsp)[slot] = {}
                 snapshot_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)["SnapshotParams"]
                 get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot).update(snapshot_block_dict)
+
+
+def copy_controlled_default_parameter_values_to_snapshot(preset, snapshot_num):
+    for dsp in get_available_default_dsps(preset):
+        for slot in get_controller_dsp(preset, dsp):
+            for parameter in get_controller_dsp_slot(preset, dsp, slot):
+                get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot)[parameter].update(
+                    get_default_dsp_slot(preset, dsp, slot)[parameter]
+                )
 
 
 # def populate_all_missing_snapshot_controllers_from_defaults(preset):
 #     print("populate_all_snapshot_controllers_from_defaults")
 #     for snapshot_num in range(constants.NUM_SNAPSHOTS):
 #         populate_missing_snapshot_controllers_from_defaults(preset, snapshot_num)
+
+
+def count_controllers(preset):
+    count = 0
+    for dsp in get_available_default_dsps(preset):
+        for slot in get_default_dsp(preset, dsp):
+            if slot in get_controller_dsp(preset, dsp):
+                count += 1
+    return count
+
+
+# def copy_defaults_to_all_snapshots(preset):
+#     for dsp in get_available_default_dsps(preset):
+#         for slot in get_default_dsp(preset, dsp):
+#             if slot in get_controller_dsp(preset, dsp):
+#                 for snapshot_num in range(constants.NUM_SNAPSHOTS):
+#                     get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot).update(
+#                         get_controller_dsp_slot(preset, dsp, slot)
+#                     )
