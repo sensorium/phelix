@@ -169,7 +169,9 @@ def add_random_parameter_to_controller(preset):
     )
     raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
     if params_not_in_controller := [
-        param for param in raw_block_dict["Ranges"] if param not in util.get_controller_dsp_slot(preset, dsp, slot)
+        param
+        for param in raw_block_dict["Controller_Dict"]
+        if param not in util.get_controller_dsp_slot(preset, dsp, slot)
     ]:
         random_param = random.choice(params_not_in_controller)
         print(f"params_not_in_controller {params_not_in_controller}")

@@ -2,9 +2,9 @@
 # the snapshotted params need to be set by hand in hxedit (unless there's an automatic way to snapshot all params)
 # this script extracts the params from the snapshots to a json file in the blocks folder
 
-import sys, os, json
-
-BLOCKS_PATH = "blocks/test"
+import json
+import os
+import constants
 
 
 def extractBlocksFromPath(preset_dict, dsp, category_path):
@@ -14,7 +14,7 @@ def extractBlocksFromPath(preset_dict, dsp, category_path):
             if slot.startswith("block") or slot.startswith("cab") or slot.startswith("split"):
                 block_dict = {}
                 block_dict["SnapshotParams"] = preset_dict["data"]["tone"]["snapshot0"]["controllers"][dsp][slot]
-                block_dict["Ranges"] = preset_dict["data"]["tone"]["controller"][dsp][slot]
+                block_dict["Controller_Dict"] = preset_dict["data"]["tone"]["controller"][dsp][slot]
                 block_dict["Defaults"] = preset_dict["data"]["tone"][dsp][slot]
                 block_filename = preset_dict["data"]["tone"][dsp][slot]["@model"] + ".json"
                 with open(os.path.join(category_path, block_filename), "w") as json_file:
@@ -29,7 +29,7 @@ def extractBlocksFromPath(preset_dict, dsp, category_path):
 
 
 def extractControls(preset_path, category, preset_name):
-    full_path = os.path.join(BLOCKS_PATH, category)
+    full_path = os.path.join(constants.BLOCKS_PATH, category)
     os.makedirs(full_path, exist_ok=True)
     with open(os.path.join(preset_path, preset_name), "r") as f:
         preset_dict = json.load(f)
@@ -37,4 +37,4 @@ def extractControls(preset_path, category, preset_name):
         extractBlocksFromPath(preset_dict, "dsp1", full_path)
 
 
-extractControls("../phelix-out/sources", "Amp", "modStereoRot.hlx")
+extractControls("../phelix-out/sources", "Dynamics", "gate.hlx")

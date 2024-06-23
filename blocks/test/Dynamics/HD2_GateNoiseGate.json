@@ -1,48 +1,48 @@
 {
     "SnapshotParams": {
-        "Boost": {
+        "Decay": {
             "@fs_enabled": false,
-            "@value": false
+            "@value": 0.5
         },
-        "Drive": {
+        "Level": {
             "@fs_enabled": false,
-            "@value": 0.5499999523162842
+            "@value": 0
         },
-        "Bright": {
+        "Threshold": {
             "@fs_enabled": false,
-            "@value": false
+            "@value": -48
         }
     },
     "Controller_Dict": {
-        "Boost": {
-            "@min": false,
-            "@max": true,
-            "@controller": 19,
-            "@snapshot_disable": false
-        },
-        "Drive": {
-            "@min": 0,
+        "Decay": {
+            "@min": 0.009999990463256836,
             "@max": 1,
             "@controller": 19,
             "@snapshot_disable": false
         },
-        "Bright": {
-            "@min": false,
-            "@max": true,
+        "Level": {
+            "@min": -60,
+            "@max": 6,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Threshold": {
+            "@min": -96,
+            "@max": 0,
             "@controller": 19,
             "@snapshot_disable": false
         }
     },
     "Defaults": {
-        "@model": "HD2_DistKinkyBoost",
-        "Bright": false,
+        "@model": "HD2_GateNoiseGate",
         "@no_snapshot_bypass": false,
         "@path": 0,
         "@stereo": false,
         "@type": 0,
-        "Drive": 0.5499999523162842,
+        "Decay": 0.5,
+        "Threshold": -48,
         "@position": 0,
-        "@enabled": true,
-        "Boost": false
+        "Level": 0,
+        "@enabled": true
     }
 }

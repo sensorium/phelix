@@ -4,6 +4,7 @@ import json
 import random
 
 import constants
+from debug import save_debug_hlx
 import file
 import util
 import choose
@@ -42,7 +43,7 @@ def random_triangle(pmax, pmin, mode_fraction, lowest_fraction):
 # chooses and stores parameter values for one block into a single snapshot
 #
 def mutate_parameter_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slot, fraction_new):
-    unpruned_block_ranges = file.reload_raw_block_dictionary(preset, dsp, slot)["Ranges"]
+    unpruned_block_ranges = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
     # model_name = utils.get_default_slot(preset, dsp, slot)["@model"]
     # print("mutating", dsp, slot, model_name)
     for parameter in util.get_controller_dsp_slot(preset, dsp, slot):
@@ -52,15 +53,23 @@ def mutate_parameter_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slo
         pmax = unpruned_block_ranges[parameter]["@max"]
         result = get_mutated_parameter_value(preset, dsp, slot, parameter, pmin, pmax)
 
-        # file.save_debug_hlx(preset)
-        prev_result = util.get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot)[parameter]["@value"]
+        print(parameter)
+        print(util.get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot)[parameter])
+        print(dsp, slot)
+        print(util.get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot))
+        save_debug_hlx(preset)
+        prev_result = util.get_snapshot_controllers_dsp_slot_parameter_value(
+            preset, snapshot_num, dsp, slot, parameter
+        )
         result_mix = mix_values(fraction_new, pmin, pmax, result, prev_result)
-        util.get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot)[parameter]["@value"] = result_mix
+        util.get_snapshot_controllers_dsp_slot_parameter(preset, snapshot_num, dsp, slot, parameter)[
+            "@value"
+        ] = result_mix
 
 
 def mutate_default_block(preset, dsp, slot, fraction_new):
     defaults_block = util.get_default_dsp_slot(preset, dsp, slot)
-    unpruned_block_ranges = file.reload_raw_block_dictionary(preset, dsp, slot)["Ranges"]
+    unpruned_block_ranges = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
     print("mutate_default_block", dsp, slot, util.get_model_name(preset, dsp, slot))
     # print(defaults_block)
     for parameter in unpruned_block_ranges:  # not all default params can be changed on the helix
@@ -324,8 +333,8 @@ def mutate_one_set_of_pedal_ranges(preset, dsp, slot, parameter):
     if not isinstance(param["@min"], bool):  # don't want to pedal bools
         # get original ranges from file
         raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
-        pmin = raw_block_dict["Ranges"][parameter]["@min"]
-        pmax = raw_block_dict["Ranges"][parameter]["@max"]
+        pmin = raw_block_dict["Controller_Dict"][parameter]["@min"]
+        pmax = raw_block_dict["Controller_Dict"][parameter]["@max"]
         # print(pedalParam["@min"], pmin, pmax)
         new_min = mutate_parameter_value(param["@min"], pmin, pmax)  # (mean, pmin, pmax)
         new_max = mutate_parameter_value(param["@max"], pmin, pmax)
@@ -340,14 +349,25 @@ def snapshot(snapshot_num):
 def mutate_dictionary(preset, snapshot_src_num, postfix_num):
     increment_preset_name(preset, postfix_num)
     set_dsp1_input_to_multi(preset)
-    util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
+    if "controllers" in util.get_snapshot(preset, snapshot_src_num):
+        print("Hi")
+        util.copy_snapshot_values_to_default(preset, snapshot_src_num)
+    # util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
     # controller
     original_num_template_controllers = util.count_controllers(preset)
-    util.populate_missing_controller_slots_from_raw_defaults(preset)
+    # util.populate_missing_controller_slots_from_raw_defaults(preset)
+    print("Ho")
+    util.populate_all_controller_slots_from_raw_defaults(preset)
     # snapshot controls
-    if original_num_template_controllers == 0:
-        util.populate_missing_snapshot_controllers_from_raw_defaults(preset, snapshot_src_num)
+    # if (
+    #     original_num_template_controllers == 0
+    # ):  # they'll already be snapshot controllers if the controller is populated
+    #    util.populate_missing_snapshot_controllers_from_raw_defaults(preset, snapshot_src_num)
+
+    util.populate_snapshot_with_controllers_from_file(preset, snapshot_src_num)
+
     util.copy_controlled_default_parameter_values_to_snapshot(preset, snapshot_src_num)
+    print("Oh")
     duplicate_snapshot_to_all(preset, snapshot(snapshot_src_num))
     swap_some_blocks_and_splits_from_file(preset, constants.MUTATION_RATE)
     choose.move_splits_and_joins(preset)
