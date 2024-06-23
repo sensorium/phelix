@@ -4,7 +4,8 @@ import json
 import random
 
 import constants
-from debug import save_debug_hlx
+
+# from debug import save_debug_hlx
 import file
 import util
 import choose
@@ -53,11 +54,11 @@ def mutate_parameter_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slo
         pmax = unpruned_block_ranges[parameter]["@max"]
         result = get_mutated_parameter_value(preset, dsp, slot, parameter, pmin, pmax)
 
-        print(parameter)
-        print(util.get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot)[parameter])
-        print(dsp, slot)
-        print(util.get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot))
-        save_debug_hlx(preset)
+        # print(parameter)
+        # print(util.get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot)[parameter])
+        # print(dsp, slot)
+        # print(util.get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot))
+        # save_debug_hlx(preset)
         prev_result = util.get_snapshot_controllers_dsp_slot_parameter_value(
             preset, snapshot_num, dsp, slot, parameter
         )
@@ -357,15 +358,13 @@ def mutate_dictionary(preset, snapshot_src_num, postfix_num):
     original_num_template_controllers = util.count_controllers(preset)
     # util.populate_missing_controller_slots_from_raw_defaults(preset)
     print("Ho")
-    util.populate_all_controller_slots_from_raw_defaults(preset)
+    util.populate_all_controller_slots_from_raw_file(preset)
     # snapshot controls
     # if (
     #     original_num_template_controllers == 0
     # ):  # they'll already be snapshot controllers if the controller is populated
     #    util.populate_missing_snapshot_controllers_from_raw_defaults(preset, snapshot_src_num)
-
     util.populate_snapshot_with_controllers_from_file(preset, snapshot_src_num)
-
     util.copy_controlled_default_parameter_values_to_snapshot(preset, snapshot_src_num)
     print("Oh")
     duplicate_snapshot_to_all(preset, snapshot(snapshot_src_num))

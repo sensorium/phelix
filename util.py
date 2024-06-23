@@ -216,15 +216,15 @@ def populate_controller_dsp_slot_from_raw_file(preset, dsp, slot):
     # print("populate_controller_from_defaults " + get_model_name(preset, dsp, slot) + ", " + dsp + " " + slot)
 
 
-def populate_missing_controller_slots_from_raw_defaults(preset):
-    for dsp in get_available_default_dsps(preset):
-        for slot in get_default_dsp(preset, dsp):
-            if slot not in get_controller_dsp(preset, dsp) and slot.startswith(("block", "split", "cab")):
-                get_controller_dsp(preset, dsp)[slot] = {}
-                populate_controller_dsp_slot_from_raw_file(preset, dsp, slot)
+# def populate_missing_controller_slots_from_raw_file(preset):
+#     for dsp in get_available_default_dsps(preset):
+#         for slot in get_default_dsp(preset, dsp):
+#             if slot not in get_controller_dsp(preset, dsp) and slot.startswith(("block", "split", "cab")):
+#                 get_controller_dsp(preset, dsp)[slot] = {}
+#                 populate_controller_dsp_slot_from_raw_file(preset, dsp, slot)
 
 
-def populate_all_controller_slots_from_raw_defaults(preset):
+def populate_all_controller_slots_from_raw_file(preset):
     for dsp in get_available_default_dsps(preset):
         for slot in get_default_dsp(preset, dsp):
             if slot.startswith(("block", "split", "cab")):
@@ -256,10 +256,10 @@ def copy_controlled_default_parameter_values_to_snapshot(preset, snapshot_num):
     for dsp in get_available_default_dsps(preset):
         for slot in get_controller_dsp(preset, dsp):
             for parameter in get_controller_dsp_slot(preset, dsp, slot):
-                print("copy_controlled_default_parameter_values_to_snapshot", dsp, slot, parameter)
-                get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot)[parameter] = {}
-                get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot)[parameter] = deepcopy(
-                    get_default_dsp_slot(preset, dsp, slot)[parameter]
+                # print("copy_controlled_default_parameter_values_to_snapshot", dsp, slot, parameter)
+                # get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot)[parameter] = {}
+                get_snapshot_controllers_dsp_slot_parameter(preset, snapshot_num, dsp, slot, parameter)["@value"] = (
+                    deepcopy(get_default_dsp_slot(preset, dsp, slot)[parameter])
                 )
 
 
@@ -282,6 +282,6 @@ def copy_snapshot_values_to_default(preset, snapshot_num):
     for dsp in get_available_default_dsps(preset):
         for slot in get_snapshot_controllers_dsp(preset, snapshot_num, dsp):
             for parameter in get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot):
-                get_default_dsp_slot(preset, dsp, slot)[parameter] = get_snapshot_controllers_dsp_slot_parameter_value(
-                    preset, snapshot_num, dsp, slot, parameter
+                get_default_dsp_slot(preset, dsp, slot)[parameter] = deepcopy(
+                    get_snapshot_controllers_dsp_slot_parameter_value(preset, snapshot_num, dsp, slot, parameter)
                 )
