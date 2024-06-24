@@ -106,7 +106,7 @@ def mix_values(fraction_new, pmin, pmax, result, prev_result):
 
 
 def mutate_parameter_values_for_all_snapshots(preset, fraction_new):
-    print("mutate_parameter_values_for_all_snapshots")
+    print("Mutating parameter values for all snapshots")
     for snapshot_num in range(constants.NUM_SNAPSHOTS):
         for dsp in util.get_snapshot_controllers(preset, snapshot_num):
             for slot in util.get_snapshot_controllers_dsp(preset, snapshot_num, dsp):
@@ -307,9 +307,10 @@ def swap_with_random_split_from_file(preset, dsp, slot):
     mutate_parameter_values_for_all_snapshots(preset, 1.0)
 
 
-def increment_preset_name(preset, postfix_num):
-    name = preset["data"]["meta"]["name"]
-    name = name + str(postfix_num)
+def increment_preset_name(preset, preset_name, postfix_num):
+    name = preset["data"]["meta"]["name"] if preset_name == "" else preset_name
+    postfix_num_str = str(postfix_num).zfill(3)
+    name = f"{name}-{postfix_num_str}"
     preset["data"]["meta"]["name"] = name
     print(f"Preset name: {name}")
 
@@ -347,17 +348,15 @@ def snapshot(snapshot_num):
     return f"snapshot{snapshot_num}"
 
 
-def mutate_dictionary(preset, snapshot_src_num, postfix_num):
-    increment_preset_name(preset, postfix_num)
+def mutate_dictionary(preset, snapshot_src_num, preset_name, postfix_num):
+    increment_preset_name(preset, preset_name, postfix_num)
     set_dsp1_input_to_multi(preset)
     if "controllers" in util.get_snapshot(preset, snapshot_src_num):
-        print("Hi")
         util.copy_snapshot_values_to_default(preset, snapshot_src_num)
-    # util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
+    util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
     # controller
     original_num_template_controllers = util.count_controllers(preset)
     # util.populate_missing_controller_slots_from_raw_defaults(preset)
-    print("Ho")
     util.populate_all_controller_slots_from_raw_file(preset)
     # snapshot controls
     # if (
@@ -366,7 +365,6 @@ def mutate_dictionary(preset, snapshot_src_num, postfix_num):
     #    util.populate_missing_snapshot_controllers_from_raw_defaults(preset, snapshot_src_num)
     util.populate_snapshot_with_controllers_from_file(preset, snapshot_src_num)
     util.copy_controlled_default_parameter_values_to_snapshot(preset, snapshot_src_num)
-    print("Oh")
     duplicate_snapshot_to_all(preset, snapshot(snapshot_src_num))
     swap_some_blocks_and_splits_from_file(preset, constants.MUTATION_RATE)
     choose.move_splits_and_joins(preset)
@@ -388,24 +386,23 @@ def mutate_dictionary(preset, snapshot_src_num, postfix_num):
 # add volume and other missing units
 
 
-def mutate_preset_from_source_snapshot(template_file, snapshot_src_num, output_file, postfix_num):
+def mutate_preset_from_source_snapshot(template_file, snapshot_src_num, output_file, preset_name, postfix_num):
     with open(template_file, "r") as f:
         preset = json.load(f)
-        mutate_dictionary(preset, snapshot_src_num, postfix_num)
+        mutate_dictionary(preset, snapshot_src_num, preset_name, postfix_num)
         print("mutate")
         with open(output_file, "w") as f:
             json.dump(preset, f, indent=4)
 
 
 def generate_multiple_mutations_from_template(args_from_gui):
-    # preset_name_base = args.get("preset_name_base")
-    print("hey!")
     for i in range(args_from_gui.get("num_presets")):
         # preset_name = preset_name_base + chr(ord("a") + (i % 26))
         mutate_preset_from_source_snapshot(
             args_from_gui.get("template_file"),
             args_from_gui.get("snapshot_src_num") - 1,  # 0 indexed
             args_from_gui.get("output_file")[:-4] + str(i + 1) + ".hlx",
+            args_from_gui.get("preset_name"),
             i,
         )
 

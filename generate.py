@@ -1,3 +1,24 @@
+# This file is the main entry point for the application. It is the start of the
+# program and is responsible for loading the necessary modules and classes.
+#
+# The program is divided into several modules, each with their own specific
+# functionality. The main module loads the necessary modules and classes, and
+# then calls the main function defined in the main module.
+#
+# The program uses the following modules:
+#   - constants: Contains global constants used throughout the program.
+#   - file: Contains functions for reading and writing files.
+#   - util: Contains utility functions used throughout the program.
+#   - mutate: Contains functions for mutating the preset.
+#   - choose: Contains functions for choosing files and parameters.
+#
+# The program uses the following classes:
+#   - Generate: Class for generating presets.
+#   - Mutate: Class for mutating presets.
+#
+# The program calls the main function, which is defined in this module.
+
+
 # this module takes a preset file and modifies it to be a valid preset for the pedalboard
 # it loads and modifies the json, and then saves it back as a new file
 from datetime import datetime
@@ -75,13 +96,10 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
         print("\nGenerating preset from template " + template_name + "...")
         set_preset_name(preset, preset_name)
         populate_preset_with_random_blocks(preset)
-        # print("finished populating")
         add_cabs(preset)
         choose.move_splits_and_joins(preset)
         print()
-        # print("about to mutate")
         mutate.mutate_parameter_values_for_all_snapshots(preset, 1.0)
-        # print("finished mutating")
         print()
         mutate.rearrange_blocks(preset, 1.0)
         choose.random_series_or_parallel_dsp_configuration(preset)
@@ -94,10 +112,14 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
 
 
 def generate_multiple_presets_from_template(args):
-    now = datetime.now()
-    preset_name_base = now.strftime("%y%m%d-%H%M")
+    if args.get("preset_name") == "":
+        now = datetime.now()
+        preset_name_base = now.strftime("%y%m%d-%H%M")
+    else:
+        preset_name_base = args.get("preset_name")
     for i in range(args.get("num_presets")):
-        preset_name = preset_name_base + chr(ord("a") + (i % 26))
+        i_str = str(i).zfill(3)
+        preset_name = f"{preset_name_base}-{i_str}"
         generate_preset_from_template_file(
             args.get("template_file"),
             args.get("output_file")[:-4] + str(i + 1) + ".hlx",
