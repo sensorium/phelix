@@ -6,7 +6,7 @@ import tkinter as tk
 
 from tkinter import Tk, Text, ttk, filedialog, END, BOTH, TRUE
 
-# from main import generate_multiple_presets_from_template
+# from generate import generate_multiple_presets_from_template
 from mutate import generate_multiple_mutations_from_template
 
 
