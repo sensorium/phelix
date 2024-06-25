@@ -118,7 +118,7 @@ class Generate:
             "num_presets": int(self.num_presets_entry.get()),
         }
         args_json = json.dumps(args)
-        command = ["python3", "main.py", args_json]
+        command = ["python3", "generate.py", args_json]
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         output, _ = process.communicate()
         output = output.decode("utf-8")

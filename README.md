@@ -9,7 +9,7 @@ Warning!  I can't guarantee it won't brick your Helix.  But it hasn't wrecked mi
 
 ## Prerequisites
 
-Install python.  Python 3 works for me.  You probably need to install a few extras, when phelix fails... hopefully the output will let you know what's missing.
+Install Python.  Python 3 works for me.  You probably need to install a few extras, when phelix fails... hopefully the output will let you know what's missing.
 Phelix works with Helix firmware 3.71, tested with a Helix LT.
 
 
@@ -24,7 +24,7 @@ There's a chance one or more of the presets will be blank.  I think this happens
 
 -blocks/ 
 
-contains the blocks that have been exported from a Helix which phelix loads to construct a new preset. So far these are (almost all) mono and legacy, but this might change (you can add any if you find them missing).  The blocks are made using HXedit by snapshotting all parameters (except bypass) and exporting as presets.  These are then processed with extractBlocks.py to generate the block files.  So far, IR blocks, Preamps and seperate Amp and Cab blocks aren't included.
+contains the blocks that have been exported from a Helix which phelix loads to construct a new preset. So far these are (almost all) mono and legacy, but this might change (you can add any if you find them missing).  The blocks are made using HXedit by snapshotting all parameters (except bypass) and exporting as presets.  These are then processed with extractBlocks.py to generate the block files.  So far, IR blocks, legacy Amp/Cab, and Preamps and seperate Amp and Cab blocks aren't included.
 
 -presets/
 
