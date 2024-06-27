@@ -49,6 +49,10 @@ def get_snapshot_blocks(preset, snapshot_num):
     return preset["data"]["tone"][f"snapshot{snapshot_num}"]["blocks"]
 
 
+def get_snapshot_blocks_dsp(preset, snapshot_num, dsp):
+    return preset["data"]["tone"][f"snapshot{snapshot_num}"]["blocks"][dsp]
+
+
 def get_snapshot_controllers(preset, snapshot_num):
     return preset["data"]["tone"][f"snapshot{snapshot_num}"]["controllers"]
 
@@ -73,6 +77,7 @@ def get_snapshot_controllers_dsp_slot_parameter(preset, snapshot_num, dsp, slot,
 
 
 def get_snapshot_controllers_dsp_slot_parameter_value(preset, snapshot_num, dsp, slot, parameter):
+    # print("get_snapshot_controllers_dsp_slot_parameter_value", snapshot_num, dsp, slot, parameter)
     return preset["data"]["tone"][f"snapshot{snapshot_num}"]["controllers"][dsp][slot][parameter]["@value"]
 
 
@@ -160,7 +165,7 @@ def add_parameter_to_controller(preset, dsp, slot, parameter, raw_block_dict):
     # save_debug_hlx(preset)
     get_controller_dsp_slot(preset, dsp, slot)[parameter] = deepcopy(raw_block_dict["Controller_Dict"][parameter])
     get_controller_dsp_slot_parameter(preset, dsp, slot, parameter)["@controller"] = 19
-    print("add_parameter_to_controller ", parameter, "in", get_model_name(preset, dsp, slot), ",", dsp, slot)
+    print("  add_parameter_to_controller ", parameter, "in", get_model_name(preset, dsp, slot), ",", dsp, slot)
 
 
 def get_controller(preset):
@@ -198,15 +203,6 @@ def set_led_colours(preset):
         preset["data"]["tone"][f"snapshot{snapshot_num}"]["@ledcolor"] = str(snapshot_num + 1)
 
 
-def add_dsp_controller_and_snapshot_keys_if_missing(preset):
-    for dsp in ["dsp0", "dsp1"]:
-        preset["data"]["tone"].setdefault(dsp, {})
-        preset["data"]["tone"].setdefault("controller", {}).setdefault(dsp, {})
-        for snapshot_num in range(constants.NUM_SNAPSHOTS):
-            snapshot_name = f"snapshot{snapshot_num}"
-            preset["data"]["tone"].setdefault(snapshot_name, {}).setdefault("controllers", {}).setdefault(dsp, {})
-
-
 # leaves
 # def populate_missing_controller_dsp_slot_parameters_from_raw_default(preset, dsp, slot):
 #     controller_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
@@ -239,6 +235,11 @@ def populate_snapshot_with_controllers_from_file(preset, snapshot_num):
                 snapshot_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)["SnapshotParams"]
                 get_snapshot_controllers_dsp(preset, snapshot_num, dsp)[slot] = {}
                 get_snapshot_controllers_dsp(preset, snapshot_num, dsp)[slot] = deepcopy(snapshot_block_dict)
+
+
+def populate_all_snapshots_with_controllers_from_file(preset):
+    for snapshot_num in range(constants.NUM_SNAPSHOTS):
+        populate_snapshot_with_controllers_from_file(preset, snapshot_num)
 
 
 # def populate_missing_snapshot_controllers_from_raw_defaults(preset, snapshot_num):
@@ -285,3 +286,61 @@ def copy_snapshot_values_to_default(preset, snapshot_num):
                 get_default_dsp_slot(preset, dsp, slot)[parameter] = deepcopy(
                     get_snapshot_controllers_dsp_slot_parameter_value(preset, snapshot_num, dsp, slot, parameter)
                 )
+
+
+def set_topologies_to_SABJ(preset):
+    preset["data"]["tone"]["global"]["@topology0"] = "SABJ"  # dsp0
+    preset["data"]["tone"]["global"]["@topology1"] = "SABJ"  # dsp1
+    # some options: "ABJ" (pathA, pathB, Join), "SABJ", (split, pathA, pathB, join)
+
+
+def add_dsp_controller_and_snapshot_keys_if_missing(preset):
+    for dsp in ["dsp0", "dsp1"]:
+        preset["data"]["tone"].setdefault(dsp, {})
+        preset["data"]["tone"].setdefault("controller", {}).setdefault(dsp, {})
+        for snapshot_num in range(constants.NUM_SNAPSHOTS):
+            snapshot_name = f"snapshot{snapshot_num}"
+            preset["data"]["tone"].setdefault(snapshot_name, {}).setdefault("controllers", {}).setdefault(dsp, {})
+            get_snapshot(preset, snapshot_num).setdefault("controllers", {}).setdefault(dsp, {})
+            get_snapshot(preset, snapshot_num).setdefault("blocks", {}).setdefault(dsp, {})
+
+
+def add_splits(preset):
+    for dsp in get_available_default_dsps(preset):
+        for snapshot_num in range(constants.NUM_SNAPSHOTS):
+            get_snapshot_blocks_dsp(preset, snapshot_num, dsp).setdefault("split", "false")  # bypass not controlled?
+
+
+def duplicate_snapshot(preset, snapshot_src, snapshot_dst):
+    preset["data"]["tone"][snapshot_dst] = deepcopy(preset["data"]["tone"][snapshot_src])
+    preset["data"]["tone"][snapshot_dst]["@name"] = snapshot_dst
+
+
+def copy_all_default_values_to_snapshot(preset, snapshot_num):
+    for dsp in get_available_default_dsps(preset):
+        for slot in get_snapshot_controllers_dsp(preset, snapshot_num, dsp):
+            for parameter in get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot):
+                get_snapshot_controllers_dsp_slot_parameter(preset, snapshot_num, dsp, slot, parameter)["@value"] = (
+                    deepcopy(get_default_dsp_slot_parameter(preset, dsp, slot, parameter))
+                )
+
+
+def copy_all_default_values_to_all_snapshots(preset):
+    for snapshot_num in range(constants.NUM_SNAPSHOTS):
+        copy_all_default_values_to_snapshot(preset, snapshot_num)
+
+
+def duplicate_src_snapshot_to_all(preset, snapshot_src):
+    for snapshot_num in range(constants.NUM_SNAPSHOTS):
+        snapshot_dst = f"snapshot{snapshot_num}"
+        if snapshot_dst != snapshot_src:
+            duplicate_snapshot(preset, snapshot_src, snapshot_dst)
+
+
+def count_controllable_parameters_in_preset(preset):
+    count = 0
+    for dsp in get_available_default_dsps(preset):
+        for slot in get_default_dsp(preset, dsp):
+            if slot.startswith(("block", "split", "cab")):
+                count += len(file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"].keys())
+    return count

@@ -1,11 +1,8 @@
 import argparse
-from copy import deepcopy
 import json
 import random
-
 import constants
-
-# from debug import save_debug_hlx
+from debug import save_debug_hlx
 import file
 import util
 import choose
@@ -71,7 +68,7 @@ def mutate_parameter_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slo
 def mutate_default_block(preset, dsp, slot, fraction_new):
     defaults_block = util.get_default_dsp_slot(preset, dsp, slot)
     unpruned_block_ranges = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
-    print("mutate_default_block", dsp, slot, util.get_model_name(preset, dsp, slot))
+    print("  mutate_default_block", dsp, slot, util.get_model_name(preset, dsp, slot))
     # print(defaults_block)
     for parameter in unpruned_block_ranges:  # not all default params can be changed on the helix
         pmin = unpruned_block_ranges[parameter]["@min"]
@@ -123,6 +120,7 @@ def mutate_parameter_value(mean, p_min, p_max):
 
 
 def swap_some_control_destinations(preset, control_num, max_changes):
+    print("Swapping some control destinations")
     num_changes = random.randint(0, max_changes)
     choose.random_remove_controls(preset, control_num, num_changes)
     for _ in range(num_changes):
@@ -145,18 +143,6 @@ def toggle_series_or_parallel_dsps(preset, change_fraction):
         print("toggling series or parallel dsps")
         current = preset["data"]["tone"]["dsp0"]["outputA"]["@output"]
         preset["data"]["tone"]["dsp0"]["outputA"]["@output"] = 2 if current == 1 else 1
-
-
-def duplicate_snapshot(preset, snapshot_src, snapshot_dst):
-    preset["data"]["tone"][snapshot_dst] = deepcopy(preset["data"]["tone"][snapshot_src])
-    preset["data"]["tone"][snapshot_dst]["@name"] = snapshot_dst
-
-
-def duplicate_snapshot_to_all(preset, snapshot_src):
-    for snapshot_num in range(constants.NUM_SNAPSHOTS):
-        snapshot_dst = f"snapshot{snapshot_num}"
-        if snapshot_dst != snapshot_src:
-            duplicate_snapshot(preset, snapshot_src, snapshot_dst)
 
 
 def find_used_default_block_slots(preset):
@@ -338,8 +324,12 @@ def mutate_one_set_of_pedal_ranges(preset, dsp, slot, parameter):
         pmin = raw_block_dict["Controller_Dict"][parameter]["@min"]
         pmax = raw_block_dict["Controller_Dict"][parameter]["@max"]
         # print(pedalParam["@min"], pmin, pmax)
-        new_min = mutate_parameter_value(param["@min"], pmin, pmax)  # (mean, pmin, pmax)
-        new_max = mutate_parameter_value(param["@max"], pmin, pmax)
+        if param["@min"] == pmin and param["@max"] == pmax:
+            new_max = random.uniform(param["@min"], param["@max"])
+            new_min = random.uniform(param["@min"], param["@max"])
+        else:
+            new_min = mutate_parameter_value(param["@min"], pmin, pmax)  # (mean, pmin, pmax)
+            new_max = mutate_parameter_value(param["@max"], pmin, pmax)
         param["@min"] = new_min
         param["@max"] = new_max
 
@@ -348,24 +338,22 @@ def snapshot(snapshot_num):
     return f"snapshot{snapshot_num}"
 
 
-def mutate_dictionary(preset, snapshot_src_num, preset_name, postfix_num):
+def mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num):
     increment_preset_name(preset, preset_name, postfix_num)
     set_dsp1_input_to_multi(preset)
-    if "controllers" in util.get_snapshot(preset, snapshot_src_num):
-        util.copy_snapshot_values_to_default(preset, snapshot_src_num)
+    util.set_topologies_to_SABJ(preset)
     util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
-    # controller
-    original_num_template_controllers = util.count_controllers(preset)
-    # util.populate_missing_controller_slots_from_raw_defaults(preset)
+    util.add_splits(preset)
     util.populate_all_controller_slots_from_raw_file(preset)
-    # snapshot controls
-    # if (
-    #     original_num_template_controllers == 0
-    # ):  # they'll already be snapshot controllers if the controller is populated
-    #    util.populate_missing_snapshot_controllers_from_raw_defaults(preset, snapshot_src_num)
-    util.populate_snapshot_with_controllers_from_file(preset, snapshot_src_num)
-    util.copy_controlled_default_parameter_values_to_snapshot(preset, snapshot_src_num)
-    duplicate_snapshot_to_all(preset, snapshot(snapshot_src_num))
+    if snapshot_src_num_str.isdigit():
+        snapshot_src_num = int(snapshot_src_num_str) - 1  # 0-indexed
+        if 0 <= snapshot_src_num <= 7:
+            print(f"Mutating from Source Snapshot {snapshot_src_num_str}")  # not indexed 0
+            util.copy_snapshot_values_to_default(preset, snapshot_src_num)
+    else:
+        print("Mutating Default to produce 8 Snapshots")
+    util.populate_all_snapshots_with_controllers_from_file(preset)
+    util.copy_all_default_values_to_all_snapshots(preset)
     swap_some_blocks_and_splits_from_file(preset, constants.MUTATION_RATE)
     choose.move_splits_and_joins(preset)
     choose.prune_controllers(preset)
@@ -378,19 +366,16 @@ def mutate_dictionary(preset, snapshot_src_num, preset_name, postfix_num):
     toggle_some_block_states(preset, constants.MUTATION_RATE)
     toggle_series_or_parallel_dsps(preset, constants.TOGGLE_RATE)
     util.set_led_colours(preset)
+    print()
 
 
-# if there are no snapshots (controllers) start with default values as source for snapshots
-# allow to distribute blocks to both dsps and all paths, even if only one is used in the source
-# check what happens with splits and joins (positions)
 # add volume and other missing units
 
 
-def mutate_preset_from_source_snapshot(template_file, snapshot_src_num, output_file, preset_name, postfix_num):
+def mutate_preset_from_source_snapshot(template_file, snapshot_src_num_str, output_file, preset_name, postfix_num):
     with open(template_file, "r") as f:
         preset = json.load(f)
-        mutate_dictionary(preset, snapshot_src_num, preset_name, postfix_num)
-        print("mutate")
+        mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num)
         with open(output_file, "w") as f:
             json.dump(preset, f, indent=4)
 
@@ -400,7 +385,8 @@ def generate_multiple_mutations_from_template(args_from_gui):
         # preset_name = preset_name_base + chr(ord("a") + (i % 26))
         mutate_preset_from_source_snapshot(
             args_from_gui.get("template_file"),
-            args_from_gui.get("snapshot_src_num") - 1,  # 0 indexed
+            args_from_gui.get("snapshot_src_num"),  # not 0 indexed (yet), and can be an int or a string ("default")
+            # args_from_gui.get("snapshot_src_num") - 1,  # 0 indexed
             args_from_gui.get("output_file")[:-4] + str(i + 1) + ".hlx",
             args_from_gui.get("preset_name"),
             i,

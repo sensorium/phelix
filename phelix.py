@@ -23,7 +23,7 @@ def load_recent_config_from_file():
     config_files = glob.glob("*.json")
     config_files.sort(key=os.path.getmtime)
     if config_files:
-        print("found config")
+        # print("found config")
         config_file = config_files[-1]
         with open(config_file, "r") as f:
             config = json.load(f)
@@ -192,13 +192,13 @@ class Mutate:
         args = {
             "template_file": self.template_entry.get(),
             "output_file": self.output_entry.get(),
-            "snapshot_src_num": int(self.snapshot_src_num_entry.get()),
+            "snapshot_src_num": self.snapshot_src_num_entry.get(),
             "preset_name": self.name_entry.get(),
             "num_presets": int(self.num_presets_entry.get()),
         }
 
         args_json = json.dumps(args)
-        print(args_json)
+        # print(args_json)
         command = ["python3", "mutate.py", args_json]
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         output, _ = process.communicate()
