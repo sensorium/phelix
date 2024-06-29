@@ -28,8 +28,8 @@ contains the blocks that have been exported from a Helix which phelix loads to c
 
 -presets/
 
-    -generated/ holds generated presets
-    -templates/ has template presets which phelix modifies by swapping blocks from the blocks folder. The one called LessOccSplit.hlx has 5 blocks on each dsp, and uses all the paths.  This seems a fairly reliable number of blocks before the presets fail to load, since phelix doesn't account for more and less dsp intensive effects.  That said, phelix limits Amp/Cab combos to one per dsp (though they may mutate beyond that... I have to check)
+-generated/ holds generated presets
+-templates/ has template presets which phelix modifies by swapping blocks from the blocks folder. The one called LessOccSplit.hlx has 5 blocks on each dsp, and uses all the paths.  This seems a fairly reliable number of blocks before the presets fail to load, since phelix doesn't account for more and less dsp intensive effects.  That said, phelix limits Amp/Cab combos to one per dsp (though they may mutate beyond that... I have to check)
 
 
 ## Contributing
