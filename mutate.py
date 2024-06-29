@@ -369,9 +369,6 @@ def mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num):
     print()
 
 
-# add volume and other missing units
-
-
 def mutate_preset_from_source_snapshot(template_file, snapshot_src_num_str, output_file, preset_name, postfix_num):
     with open(template_file, "r") as f:
         preset = json.load(f)
@@ -382,11 +379,9 @@ def mutate_preset_from_source_snapshot(template_file, snapshot_src_num_str, outp
 
 def generate_multiple_mutations_from_template(args_from_gui):
     for i in range(args_from_gui.get("num_presets")):
-        # preset_name = preset_name_base + chr(ord("a") + (i % 26))
         mutate_preset_from_source_snapshot(
             args_from_gui.get("template_file"),
-            args_from_gui.get("snapshot_src_num"),  # not 0 indexed (yet), and can be an int or a string ("default")
-            # args_from_gui.get("snapshot_src_num") - 1,  # 0 indexed
+            args_from_gui.get("snapshot_src_num"),  # not 0 indexed
             args_from_gui.get("output_file")[:-4] + str(i + 1) + ".hlx",
             args_from_gui.get("preset_name"),
             i,

@@ -190,7 +190,7 @@ def get_controller_dsp_slot_parameter(preset, dsp, slot, parameter):
 def remove_parameter_from_controller(preset, dsp, slot, param):
     del get_controller_dsp_slot(preset, dsp, slot)[param]
     model_name = get_model_name(preset, dsp, slot)
-    print(f"remove_parameter_from_controller {param} in {model_name}, {dsp} {slot}")
+    print(f"  remove_parameter_from_controller {param} in {model_name}, {dsp} {slot}")
 
 
 def get_model_name(preset, dsp, slot):

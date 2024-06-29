@@ -114,6 +114,7 @@ def random_block_category() -> str:
         ("PitchSynth", 10),
         ("Reverb", 25),
         ("Split", 10),
+        ("VolPan", 3),
         ("Wah", 10),
     ]
     # make 1 choice with weighted probabilities

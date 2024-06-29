@@ -1,0 +1,37 @@
+{
+    "SnapshotParams": {
+        "Pedal": {
+            "@fs_enabled": false,
+            "@value": 1
+        },
+        "VolumeTaper": {
+            "@fs_enabled": false,
+            "@value": false
+        }
+    },
+    "Controller_Dict": {
+        "Pedal": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "VolumeTaper": {
+            "@min": false,
+            "@max": true,
+            "@controller": 19,
+            "@snapshot_disable": false
+        }
+    },
+    "Defaults": {
+        "@model": "HD2_VolPanVol",
+        "@no_snapshot_bypass": false,
+        "@path": 0,
+        "@stereo": false,
+        "@type": 0,
+        "Pedal": 1,
+        "@position": 1,
+        "@enabled": true,
+        "VolumeTaper": false
+    }
+}
