@@ -231,6 +231,7 @@ class Mutate:
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         output, _ = process.communicate()
         output = output.decode("utf-8")
+        self.output_area.delete("1.0", tk.END)
         self.output_area.insert("end", output)
         self.output_area.insert(tk.END, "\nPreset generation complete!\n")
         self.output_area.see(tk.END)
