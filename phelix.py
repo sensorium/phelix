@@ -3,10 +3,8 @@ import os
 import glob
 import json
 import tkinter as tk
-from tkinter import Tk, Text, ttk, filedialog, END, BOTH, TRUE, CENTER
+from tkinter import ttk, filedialog, END
 
-# from generate import generate_multiple_presets_from_template
-from mutate import generate_multiple_mutations_from_template
 
 # config dictionary
 config = {}
@@ -14,6 +12,7 @@ config = {}
 # Initialize global variables
 gen_tab = None
 mutate_tab = None
+
 TEXT_FIELD_WIDTH = 50
 NUMBER_FIELD_WIDTH = 5
 OUTPUT_FIELD_WIDTH = 100
