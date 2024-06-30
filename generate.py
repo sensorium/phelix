@@ -34,18 +34,18 @@ import choose
 
 def add_cabs(preset):
     for dsp in ["dsp0", "dsp1"]:
-        cabs_used = 0
 
         amp_blocks_list = []
-        for amp_slot in preset["data"]["tone"][dsp]:
-            if util.get_model_name(preset, dsp, amp_slot).startswith("HD2_Amp"):
-                amp_blocks_list.append(amp_slot)
+        for slot in util.get_default_dsp(preset, dsp):
+            if util.get_model_name(preset, dsp, slot).startswith("HD2_Amp"):
+                amp_blocks_list.append(slot)
 
-        for amp in amp_blocks_list:
+        cabs_used = 0
+        for amp_slot in amp_blocks_list:
             print("Adding cab...")
             cab_slot = "cab" + str(cabs_used)
             cabs_used += 1
-            preset["data"]["tone"][dsp][amp]["@cab"] = cab_slot
+            util.get_default_dsp_slot(preset, dsp, amp_slot)["@cab"] = cab_slot
             # load a random cab
             raw_cab_dict = file.load_block_dictionary(choose.random_block_file_in_category("Cab"))
             util.add_raw_block_to_preset(preset, dsp, cab_slot, raw_cab_dict)
@@ -54,34 +54,30 @@ def add_cabs(preset):
 def load_random_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amps):
     while True:
         block_dict = file.load_block_dictionary(choose.random_block_file_excluding_cab_or_split())
-        if num_amps == 0 or not block_dict["Defaults"]["@model"].startswith("HD2_Amp"):
-            if block_dict["Defaults"]["@model"].startswith("HD2_Amp"):
-                num_amps += 1
-            break
-    return block_dict, num_amps
+        # Only return an amp block if num_amps is 0
+        if num_amps == 0 and block_dict["Defaults"]["@model"].startswith("HD2_Amp"):
+            num_amps += 1
+            # print("amp, numamps = ", num_amps)
+            return block_dict, num_amps
+        # Otherwise, return a non-amp block
+        elif not block_dict["Defaults"]["@model"].startswith("HD2_Amp"):
+            # print("no amp, numamps = ", num_amps)
+            return block_dict, num_amps
 
 
-# insert param keys into each snapshot in preset
 def populate_preset_with_random_blocks(preset):
     for dsp in ["dsp0", "dsp1"]:
         print("\nPopulating " + dsp + "...")
         num_amps = 0
-        util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
-
-        for slot in preset["data"]["tone"][dsp]:
-            if not slot.startswith(("block", "split")):
-                continue
+        for slot in util.get_default_dsp(preset, dsp):
+            # if not slot.startswith(("block", "split")):
+            #     continue
             if slot.startswith("block"):
                 new_dict, num_amps = load_random_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amps)
+                util.add_raw_block_to_preset(preset, dsp, slot, new_dict)
             elif slot.startswith("split"):
                 new_dict = file.load_block_dictionary(choose.random_block_file_in_category("Split"))
-
-            util.add_raw_block_to_preset(preset, dsp, slot, new_dict)
-
-
-def set_preset_name(preset, preset_name):
-    print("Preset name: " + preset_name)
-    preset["data"]["meta"]["name"] = preset_name
+                util.add_raw_block_to_preset(preset, dsp, slot, new_dict)
 
 
 def swap_some_snapshot_controls_to_pedal(preset, pedal_control_num):
@@ -94,8 +90,10 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
     with open(template_name, "r") as f:
         preset = json.load(f)
         print("\nGenerating preset from template " + template_name + "...")
-        set_preset_name(preset, preset_name)
+        util.set_preset_name(preset, preset_name)
+        util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
         populate_preset_with_random_blocks(preset)
+        print()
         add_cabs(preset)
         choose.move_splits_and_joins(preset)
         print()

@@ -2,10 +2,15 @@ from copy import deepcopy
 import constants
 import file
 
+
 # from debug import save_debug_hlx
+def set_preset_name(preset, preset_name):
+    print("Preset name: " + preset_name)
+    preset["data"]["meta"]["name"] = preset_name
 
 
 def add_raw_block_to_preset(preset, dsp, slot, raw_block_dict):
+    print("  adding raw block to preset", raw_block_dict["Defaults"]["@model"], dsp, slot)
     add_raw_block_default_to_dsp(preset, dsp, slot, raw_block_dict)
     add_raw_block_to_controller(preset, dsp, slot, raw_block_dict)
     add_raw_block_to_snapshots(preset, dsp, slot, raw_block_dict)

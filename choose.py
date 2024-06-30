@@ -16,7 +16,7 @@ def random_block_file_in_category(category_folder):
     folder_path = os.path.join(constants.BLOCKS_PATH, category_folder)
     block_files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
     filepath = os.path.join(folder_path, random.choice(block_files))
-    print(f"  choosing {filepath}")
+    # print(f"  choosing {filepath}")
     return filepath
 
 
