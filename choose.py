@@ -82,11 +82,10 @@ def random_controlled_parameter_and_ranges(preset, control_num):
             randparam = random_controller_param(preset, dsp, randblock)
         if randparam != "none":
             set_random_controller_max_and_min(preset, control_num, dsp, randblock, randparam)
-            model_name = preset["data"]["tone"][dsp][randblock]["@model"]
             print(
                 f"  set controller {str(control_num)} to {dsp}",
                 randblock,
-                model_name,
+                util.get_model_name(preset, dsp, randblock),
                 randparam,
             )
 

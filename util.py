@@ -42,7 +42,7 @@ def get_default_dsp_slot(preset, dsp, slot):
     return preset["data"]["tone"][dsp][slot]
 
 
-def get_default_dsp_slot_parameter(preset, dsp, slot, parameter):
+def get_default_dsp_slot_parameter_value(preset, dsp, slot, parameter):
     return preset["data"]["tone"][dsp][slot][parameter]
 
 
@@ -326,7 +326,7 @@ def copy_all_default_values_to_snapshot(preset, snapshot_num):
         for slot in get_snapshot_controllers_dsp(preset, snapshot_num, dsp):
             for parameter in get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot):
                 get_snapshot_controllers_dsp_slot_parameter(preset, snapshot_num, dsp, slot, parameter)["@value"] = (
-                    deepcopy(get_default_dsp_slot_parameter(preset, dsp, slot, parameter))
+                    deepcopy(get_default_dsp_slot_parameter_value(preset, dsp, slot, parameter))
                 )
 
 

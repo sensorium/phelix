@@ -8,28 +8,16 @@ import util
 import choose
 
 
-def get_mutated_parameter_value(preset, dsp, slot, parameter, pmin, pmax):
-    defaults_block = util.get_default_dsp_slot(preset, dsp, slot)
-    parameter_settings = {
-        "Level": lambda: (
-            random_triangle(pmax, pmin, 0.8, 0.0)
-            if (slot.startswith("block") or slot.startswith("cab"))
-            else random.uniform(pmin, pmax)
-        ),
-        "Time": lambda: min(pmax, random.expovariate(0.95 + (0.75 - 0.95) * (pmax - 2) / (8 - 2))),
-        "Mix": lambda: random_triangle(pmax, pmin, 0.5, 0.0),
-        "Feedback": lambda: random_triangle(pmax, pmin, 0.5, 0.0),
-        "Decay": lambda: (
-            random_triangle(pmax, pmin, 0.05, 0.0)
-            if defaults_block["@model"].startswith(("HD2_Reverb", "VIC", "Victoria"))
-            else random.uniform(pmin, pmax)
-        ),
-    }
+def is_block_or_cab_slot(slot):
+    return slot.startswith("block") or slot.startswith("cab")
 
-    if isinstance(pmin, bool):
-        return random.choice([True, False])
-    else:
-        return parameter_settings.get(parameter, lambda: random.uniform(pmin, pmax))()
+
+def is_specific_model_type(preset, dsp, slot):
+    return util.get_default_dsp_slot(preset, dsp, slot)["@model"].startswith(("HD2_Reverb", "VIC", "Victoria"))
+
+
+def is_reverb(preset, dsp, slot):
+    return util.get_default_dsp_slot(preset, dsp, slot)["@model"].startswith(("HD2_Reverb", "VIC", "Victoria"))
 
 
 def random_triangle(pmax, pmin, mode_fraction, lowest_fraction):
@@ -38,24 +26,43 @@ def random_triangle(pmax, pmin, mode_fraction, lowest_fraction):
     return random.triangular(lowest, pmax, mode)
 
 
+special_parameter_mutations_cache = {}  # Global cache
+
+
+def get_mutated_parameter_value(preset, dsp, slot, parameter, pmin, pmax):
+    global special_parameter_mutations_cache
+
+    # Check if special_parameter_mutations is cached
+    if "special_parameter_mutations" not in special_parameter_mutations_cache:
+        special_parameter_mutations_cache["special_parameter_mutations"] = {
+            "Level": lambda: (
+                random_triangle(pmax, pmin, 0.8, 0.0) if is_block_or_cab_slot(slot) else random.uniform(pmin, pmax)
+            ),
+            "Decay": lambda: (
+                random_triangle(pmax, pmin, 0.05, 0.0) if is_reverb(preset, dsp, slot) else random.uniform(pmin, pmax)
+            ),
+            "Time": lambda: min(pmax, random.expovariate(0.95 + (0.75 - 0.95) * (pmax - 2) / (8 - 2))),
+            "Mix": lambda: random_triangle(pmax, pmin, 0.5, 0.0),
+            "Feedback": lambda: random_triangle(pmax, pmin, 0.5, 0.0),
+        }
+
+    special_parameter_mutations = special_parameter_mutations_cache["special_parameter_mutations"]
+
+    if isinstance(pmin, bool):
+        return random.choice([True, False])
+    else:
+        return special_parameter_mutations.get(parameter, lambda: random.uniform(pmin, pmax))()
+
+
 # chooses and stores parameter values for one block into a single snapshot
 #
 def mutate_parameter_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slot, fraction_new):
-    unpruned_block_ranges = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
-    # model_name = utils.get_default_slot(preset, dsp, slot)["@model"]
-    # print("mutating", dsp, slot, model_name)
+    raw_controllers = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
+    # print("mutating", dsp, slot, utils.get_default_slot(preset, dsp, slot)["@model"])
     for parameter in util.get_controller_dsp_slot(preset, dsp, slot):
-        # print("  about to mutate " + parameter)
-        # print(get_snapshot_slot(preset, snapshot_num, dsp, slot))
-        pmin = unpruned_block_ranges[parameter]["@min"]
-        pmax = unpruned_block_ranges[parameter]["@max"]
+        pmin = raw_controllers[parameter]["@min"]
+        pmax = raw_controllers[parameter]["@max"]
         result = get_mutated_parameter_value(preset, dsp, slot, parameter, pmin, pmax)
-
-        # print(parameter)
-        # print(util.get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot)[parameter])
-        # print(dsp, slot)
-        # print(util.get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot))
-        # save_debug_hlx(preset)
         prev_result = util.get_snapshot_controllers_dsp_slot_parameter_value(
             preset, snapshot_num, dsp, slot, parameter
         )
@@ -66,30 +73,23 @@ def mutate_parameter_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slo
 
 
 def mutate_default_block(preset, dsp, slot, fraction_new):
-    defaults_block = util.get_default_dsp_slot(preset, dsp, slot)
-    unpruned_block_ranges = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
+    raw_controllers = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
     print("  mutate_default_block", dsp, slot, util.get_model_name(preset, dsp, slot))
-    # print(defaults_block)
-    for parameter in unpruned_block_ranges:  # not all default params can be changed on the helix
-        pmin = unpruned_block_ranges[parameter]["@min"]
-        pmax = unpruned_block_ranges[parameter]["@max"]
+    for parameter in raw_controllers:  # not all default params can be changed on the helix
+        pmin = raw_controllers[parameter]["@min"]
+        pmax = raw_controllers[parameter]["@max"]
         result = get_mutated_parameter_value(preset, dsp, slot, parameter, pmin, pmax)
-        if isinstance(result, bool):
-            defaults_block[parameter] = result
-        else:
-            # random nudge default param
-            prev_result = defaults_block[parameter]
-            fraction_prev = 1.0 - fraction_new
-            result_mix = result * fraction_new + prev_result * fraction_prev
-            result_mix_constrained = max(pmin, min(result_mix, pmax))
-            defaults_block[parameter] = result_mix_constrained
+        prev_result = util.get_default_dsp_slot_parameter_value(preset, dsp, slot, parameter)
+        util.get_default_dsp_slot(preset, dsp, slot)[parameter] = mix_values(
+            fraction_new, pmin, pmax, result, prev_result
+        )
 
 
-def mutate_all_default_blocks(preset, fraction_new):
-    for dsp in util.get_available_default_dsps(preset):
-        for slot in util.get_default_dsp(preset, dsp):
-            if slot.startswith(("cab", "split", "block")):
-                mutate_default_block(preset, dsp, slot, fraction_new)
+# def mix_result(fraction_new, defaults_block, parameter, pmin, pmax, result):
+#     prev_result = defaults_block[parameter]
+#     fraction_prev = 1.0 - fraction_new
+#     result_mix = result * fraction_new + prev_result * fraction_prev
+#     return max(pmin, min(result_mix, pmax))
 
 
 def mix_values(fraction_new, pmin, pmax, result, prev_result):
@@ -97,9 +97,14 @@ def mix_values(fraction_new, pmin, pmax, result, prev_result):
         return result
     fraction_prev = 1.0 - fraction_new
     result_mix = result * fraction_new + prev_result * fraction_prev
-    result_mix_constrained = max(pmin, min(result_mix, pmax))
-    return result_mix_constrained
-    # print(pmin, pmax, prev_result, result_mix_constrained)
+    return max(pmin, min(result_mix, pmax))
+
+
+def mutate_all_default_blocks(preset, fraction_new):
+    for dsp in util.get_available_default_dsps(preset):
+        for slot in util.get_default_dsp(preset, dsp):
+            if slot.startswith(("cab", "split", "block")):
+                mutate_default_block(preset, dsp, slot, fraction_new)
 
 
 def mutate_parameter_values_for_all_snapshots(preset, fraction_new):
@@ -127,15 +132,24 @@ def swap_some_control_destinations(preset, control_num, max_changes):
         choose.random_controlled_parameter_and_ranges(preset, control_num)
 
 
+def toggle_block_state(preset, dsp, slot):
+    current_state = util.get_default_dsp_slot_parameter_value(preset, dsp, slot, "@enabled")
+    util.get_default_dsp_slot(preset, dsp, slot)["@enabled"] = not current_state
+
+
 def toggle_some_block_states(preset, change_fraction):
+    for dsp in util.get_available_default_dsps(preset):
+        for slot in util.get_default_dsp(preset, dsp):
+            if slot.startswith("block") and random.uniform(0, 1) < change_fraction:
+                toggle_block_state(preset, dsp, slot)
+
     for snapshot_num in range(constants.NUM_SNAPSHOTS):
         snapshot_blocks = util.get_snapshot_blocks(preset, snapshot_num)
         for dsp in snapshot_blocks:
             for slot in snapshot_blocks[dsp]:
                 if slot.startswith("block") and random.uniform(0, 1) < change_fraction:
                     current_state = snapshot_blocks[dsp][slot]
-                    new_state = not current_state
-                    snapshot_blocks[dsp][slot] = new_state
+                    snapshot_blocks[dsp][slot] = not current_state
 
 
 def toggle_series_or_parallel_dsps(preset, change_fraction):
@@ -248,7 +262,7 @@ def rearrange_blocks(preset, fraction_move):
 def rearrange_cab(preset, used_dsp_cab_slots, unused_dsp_cab_slots, dsp, amp_dsp, amp_slot):
     if dsp != amp_dsp:
         old_cab_slot = util.get_default_dsp_slot(preset, amp_dsp, amp_slot)["@cab"]
-        print("rearrange_cab old_cab_slot", dsp, old_cab_slot)
+        # print("rearrange_cab old_cab_slot", dsp, old_cab_slot)
         # Move cab_from_slot from used to unused list
         used_dsp_cab_slots[dsp].remove(old_cab_slot)
         unused_dsp_cab_slots[dsp].append(old_cab_slot)
@@ -348,8 +362,8 @@ def mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num):
     if snapshot_src_num_str.isdigit():
         snapshot_src_num = int(snapshot_src_num_str) - 1  # 0-indexed
         if 0 <= snapshot_src_num <= 7:
-            print(f"Mutating from Source Snapshot {snapshot_src_num_str}")  # not indexed 0
-            util.copy_snapshot_values_to_default(preset, snapshot_src_num)
+            print(f"Mutating from Source Snapshot {snapshot_src_num_str}")  # str is not 0-indexed
+            util.copy_snapshot_values_to_default(preset, snapshot_src_num)  # 0-indexed
     else:
         print("Mutating Default to produce 8 Snapshots")
     util.populate_all_snapshots_with_controllers_from_file(preset)
@@ -378,6 +392,9 @@ def mutate_preset_from_source_snapshot(template_file, snapshot_src_num_str, outp
 
 
 def generate_multiple_mutations_from_template(args_from_gui):
+    if args_from_gui.get("snapshot_src_num") == "":
+        snapshot_src_num = "default"
+
     for i in range(args_from_gui.get("num_presets")):
         mutate_preset_from_source_snapshot(
             args_from_gui.get("template_file"),
