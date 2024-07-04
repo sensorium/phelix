@@ -15,10 +15,7 @@ r = appmap.Recording()
 with r:
     import generate
 
-    # generate.generate_preset_from_template_file(
-    #     "presets/templates/LessOccSplitcc48.hlx", "presets/generated/aGenerated.hlx", ""
-    # )
-    generate.test("presets/templates/LessOccSplitcc48.hlx", "")
+    generate.test("presets/templates/Generator(CC48fs12).hlx", "")
     # print(sample.C().hello_world(), file=sys.stderr)
 
 with open(output_file, "w") as f:
