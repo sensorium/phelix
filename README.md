@@ -5,11 +5,11 @@ Line6 Helix preset generator
 
 Generates random presets for Helix processors, and enables you to mutate your own presets to search for unusual sounds.
 
-Warning!  I can't guarantee it won't brick your Helix.  But it hasn't wrecked mine yet.
+__*Warning!*__  I can't guarantee it won't brick your Helix.  But it hasn't wrecked mine yet.
 
 ## Prerequisites
 
-Install Python.  Python 3 works for me.  You probably need to install a few extras, when phelix fails... hopefully the output will let you know what's missing.
+Install Python.  Python 3 works for me.  You might need to install a few extras, if phelix fails... hopefully the output will let you know what's missing.
 Phelix works with Helix firmware 3.71, tested with a Helix LT.
 
 
