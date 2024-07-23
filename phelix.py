@@ -4,6 +4,7 @@ import glob
 import json
 import tkinter as tk
 from tkinter import ttk, filedialog, END
+from tkinter import BooleanVar
 
 
 # config dictionary
@@ -52,9 +53,8 @@ def save_config_to_file(event=None):
     config["mutate_preset_name"] = mutate_tab.name_entry.get()
     config["mutate_num_presets"] = int(mutate_tab.num_presets_entry.get())
     config["mutate_snapshot_src_num"] = int(mutate_tab.snapshot_src_num_entry.get())
-
-    config["change_topology"] = gen_tab.name_entry.get()
-    config["change_controllers"] = gen_tab.name_entry.get()
+    config["change_topology"] = mutate_tab.change_topology_var.get()
+    config["change_controllers"] = mutate_tab.change_controllers_var.get()
 
     config_file = filedialog.asksaveasfilename(
         initialdir="./", title="Save Config File", filetypes=(("json files", "*.json"), ("All files", "*.*"))
@@ -104,25 +104,8 @@ def update_ui_from_config():
     mutate_tab.num_presets_entry.insert(0, config["mutate_num_presets"])
     mutate_tab.snapshot_src_num_entry.delete(0, END)
     mutate_tab.snapshot_src_num_entry.insert(0, config["mutate_snapshot_src_num"])
-    # gen_tab.template_entry.delete(0, END)
-    # gen_tab.template_entry.insert(0, config.get("template_file", ""))
-    # gen_tab.output_entry.delete(0, END)
-    # gen_tab.output_entry.insert(0, config.get("output_file", ""))
-    # gen_tab.name_entry.delete(0, END)
-    # gen_tab.name_entry.insert(0, config.get("preset_name", ""))
-    # gen_tab.num_presets_entry.delete(0, END)
-    # gen_tab.num_presets_entry.insert(0, config.get("num_presets", 1))
-
-    # mutate_tab.template_entry.delete(0, END)
-    # mutate_tab.template_entry.insert(0, config.get("mutate_template_file", ""))
-    # mutate_tab.output_entry.delete(0, END)
-    # mutate_tab.output_entry.insert(0, config.get("mutate_output_file", ""))
-    # mutate_tab.name_entry.delete(0, END)
-    # mutate_tab.name_entry.insert(0, config.get("mutate_preset_name", ""))
-    # mutate_tab.num_presets_entry.delete(0, END)
-    # mutate_tab.num_presets_entry.insert(0, config.get("mutate_num_presets", 1))
-    # mutate_tab.snapshot_src_num_entry.delete(0, END)
-    # mutate_tab.snapshot_src_num_entry.insert(0, config.get("mutate_snapshot_src_num", 1))
+    mutate_tab.change_topology_var.set(config["change_topology"])
+    mutate_tab.change_controllers_var.set(config["change_controllers"])
 
 
 ########### generate_tab #######################################################
@@ -214,6 +197,10 @@ class Mutate:
         self.name_entry = None
         self.num_presets_entry = None
         self.snapshot_src_num_entry = None
+        # self.change_topology_entry = None
+        # self.change_controllers_entry = None
+        self.change_topology_var = BooleanVar()
+        self.change_controllers_var = BooleanVar()
         self.output_area = None
         self.parent = parent
         self.frame = ttk.Frame(parent)
@@ -226,6 +213,8 @@ class Mutate:
             "snapshot_src_num": self.snapshot_src_num_entry.get(),
             "preset_name": self.name_entry.get(),
             "num_presets": int(self.num_presets_entry.get()),
+            "change_topology": self.change_topology_var.get(),
+            "change_controllers": self.change_controllers_var.get(),
         }
 
         args_json = json.dumps(args)
@@ -291,9 +280,21 @@ class Mutate:
         generate_button = tk.Button(self.frame, text="Mutate Preset", command=lambda: self.mutate_preset())
         generate_button.grid(row=5, column=0, columnspan=3, padx=5, pady=5, sticky="ew")
 
+        # Change Topology Checkbox
+        self.change_topology_entry = tk.Checkbutton(
+            self.frame, text="Change Topology", variable=self.change_topology_var
+        )
+        self.change_topology_entry.grid(row=6, column=1, padx=5, pady=5, sticky="w")
+
+        # Change Controllers Checkbox
+        self.change_controllers_entry = tk.Checkbutton(
+            self.frame, text="Change Controllers", variable=self.change_controllers_var
+        )
+        self.change_controllers_entry.grid(row=7, column=1, padx=5, pady=5, sticky="w")
+
         # Output Area
         self.output_area = tk.Text(self.frame, width=OUTPUT_FIELD_WIDTH)
-        self.output_area.grid(row=6, column=0, columnspan=3, padx=5, pady=5, sticky="w")
+        self.output_area.grid(row=8, column=0, columnspan=3, padx=5, pady=5, sticky="w")
 
 
 window = tk.Tk()

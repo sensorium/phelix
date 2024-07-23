@@ -369,14 +369,14 @@ def mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num, ar
     util.populate_all_snapshots_with_controllers_from_file(preset)
     util.copy_all_default_values_to_all_snapshots(preset)
 
-    if args_from_gui.get("change_topology") == "true":
+    if args_from_gui.get("change_topology") == True:
         swap_some_blocks_and_splits_from_file(preset, constants.MUTATION_RATE)
         choose.prune_controllers(preset)
         rearrange_blocks(preset, constants.FRACTION_MOVE)
         choose.move_splits_and_joins(preset)
         toggle_series_or_parallel_dsps(preset, constants.TOGGLE_RATE)
 
-    if args_from_gui.get("change_controllers") == "true":
+    if args_from_gui.get("change_controllers") == True:
         choose.random_new_params_for_snapshot_control(preset)
 
     mutate_parameter_values_for_all_snapshots(preset, constants.MUTATION_RATE)
