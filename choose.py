@@ -33,12 +33,8 @@ def random_controller_dsp_and_block(preset):
     # returns a random block, or "none" if there are no blocks
     found_blocks = []
     for dsp in util.get_controller(preset):
-        for slot in util.get_controller_dsp(preset, dsp):
-            found_blocks.append((dsp, slot))
-    rand_dsp_and_block = ["none", "none"]
-    if len(found_blocks) > 0:
-        rand_dsp_and_block = random.choice(found_blocks)
-    return rand_dsp_and_block
+        found_blocks.extend((dsp, slot) for slot in util.get_controller_dsp(preset, dsp))
+    return random.choice(found_blocks) if found_blocks else ["none", "none"]
 
 
 def random_controller_param(preset, dsp, slot):
@@ -73,26 +69,49 @@ def random_controller_param_excluding_bools_and_mic(preset, dsp, slot):
     return randparam
 
 
+def random_controller_param_excluding_bools_and_cabparams(preset, dsp, slot):
+    # returns a random param (but not one with a boolean value), or "none" if there are no params
+    params = []
+    for param in util.get_controller_dsp_slot(preset, dsp, slot):
+        if not isinstance(
+            util.get_controller_dsp_slot(preset, dsp, slot)[param]["@min"],
+            bool,
+        ) and param not in ["Mic", "Position", "Distance", "Angle"]:
+            params.append(param)
+            # print("append to getRandControllerParamNoBool choices " +param)
+    randparam = "none"
+    if len(params) > 0:
+        randparam = random.choice(params)
+    return randparam
+
+
 def random_controlled_parameter_and_ranges(preset, control_num):
-    dsp, randblock = random_controller_dsp_and_block(preset)
-    if randblock != "none":
-        if control_num == constants.PEDAL_2:
-            randparam = random_controller_param_excluding_bools_and_mic(preset, dsp, randblock)
+    dsp, slot = random_controller_dsp_and_block(preset)
+    if slot != "none":
+        if control_num in [constants.PEDAL_2, constants.MIDI_CC_CONTROL]:
+            param = random_controller_param_excluding_bools_and_cabparams(preset, dsp, slot)
         else:
-            randparam = random_controller_param(preset, dsp, randblock)
-        if randparam != "none":
-            set_random_controller_max_and_min(preset, control_num, dsp, randblock, randparam)
+            param = random_controller_param(preset, dsp, slot)
+        if param != "none":
+            set_controller_num(preset, control_num, dsp, slot, param)
+            set_random_max_and_min_for_controlled_param(preset, dsp, slot, param)
             print(
-                f"  set controller {str(control_num)} to {dsp}",
-                randblock,
-                util.get_model_name(preset, dsp, randblock),
-                randparam,
+                f"  set {dsp}",
+                slot,
+                util.get_model_name(preset, dsp, slot),
+                param,
+                f"to controller {str(control_num)}",
             )
 
 
-def set_random_controller_max_and_min(preset, control_num, dsp, slot, parameter):
+def set_controller_num(preset, control_num, dsp, slot, parameter):
     controlled_param = util.get_controller_dsp(preset, dsp)[slot][parameter]
     controlled_param["@controller"] = control_num
+
+
+def set_random_max_and_min_for_controlled_param(preset, dsp, slot, parameter):
+    controlled_param = util.get_controller_dsp(preset, dsp)[slot][parameter]
+    # controlled_param["@controller"] = control_num
     new_max = random.uniform(controlled_param["@min"], controlled_param["@max"])
     new_min = random.uniform(controlled_param["@min"], controlled_param["@max"])
     # set new random max and min values within the original limits
