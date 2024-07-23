@@ -53,6 +53,9 @@ def save_config_to_file(event=None):
     config["mutate_num_presets"] = int(mutate_tab.num_presets_entry.get())
     config["mutate_snapshot_src_num"] = int(mutate_tab.snapshot_src_num_entry.get())
 
+    config["change_topology"] = gen_tab.name_entry.get()
+    config["change_controllers"] = gen_tab.name_entry.get()
+
     config_file = filedialog.asksaveasfilename(
         initialdir="./", title="Save Config File", filetypes=(("json files", "*.json"), ("All files", "*.*"))
     )

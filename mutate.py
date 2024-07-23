@@ -352,7 +352,7 @@ def snapshot(snapshot_num):
     return f"snapshot{snapshot_num}"
 
 
-def mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num):
+def mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num, args_from_gui):
     increment_preset_name(preset, preset_name, postfix_num)
     set_dsp1_input_to_multi(preset)
     util.set_topologies_to_SABJ(preset)
@@ -368,40 +368,51 @@ def mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num):
         print("Mutating Default to produce 8 Snapshots")
     util.populate_all_snapshots_with_controllers_from_file(preset)
     util.copy_all_default_values_to_all_snapshots(preset)
-    swap_some_blocks_and_splits_from_file(preset, constants.MUTATION_RATE)
-    choose.move_splits_and_joins(preset)
-    choose.prune_controllers(preset)
-    choose.random_new_params_for_snapshot_control(preset)
+
+    if args_from_gui.get("change_topology") == "true":
+        swap_some_blocks_and_splits_from_file(preset, constants.MUTATION_RATE)
+        choose.prune_controllers(preset)
+        rearrange_blocks(preset, constants.FRACTION_MOVE)
+        choose.move_splits_and_joins(preset)
+        toggle_series_or_parallel_dsps(preset, constants.TOGGLE_RATE)
+
+    if args_from_gui.get("change_controllers") == "true":
+        choose.random_new_params_for_snapshot_control(preset)
+
     mutate_parameter_values_for_all_snapshots(preset, constants.MUTATION_RATE)
     mutate_all_default_blocks(preset, constants.MUTATION_RATE)
     swap_some_control_destinations(preset, constants.PEDAL_2, 10)
     mutate_all_pedal_ranges(preset)
-    rearrange_blocks(preset, constants.FRACTION_MOVE)
+
     toggle_some_block_states(preset, constants.MUTATION_RATE)
-    toggle_series_or_parallel_dsps(preset, constants.TOGGLE_RATE)
+
     util.set_led_colours(preset)
     print()
 
 
-def mutate_preset_from_source_snapshot(template_file, snapshot_src_num_str, output_file, preset_name, postfix_num):
+def mutate_preset_from_source_snapshot(
+    template_file, snapshot_src_num_str, output_file, preset_name, postfix_num, args_from_gui
+):
     with open(template_file, "r") as f:
         preset = json.load(f)
-        mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num)
+        mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num, args_from_gui)
         with open(output_file, "w") as f:
             json.dump(preset, f, indent=4)
 
 
 def generate_multiple_mutations_from_template(args_from_gui):
     if args_from_gui.get("snapshot_src_num") == "":
-        snapshot_src_num = "default"
-
+        snapshot_src_num_str = "default"
+    else:
+        snapshot_src_num_str = args_from_gui.get("snapshot_src_num")  # not 0 indexed
     for i in range(args_from_gui.get("num_presets")):
         mutate_preset_from_source_snapshot(
             args_from_gui.get("template_file"),
-            args_from_gui.get("snapshot_src_num"),  # not 0 indexed
+            snapshot_src_num_str,  # not 0 indexed
             args_from_gui.get("output_file")[:-4] + str(i + 1) + ".hlx",
             args_from_gui.get("preset_name"),
             i,
+            args_from_gui,
         )
 
 
