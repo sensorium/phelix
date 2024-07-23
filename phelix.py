@@ -197,8 +197,6 @@ class Mutate:
         self.name_entry = None
         self.num_presets_entry = None
         self.snapshot_src_num_entry = None
-        # self.change_topology_entry = None
-        # self.change_controllers_entry = None
         self.change_topology_var = BooleanVar()
         self.change_controllers_var = BooleanVar()
         self.output_area = None
@@ -281,16 +279,16 @@ class Mutate:
         generate_button.grid(row=5, column=0, columnspan=3, padx=5, pady=5, sticky="ew")
 
         # Change Topology Checkbox
-        self.change_topology_entry = tk.Checkbutton(
+        self.change_topology_checkbox = tk.Checkbutton(
             self.frame, text="Change Topology", variable=self.change_topology_var
         )
-        self.change_topology_entry.grid(row=6, column=1, padx=5, pady=5, sticky="w")
+        self.change_topology_checkbox.grid(row=6, column=1, padx=5, pady=5, sticky="w")
 
         # Change Controllers Checkbox
-        self.change_controllers_entry = tk.Checkbutton(
+        self.change_controllers_checkbox = tk.Checkbutton(
             self.frame, text="Change Controllers", variable=self.change_controllers_var
         )
-        self.change_controllers_entry.grid(row=7, column=1, padx=5, pady=5, sticky="w")
+        self.change_controllers_checkbox.grid(row=7, column=1, padx=5, pady=5, sticky="w")
 
         # Output Area
         self.output_area = tk.Text(self.frame, width=OUTPUT_FIELD_WIDTH)
