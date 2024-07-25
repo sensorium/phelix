@@ -236,6 +236,13 @@ def rearrange_blocks(preset, fraction_move):
             model_name = util.get_model_name(preset, dsp, slot)
             # update slot arrays
             to_dsp, to_slot = unused_block_slots.pop()
+
+            # wastes unused slot this turn if there is already an amp in to_dsp
+            if model_name.startswith("HD2_Amp"):
+                if dsp != to_dsp:
+                    if util.count_amps(preset, to_dsp) > 0:
+                        return
+
             unused_block_slots.append([dsp, slot])
             # get new unused path and position on to_dsp
             from_path = util.get_default_dsp_slot(preset, dsp, slot)["@path"]
