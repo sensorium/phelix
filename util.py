@@ -269,10 +269,8 @@ def copy_controlled_default_parameter_values_to_snapshot(preset, snapshot_num):
                 )
 
 
-# def populate_all_missing_snapshot_controllers_from_defaults(preset):
-#     print("populate_all_snapshot_controllers_from_defaults")
-#     for snapshot_num in range(constants.NUM_SNAPSHOTS):
-#         populate_missing_snapshot_controllers_from_defaults(preset, snapshot_num)
+def count_amps(preset, dsp):
+    return sum(bool(get_model_name(preset, dsp, slot).startswith("HD2_Amp")) for slot in get_default_dsp(preset, dsp))
 
 
 def count_controllers(preset):

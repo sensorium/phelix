@@ -4,7 +4,7 @@ import glob
 import json
 import tkinter as tk
 from tkinter import ttk, filedialog, END
-from tkinter import BooleanVar
+from tkinter import BooleanVar, Label
 
 
 # config dictionary
@@ -230,8 +230,7 @@ class Mutate:
         self.frame.columnconfigure(1, weight=1)
 
         # Input Preset File
-        self.template_entry = tk.Entry(self.frame)
-        self.template_entry.config(width=TEXT_FIELD_WIDTH)
+        self.template_entry = tk.Entry(self.frame, width=TEXT_FIELD_WIDTH)
         self.template_entry.grid(row=0, column=1, padx=5, pady=5, sticky="w")
         template_button = tk.Button(
             self.frame,
@@ -244,8 +243,7 @@ class Mutate:
         # Source Snapshot
         snapshot_src_num_label = tk.Label(self.frame, text="Source Snapshot:")
         snapshot_src_num_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
-        self.snapshot_src_num_entry = tk.Entry(self.frame)
-        self.snapshot_src_num_entry.config(width=NUMBER_FIELD_WIDTH)
+        self.snapshot_src_num_entry = tk.Entry(self.frame, width=NUMBER_FIELD_WIDTH)
         self.snapshot_src_num_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")
 
         # Output Preset File
@@ -263,32 +261,30 @@ class Mutate:
         # Preset Name
         name_label = tk.Label(self.frame, text="Preset Name (optional):")
         name_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
-        self.name_entry = tk.Entry(self.frame)
-        self.name_entry.config(width=TEXT_FIELD_WIDTH)
+        self.name_entry = tk.Entry(self.frame, width=TEXT_FIELD_WIDTH)
         self.name_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
 
         # Number of Presets
         num_presets_label = tk.Label(self.frame, text="Number of Presets:")
         num_presets_label.grid(row=4, column=0, padx=5, pady=5, sticky="w")
-        self.num_presets_entry = tk.Entry(self.frame)
-        self.num_presets_entry.config(width=NUMBER_FIELD_WIDTH)
+        self.num_presets_entry = tk.Entry(self.frame, width=NUMBER_FIELD_WIDTH)
         self.num_presets_entry.grid(row=4, column=1, padx=5, pady=5, sticky="w")
+
+        # Change Topology Checkbox
+        change_topology_label = tk.Label(self.frame, text="Change Topology")
+        change_topology_label.grid(row=5, column=0, padx=5, pady=5, sticky="w")
+        self.change_topology_checkbox = tk.Checkbutton(self.frame, variable=self.change_topology_var)
+        self.change_topology_checkbox.grid(row=5, column=1, padx=5, pady=5, sticky="w")
+
+        # Change Controllers Checkbox
+        change_controllers_label = tk.Label(self.frame, text="Change Controllers")
+        change_controllers_label.grid(row=6, column=0, padx=5, pady=5, sticky="w")
+        self.change_controllers_checkbox = tk.Checkbutton(self.frame, variable=self.change_controllers_var)
+        self.change_controllers_checkbox.grid(row=6, column=1, padx=5, pady=5, sticky="w")
 
         # Mutate Button
         generate_button = tk.Button(self.frame, text="Mutate Preset", command=lambda: self.mutate_preset())
-        generate_button.grid(row=5, column=0, columnspan=3, padx=5, pady=5, sticky="ew")
-
-        # Change Topology Checkbox
-        self.change_topology_checkbox = tk.Checkbutton(
-            self.frame, text="Change Topology", variable=self.change_topology_var
-        )
-        self.change_topology_checkbox.grid(row=6, column=1, padx=5, pady=5, sticky="w")
-
-        # Change Controllers Checkbox
-        self.change_controllers_checkbox = tk.Checkbutton(
-            self.frame, text="Change Controllers", variable=self.change_controllers_var
-        )
-        self.change_controllers_checkbox.grid(row=7, column=1, padx=5, pady=5, sticky="w")
+        generate_button.grid(row=7, column=0, columnspan=3, padx=5, pady=5, sticky="ew")
 
         # Output Area
         self.output_area = tk.Text(self.frame, width=OUTPUT_FIELD_WIDTH)
