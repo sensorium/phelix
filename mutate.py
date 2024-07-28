@@ -85,13 +85,6 @@ def mutate_values_in_default_block(preset, dsp, slot, fraction_new):
         )
 
 
-# def mix_result(fraction_new, defaults_block, parameter, pmin, pmax, result):
-#     prev_result = defaults_block[parameter]
-#     fraction_prev = 1.0 - fraction_new
-#     result_mix = result * fraction_new + prev_result * fraction_prev
-#     return max(pmin, min(result_mix, pmax))
-
-
 def mix_values(fraction_new, pmin, pmax, result, prev_result):
     if isinstance(result, bool):
         return result
