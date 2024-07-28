@@ -120,24 +120,11 @@ def set_random_max_and_min_for_controlled_param(preset, dsp, slot, parameter):
 
 
 def random_block_category() -> str:
-    block_categories = [
-        ("Amp", 20),
-        ("Cab", 10),
-        ("Delay", 20),
-        ("Distort", 15),
-        ("Dynamics", 10),
-        ("EQ", 20),
-        ("Filter", 5),
-        ("Mod", 30),
-        ("PitchSynth", 10),
-        ("Reverb", 25),
-        ("Split", 10),
-        ("VolPan", 3),
-        ("Wah", 10),
-    ]
     # make 1 choice with weighted probabilities
     return random.choices(
-        [choice[0] for choice in block_categories], weights=[choice[1] for choice in block_categories], k=1
+        [choice[0] for choice in constants.block_categories],
+        weights=[choice[1] for choice in constants.block_categories],
+        k=1,
     )[0]
 
 

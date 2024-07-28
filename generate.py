@@ -96,7 +96,7 @@ def test(template_name, preset_name):
         add_cabs(preset)
         choose.move_splits_and_joins(preset)
         mutate.mutate_parameter_values_for_all_snapshots(preset, 1.0)
-        mutate.mutate_all_default_blocks(preset, 1.0)
+        mutate.mutate_values_in_all_default_blocks(preset, 1.0)
 
 
 def generate_preset_from_template_file(template_name, save_name, preset_name):
@@ -111,7 +111,7 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
         choose.move_splits_and_joins(preset)
         print()
         mutate.mutate_parameter_values_for_all_snapshots(preset, 1.0)
-        mutate.mutate_all_default_blocks(preset, 1.0)
+        mutate.mutate_values_in_all_default_blocks(preset, 1.0)
         print()
         mutate.rearrange_blocks(preset, 1.0)
         choose.random_series_or_parallel_dsp_configuration(preset)

@@ -5,7 +5,7 @@ import json
 import tkinter as tk
 from tkinter import ttk, filedialog, END
 from tkinter import BooleanVar, Label
-
+import constants
 
 # config dictionary
 config = {}
@@ -55,6 +55,8 @@ def save_config_to_file(event=None):
     config["mutate_snapshot_src_num"] = int(mutate_tab.snapshot_src_num_entry.get())
     config["change_topology"] = mutate_tab.change_topology_var.get()
     config["change_controllers"] = mutate_tab.change_controllers_var.get()
+
+    config["block_categories"] = constants.block_categories
 
     config_file = filedialog.asksaveasfilename(
         initialdir="./", title="Save Config File", filetypes=(("json files", "*.json"), ("All files", "*.*"))
@@ -106,6 +108,15 @@ def update_ui_from_config():
     mutate_tab.snapshot_src_num_entry.insert(0, config["mutate_snapshot_src_num"])
     mutate_tab.change_topology_var.set(config["change_topology"])
     mutate_tab.change_controllers_var.set(config["change_controllers"])
+
+    # Update UI on probabilities_tab from block_categories
+    for idx, (category, value) in enumerate(constants.block_categories):
+        label = tk.Label(probabilities_tab, text=f"{category}:")
+        label.grid(row=idx, column=0, padx=5, pady=5, sticky="w")
+
+        entry = tk.Entry(probabilities_tab)
+        entry.insert(0, value)
+        entry.grid(row=idx, column=1, padx=5, pady=5)
 
 
 ########### generate_tab #######################################################
@@ -299,8 +310,22 @@ window.title("Preset Generator")
 tabs = ttk.Notebook(window)
 gen_tab = Generate(tabs)
 mutate_tab = Mutate(tabs)
+
+probabilities_tab = ttk.Frame(window)
+# Assuming constants.block_categories is a list of tuples [(category, value), ...]
+labels = [category for category, _ in constants.block_categories]
+
+for idx, label_text in enumerate(labels):
+    label = tk.Label(probabilities_tab, text=label_text)
+    label.grid(row=idx, column=0, padx=5, pady=5, sticky="w")
+
+    entry = tk.Entry(probabilities_tab, width=NUMBER_FIELD_WIDTH)
+    entry.grid(row=idx, column=1, padx=5, pady=5)
+
+
 tabs.add(gen_tab.frame, text="Generate")
 tabs.add(mutate_tab.frame, text="Mutate")
+tabs.add(probabilities_tab, text="Probabilities")
 tabs.pack(expand=1, fill="both")
 
 # -----------------------------------------------------------------------------

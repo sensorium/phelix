@@ -72,7 +72,7 @@ def mutate_parameter_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slo
         ] = result_mix
 
 
-def mutate_default_block(preset, dsp, slot, fraction_new):
+def mutate_values_in_default_block(preset, dsp, slot, fraction_new):
     raw_controllers = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
     print("  mutate_default_block", dsp, slot, util.get_model_name(preset, dsp, slot))
     for parameter in raw_controllers:  # not all default params can be changed on the helix
@@ -100,11 +100,12 @@ def mix_values(fraction_new, pmin, pmax, result, prev_result):
     return max(pmin, min(result_mix, pmax))
 
 
-def mutate_all_default_blocks(preset, fraction_new):
+def mutate_values_in_all_default_blocks(preset, fraction_new):
+    print("Mutating values in preset default")
     for dsp in util.get_available_default_dsps(preset):
         for slot in util.get_default_dsp(preset, dsp):
             if slot.startswith(("cab", "split", "block")):
-                mutate_default_block(preset, dsp, slot, fraction_new)
+                mutate_values_in_default_block(preset, dsp, slot, fraction_new)
 
 
 def mutate_parameter_values_for_all_snapshots(preset, fraction_new):
@@ -385,10 +386,10 @@ def mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num, ar
 
     if args_from_gui.get("change_controllers") == True:
         choose.random_new_params_for_snapshot_control(preset)
+        swap_some_control_destinations(preset, constants.PEDAL_2, 10)
 
     mutate_parameter_values_for_all_snapshots(preset, constants.MUTATION_RATE)
-    mutate_all_default_blocks(preset, constants.MUTATION_RATE)
-    swap_some_control_destinations(preset, constants.PEDAL_2, 10)
+    mutate_values_in_all_default_blocks(preset, constants.MUTATION_RATE)
     mutate_all_pedal_ranges(preset)
 
     toggle_some_block_states(preset, constants.MUTATION_RATE)
