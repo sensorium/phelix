@@ -20,42 +20,58 @@ def is_reverb(preset, dsp, slot):
     return util.get_default_dsp_slot(preset, dsp, slot)["@model"].startswith(("HD2_Reverb", "VIC", "Victoria"))
 
 
-def random_triangle(pmax, pmin, mode_fraction, lowest_fraction):
+def random_triangle(pmin, pmax, mode_fraction, lowest_fraction):
     lowest = ((pmax - pmin) * lowest_fraction) + pmin
-    mode = (pmax - pmin) * mode_fraction + pmin
-    return random.triangular(lowest, pmax, mode)
+    mode = ((pmax - pmin) * mode_fraction) + pmin
+    result = random.triangular(lowest, pmax, mode)
+    # print("  random_triangle", lowest, pmax, mode, result)
+    # print("  random_triangle", pmin, pmax, mode, result)
+    return result
 
 
-special_parameter_mutations_cache = {}  # Global cache
+def get_mutated_level(pmin, pmax, slot):
+    if is_block_or_cab_slot(slot):
+        return random_triangle(pmin, pmax, 0.8, 0.0)
+    else:
+        return random.uniform(pmin, pmax)
+
+
+def get_mutated_decay(pmin, pmax, preset, dsp, slot):
+    if is_reverb(preset, dsp, slot):
+        return random_triangle(pmin, pmax, 0.05, 0.0)
+    else:
+        return random.uniform(pmin, pmax)
+
+
+def get_mutated_time(pmax):
+    return min(pmax, random.expovariate(0.95 + (0.75 - 0.95) * (pmax - 2) / (8 - 2)))
+
+
+def get_mutated_mix(pmin, pmax):
+    return random_triangle(pmin, pmax, 0.5, 0.0)
+
+
+def get_mutated_feedback(pmin, pmax):
+    return random_triangle(pmin, pmax, 0.5, 0.0)
 
 
 def get_mutated_parameter_value(preset, dsp, slot, parameter, pmin, pmax):
-    global special_parameter_mutations_cache
-
-    # Check if special_parameter_mutations is cached
-    if "special_parameter_mutations" not in special_parameter_mutations_cache:
-        special_parameter_mutations_cache["special_parameter_mutations"] = {
-            "Level": lambda: (
-                random_triangle(pmax, pmin, 0.8, 0.0) if is_block_or_cab_slot(slot) else random.uniform(pmin, pmax)
-            ),
-            "Decay": lambda: (
-                random_triangle(pmax, pmin, 0.05, 0.0) if is_reverb(preset, dsp, slot) else random.uniform(pmin, pmax)
-            ),
-            "Time": lambda: min(pmax, random.expovariate(0.95 + (0.75 - 0.95) * (pmax - 2) / (8 - 2))),
-            "Mix": lambda: random_triangle(pmax, pmin, 0.5, 0.0),
-            "Feedback": lambda: random_triangle(pmax, pmin, 0.5, 0.0),
-        }
-
-    special_parameter_mutations = special_parameter_mutations_cache["special_parameter_mutations"]
-
     if isinstance(pmin, bool):
         return random.choice([True, False])
+    if parameter == "Level":
+        return get_mutated_level(pmin, pmax, slot)
+    elif parameter == "Decay":
+        return get_mutated_decay(pmin, pmax, preset, dsp, slot)
+    elif parameter == "Time":
+        return get_mutated_time(pmax)
+    elif parameter == "Mix":
+        return get_mutated_mix(pmin, pmax)
+    elif parameter == "Feedback":
+        return get_mutated_feedback(pmin, pmax)
     else:
-        return special_parameter_mutations.get(parameter, lambda: random.uniform(pmin, pmax))()
+        return random.uniform(pmin, pmax)
 
 
-# chooses and stores parameter values for one block into a single snapshot
-#
 def mutate_parameter_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slot, fraction_new):
     raw_controllers = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
     # print("mutating", dsp, slot, utils.get_default_slot(preset, dsp, slot)["@model"])
@@ -67,6 +83,7 @@ def mutate_parameter_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slo
             preset, snapshot_num, dsp, slot, parameter
         )
         result_mix = mix_values(fraction_new, pmin, pmax, result, prev_result)
+        # print("  mutate", dsp, slot, parameter, pmin, pmax, result, prev_result, result_mix)
         util.get_snapshot_controllers_dsp_slot_parameter(preset, snapshot_num, dsp, slot, parameter)[
             "@value"
         ] = result_mix
@@ -308,7 +325,7 @@ def swap_with_random_split_from_file(preset, dsp, slot):
     mutate_parameter_values_for_all_snapshots(preset, 1.0)
 
 
-def increment_preset_name(preset, preset_name, postfix_num):
+def set_preset_name(preset, preset_name, postfix_num):
     name = preset["data"]["meta"]["name"] if preset_name == "" else preset_name
     postfix_num_str = str(postfix_num).zfill(3)
     name = f"{name}-{postfix_num_str}"
@@ -354,7 +371,7 @@ def snapshot(snapshot_num):
 
 
 def mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num, args_from_gui):
-    increment_preset_name(preset, preset_name, postfix_num)
+    set_preset_name(preset, preset_name, postfix_num)
     set_dsp1_input_to_multi(preset)
     util.set_topologies_to_SABJ(preset)
     util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
@@ -370,14 +387,14 @@ def mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num, ar
     util.populate_all_snapshots_with_controllers_from_file(preset)
     util.copy_all_default_values_to_all_snapshots(preset)
 
-    if args_from_gui.get("change_topology") == True:
+    if args_from_gui.get("change_topology") is True:
         swap_some_blocks_and_splits_from_file(preset, constants.MUTATION_RATE)
         choose.prune_controllers(preset)
         rearrange_blocks(preset, constants.FRACTION_MOVE)
         choose.move_splits_and_joins(preset)
         toggle_series_or_parallel_dsps(preset, constants.TOGGLE_RATE)
 
-    if args_from_gui.get("change_controllers") == True:
+    if args_from_gui.get("change_controllers") is True:
         choose.random_new_params_for_snapshot_control(preset)
         swap_some_control_destinations(preset, constants.PEDAL_2, 10)
 
@@ -412,7 +429,7 @@ def generate_multiple_mutations_from_template(args_from_gui):
             snapshot_src_num_str,  # not 0 indexed
             args_from_gui.get("output_file")[:-4] + str(i + 1) + ".hlx",
             args_from_gui.get("preset_name"),
-            i,
+            i + 1,
             args_from_gui,
         )
 

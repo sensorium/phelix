@@ -130,7 +130,7 @@ def generate_multiple_presets_from_template(args):
     else:
         preset_name_base = args.get("preset_name")
     for i in range(args.get("num_presets")):
-        i_str = str(i).zfill(3)
+        i_str = str(i + 1).zfill(3)
         preset_name = f"{preset_name_base}-{i_str}"
         generate_preset_from_template_file(
             args.get("template_file"),
