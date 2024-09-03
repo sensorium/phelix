@@ -1,3 +1,13 @@
+""" 
+choose.py
+ 
+ This file is part of phelix.
+ 
+ Copyright 2024 Tim Barrass
+ 
+ phelix is licensed under the GNU General Public Licence (GPL) Version 3 or later. 
+"""
+
 import os
 import random
 import constants

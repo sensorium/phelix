@@ -1,23 +1,12 @@
-# This file is the main entry point for the application. It is the start of the
-# program and is responsible for loading the necessary modules and classes.
-#
-# The program is divided into several modules, each with their own specific
-# functionality. The main module loads the necessary modules and classes, and
-# then calls the main function defined in the main module.
-#
-# The program uses the following modules:
-#   - constants: Contains global constants used throughout the program.
-#   - file: Contains functions for reading and writing files.
-#   - util: Contains utility functions used throughout the program.
-#   - mutate: Contains functions for mutating the preset.
-#   - choose: Contains functions for choosing files and parameters.
-#
-# The program uses the following classes:
-#   - Generate: Class for generating presets.
-#   - Mutate: Class for mutating presets.
-#
-# The program calls the main function, which is defined in this module.
-
+""" 
+generate.py
+ 
+ This file is part of phelix.
+ 
+ Copyright 2024 Tim Barrass
+ 
+ phelix is licensed under the GNU General Public Licence (GPL) Version 3 or later. 
+"""
 
 # this module takes a preset file and modifies it to be a valid preset for the pedalboard
 # it loads and modifies the json, and then saves it back as a new file

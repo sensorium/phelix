@@ -1,3 +1,13 @@
+""" 
+mutate.py
+ 
+ This file is part of phelix.
+ 
+ Copyright 2024 Tim Barrass
+ 
+ phelix is licensed under the GNU General Public Licence (GPL) Version 3 or later. 
+"""
+
 import argparse
 import json
 import random
