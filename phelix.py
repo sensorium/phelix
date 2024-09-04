@@ -14,7 +14,7 @@ import glob
 import json
 import tkinter as tk
 from tkinter import ttk, filedialog, END
-from tkinter import BooleanVar, Label
+from tkinter import BooleanVar
 import variables
 
 # config dictionary
@@ -120,16 +120,6 @@ def update_ui_from_config():
     mutate_tab.change_topology_var.set(config["change_topology"])
     mutate_tab.change_controllers_var.set(config["change_controllers"])
 
-    # # Update UI on probabilities_tab from block_probabilities
-    # for idx, (category, value) in enumerate(variables.block_probabilities):
-    #     label = tk.Label(probabilities_tab, text=f"{category}:")
-    #     label.grid(row=idx, column=0, padx=5, pady=5, sticky="w")
-
-    #     entry = tk.Entry(probabilities_tab)
-    #     entry.insert(0, value)
-    #     entry.grid(row=idx, column=1, padx=5, pady=5)
-    #     print(entry.get())
-    #     probabilities_dict[category] = entry
     for idx, (category, value) in enumerate(variables.block_probabilities.items()):
         label = tk.Label(probabilities_tab, text=f"{category}:")
         label.grid(row=idx, column=0, padx=5, pady=5, sticky="w")
