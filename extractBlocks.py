@@ -15,7 +15,7 @@ extractBlocks.py
 
 import json
 import os
-import constants
+import variables
 
 
 def extractBlocksFromPath(preset_dict, dsp, category_path):
@@ -40,7 +40,7 @@ def extractBlocksFromPath(preset_dict, dsp, category_path):
 
 
 def extractControls(preset_path, category, preset_name):
-    full_path = os.path.join(constants.BLOCKS_PATH, category)
+    full_path = os.path.join(variables.BLOCKS_PATH, category)
     os.makedirs(full_path, exist_ok=True)
     with open(os.path.join(preset_path, preset_name), "r") as f:
         preset_dict = json.load(f)

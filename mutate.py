@@ -11,7 +11,7 @@ mutate.py
 import argparse
 import json
 import random
-import constants
+import variables
 from debug import save_debug_hlx
 import file
 import util
@@ -130,7 +130,7 @@ def mutate_values_in_all_default_blocks(preset, fraction_new):
 
 def mutate_parameter_values_for_all_snapshots(preset, fraction_new):
     print("Mutating parameter values for all snapshots")
-    for snapshot_num in range(constants.NUM_SNAPSHOTS):
+    for snapshot_num in range(variables.NUM_SNAPSHOTS):
         for dsp in util.get_snapshot_controllers(preset, snapshot_num):
             for slot in util.get_snapshot_controllers_dsp(preset, snapshot_num, dsp):
                 mutate_parameter_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slot, fraction_new)
@@ -164,7 +164,7 @@ def toggle_some_block_states(preset, change_fraction):
             if slot.startswith("block") and random.uniform(0, 1) < change_fraction:
                 toggle_block_state(preset, dsp, slot)
 
-    for snapshot_num in range(constants.NUM_SNAPSHOTS):
+    for snapshot_num in range(variables.NUM_SNAPSHOTS):
         snapshot_blocks = util.get_snapshot_blocks(preset, snapshot_num)
         for dsp in snapshot_blocks:
             for slot in snapshot_blocks[dsp]:
@@ -190,7 +190,7 @@ def find_used_default_block_slots(preset):
 def find_unused_default_block_slots(preset):
     dsp_slot = []
     for dsp in util.get_available_default_dsps(preset):
-        for block_num in range(constants.NUM_SLOTS_PER_DSP):
+        for block_num in range(variables.NUM_SLOTS_PER_DSP):
             slot = f"block{block_num}"
             if slot not in util.get_default_dsp(preset, dsp):
                 dsp_slot.append([dsp, slot])
@@ -213,8 +213,8 @@ def find_unused_dsp_path_positions(preset):
     unused_dsp_path_positions = {}
     for dsp in util.get_available_default_dsps(preset):
         unused_dsp_path_positions[dsp] = []
-        for path in range(constants.NUM_PATHS_PER_DSP):
-            for pos in range(constants.NUM_POSITIONS_PER_PATH):
+        for path in range(variables.NUM_PATHS_PER_DSP):
+            for pos in range(variables.NUM_POSITIONS_PER_PATH):
                 if (path, pos) not in used_dsp_path_positions[dsp]:
                     unused_dsp_path_positions[dsp].append((path, pos))
     return unused_dsp_path_positions
@@ -235,7 +235,7 @@ def find_unused_default_dsp_cab_slots(preset):
     unused_dsp_cab_slots = {}
     for dsp in util.get_available_default_dsps(preset):
         unused_dsp_cab_slots[dsp] = []
-        for cab_num in range(constants.NUM_SLOTS_PER_DSP):
+        for cab_num in range(variables.NUM_SLOTS_PER_DSP):
             slot = f"cab{cab_num}"
             if slot not in used_dsp_cab_slots[dsp]:
                 unused_dsp_cab_slots[dsp].append(slot)
@@ -322,7 +322,7 @@ def swap_with_random_block_from_file(preset, dsp, slot):
     util.add_raw_block_to_preset(preset, dsp, slot, raw_block_dict)
     util.get_default_dsp_slot(preset, dsp, slot)["@path"] = path
     util.get_default_dsp_slot(preset, dsp, slot)["@position"] = pos
-    for snapshot_num in range(constants.NUM_SNAPSHOTS):
+    for snapshot_num in range(variables.NUM_SNAPSHOTS):
         mutate_parameter_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slot, 1.0)
 
 
@@ -398,21 +398,21 @@ def mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num, ar
     util.copy_all_default_values_to_all_snapshots(preset)
 
     if args_from_gui.get("change_topology") is True:
-        swap_some_blocks_and_splits_from_file(preset, constants.MUTATION_RATE)
+        swap_some_blocks_and_splits_from_file(preset, variables.MUTATION_RATE)
         choose.prune_controllers(preset)
-        rearrange_blocks(preset, constants.FRACTION_MOVE)
+        rearrange_blocks(preset, variables.FRACTION_MOVE)
         choose.move_splits_and_joins(preset)
-        toggle_series_or_parallel_dsps(preset, constants.TOGGLE_RATE)
+        toggle_series_or_parallel_dsps(preset, variables.TOGGLE_RATE)
 
     if args_from_gui.get("change_controllers") is True:
         choose.random_new_params_for_snapshot_control(preset)
-        swap_some_control_destinations(preset, constants.PEDAL_2, 10)
+        swap_some_control_destinations(preset, variables.PEDAL_2, 10)
 
-    mutate_parameter_values_for_all_snapshots(preset, constants.MUTATION_RATE)
-    mutate_values_in_all_default_blocks(preset, constants.MUTATION_RATE)
+    mutate_parameter_values_for_all_snapshots(preset, variables.MUTATION_RATE)
+    mutate_values_in_all_default_blocks(preset, variables.MUTATION_RATE)
     mutate_all_pedal_ranges(preset)
 
-    toggle_some_block_states(preset, constants.MUTATION_RATE)
+    toggle_some_block_states(preset, variables.MUTATION_RATE)
 
     util.set_led_colours(preset)
     print()

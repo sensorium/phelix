@@ -9,7 +9,7 @@ util.py
 """
 
 from copy import deepcopy
-import constants
+import variables
 import file
 
 
@@ -98,7 +98,7 @@ def get_snapshot_controllers_dsp_slot_parameter_value(preset, snapshot_num, dsp,
 
 def add_raw_block_to_snapshots(preset, dsp, slot, raw_block_dict):
     # print("Adding raw block to snapshots")
-    for snapshot_num in range(constants.NUM_SNAPSHOTS):
+    for snapshot_num in range(variables.NUM_SNAPSHOTS):
         snapshot_slot = get_snapshot_controllers_dsp(preset, snapshot_num, dsp)
         snapshot_slot[slot] = deepcopy(raw_block_dict["SnapshotParams"])
 
@@ -125,7 +125,7 @@ def move_controller_slot(preset, from_dsp, from_slot, to_dsp, to_slot):
 
 
 def move_snapshot_slot(preset, from_dsp, from_slot, to_dsp, to_slot, slot_type):
-    for snapshot_num in range(constants.NUM_SNAPSHOTS):
+    for snapshot_num in range(variables.NUM_SNAPSHOTS):
         # NOTE: this if may be unnecessary, might not need slot_type at all
         if slot_type in ["block", "cab"]:
             to_snapshot = get_snapshot_controllers_dsp(preset, snapshot_num, to_dsp)
@@ -159,7 +159,7 @@ def count_parameters_in_controller(preset):
 
 
 def add_parameter_to_all_snapshots(preset, dsp, slot, parameter, raw_block_dict):
-    for snapshot_num in range(constants.NUM_SNAPSHOTS):
+    for snapshot_num in range(variables.NUM_SNAPSHOTS):
         snapshot_name = f"snapshot{snapshot_num}"
         if snapshot_name in preset["data"]["tone"]:
             snapshot_dict = get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot)
@@ -168,7 +168,7 @@ def add_parameter_to_all_snapshots(preset, dsp, slot, parameter, raw_block_dict)
 
 
 def remove_parameter_from_all_snapshots(preset, dsp, slot, parameter):
-    for snapshot_num in range(constants.NUM_SNAPSHOTS):
+    for snapshot_num in range(variables.NUM_SNAPSHOTS):
         snapshot = get_snapshot_controllers_dsp(preset, snapshot_num, dsp)
         del snapshot[slot][parameter]
         # print("remove_parameter_from_all_snapshots " + parameter + " in " + get_model_name(preset, dsp, slot) + ", " + dsp + " " + slot)
@@ -214,7 +214,7 @@ def get_model_name(preset, dsp, slot):
 
 
 def set_led_colours(preset):
-    for snapshot_num in range(constants.NUM_SNAPSHOTS):
+    for snapshot_num in range(variables.NUM_SNAPSHOTS):
         preset["data"]["tone"][f"snapshot{snapshot_num}"]["@ledcolor"] = str(snapshot_num + 1)
 
 
@@ -245,7 +245,7 @@ def populate_snapshot_with_controllers_from_file(preset, snapshot_num):
 
 
 def populate_all_snapshots_with_controllers_from_file(preset):
-    for snapshot_num in range(constants.NUM_SNAPSHOTS):
+    for snapshot_num in range(variables.NUM_SNAPSHOTS):
         populate_snapshot_with_controllers_from_file(preset, snapshot_num)
 
 
@@ -292,7 +292,7 @@ def add_dsp_controller_and_snapshot_keys_if_missing(preset):
     for dsp in ["dsp0", "dsp1"]:
         preset["data"]["tone"].setdefault(dsp, {})
         preset["data"]["tone"].setdefault("controller", {}).setdefault(dsp, {})
-        for snapshot_num in range(constants.NUM_SNAPSHOTS):
+        for snapshot_num in range(variables.NUM_SNAPSHOTS):
             snapshot_name = f"snapshot{snapshot_num}"
             preset["data"]["tone"].setdefault(snapshot_name, {}).setdefault("controllers", {}).setdefault(dsp, {})
             get_snapshot(preset, snapshot_num).setdefault("controllers", {}).setdefault(dsp, {})
@@ -301,7 +301,7 @@ def add_dsp_controller_and_snapshot_keys_if_missing(preset):
 
 def add_splits(preset):
     for dsp in get_available_default_dsps(preset):
-        for snapshot_num in range(constants.NUM_SNAPSHOTS):
+        for snapshot_num in range(variables.NUM_SNAPSHOTS):
             get_snapshot_blocks_dsp(preset, snapshot_num, dsp).setdefault("split", "false")  # bypass not controlled?
 
 
@@ -320,12 +320,12 @@ def copy_all_default_values_to_snapshot(preset, snapshot_num):
 
 
 def copy_all_default_values_to_all_snapshots(preset):
-    for snapshot_num in range(constants.NUM_SNAPSHOTS):
+    for snapshot_num in range(variables.NUM_SNAPSHOTS):
         copy_all_default_values_to_snapshot(preset, snapshot_num)
 
 
 def duplicate_src_snapshot_to_all(preset, snapshot_src):
-    for snapshot_num in range(constants.NUM_SNAPSHOTS):
+    for snapshot_num in range(variables.NUM_SNAPSHOTS):
         snapshot_dst = f"snapshot{snapshot_num}"
         if snapshot_dst != snapshot_src:
             duplicate_snapshot(preset, snapshot_src, snapshot_dst)

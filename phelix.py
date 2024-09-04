@@ -15,10 +15,11 @@ import json
 import tkinter as tk
 from tkinter import ttk, filedialog, END
 from tkinter import BooleanVar, Label
-import constants
+import variables
 
 # config dictionary
 config = {}
+entries_dict = {}  # Dictionary to store block probabilities entries
 
 # Initialize global variables
 gen_tab = None
@@ -66,7 +67,7 @@ def save_config_to_file(event=None):
     config["change_topology"] = mutate_tab.change_topology_var.get()
     config["change_controllers"] = mutate_tab.change_controllers_var.get()
 
-    config["block_categories"] = constants.block_categories
+    config["block_probabilities"] = variables.block_probabilities
 
     config_file = filedialog.asksaveasfilename(
         initialdir="./", title="Save Config File", filetypes=(("json files", "*.json"), ("All files", "*.*"))
@@ -119,14 +120,31 @@ def update_ui_from_config():
     mutate_tab.change_topology_var.set(config["change_topology"])
     mutate_tab.change_controllers_var.set(config["change_controllers"])
 
-    # Update UI on probabilities_tab from block_categories
-    for idx, (category, value) in enumerate(constants.block_categories):
+    # # Update UI on probabilities_tab from block_probabilities
+    # for idx, (category, value) in enumerate(variables.block_probabilities):
+    #     label = tk.Label(probabilities_tab, text=f"{category}:")
+    #     label.grid(row=idx, column=0, padx=5, pady=5, sticky="w")
+
+    #     entry = tk.Entry(probabilities_tab)
+    #     entry.insert(0, value)
+    #     entry.grid(row=idx, column=1, padx=5, pady=5)
+    #     print(entry.get())
+    #     probabilities_dict[category] = entry
+    for idx, (category, value) in enumerate(variables.block_probabilities.items()):
         label = tk.Label(probabilities_tab, text=f"{category}:")
         label.grid(row=idx, column=0, padx=5, pady=5, sticky="w")
 
         entry = tk.Entry(probabilities_tab)
+        entry.delete(0, END)
         entry.insert(0, value)
         entry.grid(row=idx, column=1, padx=5, pady=5)
+        entries_dict[category] = entry
+
+
+def copyEntriesToBlockProbabilities():
+    for category, entry in entries_dict.items():
+        print(f"{category}: {entry.get()}")
+        variables.block_probabilities[category] = entry.get()
 
 
 ########### generate_tab #######################################################
@@ -322,16 +340,18 @@ gen_tab = Generate(tabs)
 mutate_tab = Mutate(tabs)
 
 probabilities_tab = ttk.Frame(window)
-# Assuming constants.block_categories is a list of tuples [(category, value), ...]
-labels = [category for category, _ in constants.block_categories]
-
-for idx, label_text in enumerate(labels):
+# Assuming constants.block_probabilities is a list of tuples [(category, value), ...]
+for idx, label_text in enumerate(variables.block_probabilities):
     label = tk.Label(probabilities_tab, text=label_text)
     label.grid(row=idx, column=0, padx=5, pady=5, sticky="w")
 
     entry = tk.Entry(probabilities_tab, width=NUMBER_FIELD_WIDTH)
     entry.grid(row=idx, column=1, padx=5, pady=5)
 
+    entries_dict[label_text] = entry
+
+copy_button = tk.Button(probabilities_tab, text="Update Probabilities", command=copyEntriesToBlockProbabilities)
+copy_button.grid(row=len(variables.block_probabilities), column=0, columnspan=2, padx=5, pady=5, sticky="ew")
 
 tabs.add(gen_tab.frame, text="Generate")
 tabs.add(mutate_tab.frame, text="Mutate")

@@ -14,7 +14,7 @@ from datetime import datetime
 import json
 import sys
 
-import constants
+import variables
 import file
 import util
 import mutate
@@ -71,7 +71,7 @@ def populate_preset_with_random_blocks(preset):
 
 def swap_some_snapshot_controls_to_pedal(preset, pedal_control_num):
     print("\nSwapping some snapshot controls to pedal...")
-    for _ in range(constants.NUM_PEDAL_PARAMS):
+    for _ in range(variables.NUM_PEDAL_PARAMS):
         choose.random_controlled_parameter_and_ranges(preset, pedal_control_num)
 
 
@@ -105,7 +105,7 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
         mutate.rearrange_blocks(preset, 1.0)
         choose.random_series_or_parallel_dsp_configuration(preset)
         choose.prune_controllers(preset)
-        swap_some_snapshot_controls_to_pedal(preset, constants.PEDAL_2)
+        swap_some_snapshot_controls_to_pedal(preset, variables.PEDAL_2)
         mutate.toggle_some_block_states(preset, 0.5)
         util.set_led_colours(preset)
         with open(save_name, "w") as json_file:

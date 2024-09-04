@@ -10,7 +10,7 @@ file.py
 
 import os
 import json
-import constants
+import variables
 import debug
 import util
 
@@ -28,7 +28,7 @@ def reload_raw_block_dictionary(preset, dsp, slot):
     block_filename = f"{util.get_model_name(preset, dsp, slot)}.json"
     # print(f"loading {block_filename}")
     block_folder = None
-    for root, _, files in os.walk(constants.BLOCKS_PATH):
+    for root, _, files in os.walk(variables.BLOCKS_PATH):
         if block_filename in files:
             block_folder = root
             break

@@ -10,7 +10,7 @@ choose.py
 
 import os
 import random
-import constants
+import variables
 import util
 import file
 
@@ -23,7 +23,7 @@ def random_block_file_excluding_cab_or_split():
 
 
 def random_block_file_in_category(category_folder):
-    folder_path = os.path.join(constants.BLOCKS_PATH, category_folder)
+    folder_path = os.path.join(variables.BLOCKS_PATH, category_folder)
     block_files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
     filepath = os.path.join(folder_path, random.choice(block_files))
     # print(f"  choosing {filepath}")
@@ -98,7 +98,7 @@ def random_controller_param_excluding_bools_and_cabparams(preset, dsp, slot):
 def random_controlled_parameter_and_ranges(preset, control_num):
     dsp, slot = random_controller_dsp_and_block(preset)
     if slot != "none":
-        if control_num in [constants.PEDAL_2, constants.MIDI_CC_CONTROL]:
+        if control_num in [variables.PEDAL_2, variables.MIDI_CC_CONTROL]:
             param = random_controller_param_excluding_bools_and_cabparams(preset, dsp, slot)
         else:
             param = random_controller_param(preset, dsp, slot)
@@ -129,11 +129,20 @@ def set_random_max_and_min_for_controlled_param(preset, dsp, slot, parameter):
     controlled_param["@min"] = new_min
 
 
+# def random_block_category() -> str:
+#     # make 1 choice with weighted probabilities
+#     return random.choices(
+#         [choice[0] for choice in variables.block_probabilities],
+#         weights=[choice[1] for choice in variables.block_probabilities],
+#         k=1,
+#     )[0]
+
+
 def random_block_category() -> str:
     # make 1 choice with weighted probabilities
     return random.choices(
-        [choice[0] for choice in constants.block_categories],
-        weights=[choice[1] for choice in constants.block_categories],
+        list(variables.block_probabilities.keys()),
+        weights=list(variables.block_probabilities.values()),
         k=1,
     )[0]
 
@@ -157,7 +166,7 @@ def random_controller_to_snapshot(preset, param_list, control_num):
     random_index = random.randint(0, len(param_list) - 1)
     dsp, slot, parameter = param_list[random_index]
     # set control to snapshot
-    util.get_controller_dsp_slot_parameter(preset, dsp, slot, parameter)["@controller"] = constants.SNAPSHOT_CONTROL
+    util.get_controller_dsp_slot_parameter(preset, dsp, slot, parameter)["@controller"] = variables.SNAPSHOT_CONTROL
     print(
         f"  set control {str(control_num)} to snapshot {str(control_num)} for {dsp}",
         slot,
@@ -205,19 +214,19 @@ def random_series_or_parallel_dsp_configuration(preset):
 
 def prune_controllers(preset):
     print("\nPruning controls to maximum 64...")
-    while util.count_parameters_in_controller(preset) > constants.MAXIMUM_CONTROLLERS:
+    while util.count_parameters_in_controller(preset) > variables.MAXIMUM_CONTROLLERS:
         remove_one_random_controller_parameter(preset)
 
 
 def grow_controllers(preset):
-    max_controllers = min(util.count_controllable_parameters_in_preset(preset), constants.MAXIMUM_CONTROLLERS)
+    max_controllers = min(util.count_controllable_parameters_in_preset(preset), variables.MAXIMUM_CONTROLLERS)
     print("\nGrowing controls to maximum ", max_controllers)
     while util.count_parameters_in_controller(preset) < max_controllers - 1:
         add_random_parameter_to_controller(preset)
 
 
 def move_split_and_join(preset, dsp):
-    join_position = random.randint(constants.NUM_POSITIONS_PER_PATH - 4, constants.NUM_POSITIONS_PER_PATH)
+    join_position = random.randint(variables.NUM_POSITIONS_PER_PATH - 4, variables.NUM_POSITIONS_PER_PATH)
     split_position = random.randint(0, join_position - 3)
     preset["data"]["tone"][dsp]["join"]["@position"] = join_position
     preset["data"]["tone"][dsp]["split"]["@position"] = split_position
