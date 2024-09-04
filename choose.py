@@ -129,15 +129,6 @@ def set_random_max_and_min_for_controlled_param(preset, dsp, slot, parameter):
     controlled_param["@min"] = new_min
 
 
-# def random_block_category() -> str:
-#     # make 1 choice with weighted probabilities
-#     return random.choices(
-#         [choice[0] for choice in variables.block_probabilities],
-#         weights=[choice[1] for choice in variables.block_probabilities],
-#         k=1,
-#     )[0]
-
-
 def random_block_category() -> str:
     # make 1 choice with weighted probabilities
     return random.choices(
