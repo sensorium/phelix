@@ -76,6 +76,10 @@ def get_snapshot_controllers_dsp(preset, snapshot_num, dsp):
     return preset["data"]["tone"][f"snapshot{snapshot_num}"]["controllers"][dsp]
 
 
+def get_snapshot_controllers_blocks_dsp(preset, snapshot_num, dsp):
+    return preset["data"]["tone"][f"snapshot{snapshot_num}"]["blocks"][dsp]
+
+
 def get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot):
     # print(
     #     "get_snapshot_controllers_dsp_slot",
@@ -128,10 +132,17 @@ def move_snapshot_slot(preset, from_dsp, from_slot, to_dsp, to_slot, slot_type):
     for snapshot_num in range(variables.NUM_SNAPSHOTS):
         # NOTE: this if may be unnecessary, might not need slot_type at all
         if slot_type in ["block", "cab"]:
-            to_snapshot = get_snapshot_controllers_dsp(preset, snapshot_num, to_dsp)
-            from_snapshot = get_snapshot_controllers_dsp(preset, snapshot_num, from_dsp)
-            to_snapshot[to_slot] = {}
-            to_snapshot[to_slot] = from_snapshot.pop(from_slot)
+            to_snapshot_controllers = get_snapshot_controllers_dsp(preset, snapshot_num, to_dsp)
+            from_snapshot_controllers = get_snapshot_controllers_dsp(preset, snapshot_num, from_dsp)
+            to_snapshot_controllers[to_slot] = {}
+            to_snapshot_controllers[to_slot] = from_snapshot_controllers.pop(from_slot)
+
+            # also move slot true/false
+            to_snapshot_blocks = get_snapshot_controllers_blocks_dsp(preset, snapshot_num, to_dsp)
+            from_snapshot_blocks = get_snapshot_controllers_blocks_dsp(preset, snapshot_num, from_dsp)
+            # print(to_snapshot_blocks, from_snapshot_blocks)
+            to_snapshot_blocks[to_slot] = {}
+            to_snapshot_blocks[to_slot] = from_snapshot_blocks.pop(from_slot)
 
 
 def list_pedal_controls(preset, controller_num):
