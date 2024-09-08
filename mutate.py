@@ -332,7 +332,7 @@ def swap_with_random_split_from_file(preset, dsp, slot):
     split_dict = file.load_block_dictionary(choose.random_block_file_in_category("Split"))
     util.add_raw_block_to_preset(preset, dsp, slot, split_dict)
     util.get_default_dsp_slot(preset, dsp, slot)["@position"] = keep_position
-    mutate_parameter_values_for_all_snapshots(preset, 1.0)
+    # mutate_parameter_values_for_all_snapshots(preset, 1.0)
 
 
 def set_preset_name(preset, preset_name, postfix_num):
@@ -387,6 +387,7 @@ def mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num, ar
     util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
     util.add_splits(preset)
     util.populate_all_controller_slots_from_raw_file(preset)
+    print()
     if snapshot_src_num_str.isdigit():
         snapshot_src_num = int(snapshot_src_num_str) - 1  # 0-indexed
         if 0 <= snapshot_src_num <= 7:
@@ -400,15 +401,20 @@ def mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num, ar
     if args_from_gui.get("change_topology") is True:
         swap_some_blocks_and_splits_from_file(preset, variables.MUTATION_RATE)
         choose.prune_controllers(preset)
+        util.remove_empty_controller_dsp_slots(preset)
+        print()
         rearrange_blocks(preset, variables.FRACTION_MOVE)
         choose.move_splits_and_joins(preset)
         toggle_series_or_parallel_dsps(preset, variables.TOGGLE_RATE)
 
     if args_from_gui.get("change_controllers") is True:
         choose.random_new_params_for_snapshot_control(preset)
+        print()
         swap_some_control_destinations(preset, variables.PEDAL_2, 10)
 
+    print()
     mutate_parameter_values_for_all_snapshots(preset, variables.MUTATION_RATE)
+    print()
     mutate_values_in_all_default_blocks(preset, variables.MUTATION_RATE)
     mutate_all_pedal_ranges(preset)
 

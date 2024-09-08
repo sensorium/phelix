@@ -75,17 +75,17 @@ def swap_some_snapshot_controls_to_pedal(preset, pedal_control_num):
         choose.random_controlled_parameter_and_ranges(preset, pedal_control_num)
 
 
-def test(template_name, preset_name):
-    with open(template_name, "r") as f:
-        preset = json.load(f)
-        print("\nGenerating preset from template " + template_name + "...")
-        util.set_preset_name(preset, preset_name)
-        util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
-        populate_preset_with_random_blocks(preset)
-        add_cabs(preset)
-        choose.move_splits_and_joins(preset)
-        mutate.mutate_parameter_values_for_all_snapshots(preset, 1.0)
-        mutate.mutate_values_in_all_default_blocks(preset, 1.0)
+# def test(template_name, preset_name):
+#     with open(template_name, "r") as f:
+#         preset = json.load(f)
+#         print("\nGenerating preset from template " + template_name + "...")
+#         util.set_preset_name(preset, preset_name)
+#         util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
+#         populate_preset_with_random_blocks(preset)
+#         add_cabs(preset)
+#         choose.move_splits_and_joins(preset)
+#         mutate.mutate_parameter_values_for_all_snapshots(preset, 1.0)
+#         mutate.mutate_values_in_all_default_blocks(preset, 1.0)
 
 
 def generate_preset_from_template_file(template_name, save_name, preset_name):
@@ -100,11 +100,13 @@ def generate_preset_from_template_file(template_name, save_name, preset_name):
         choose.move_splits_and_joins(preset)
         print()
         mutate.mutate_parameter_values_for_all_snapshots(preset, 1.0)
+        print()
         mutate.mutate_values_in_all_default_blocks(preset, 1.0)
         print()
         mutate.rearrange_blocks(preset, 1.0)
         choose.random_series_or_parallel_dsp_configuration(preset)
         choose.prune_controllers(preset)
+        util.remove_empty_controller_dsp_slots(preset)
         swap_some_snapshot_controls_to_pedal(preset, variables.PEDAL_2)
         mutate.toggle_some_block_states(preset, 0.5)
         util.set_led_colours(preset)
@@ -119,7 +121,7 @@ def generate_multiple_presets_from_template(args):
     else:
         preset_name_base = args.get("preset_name")
     for i in range(args.get("num_presets")):
-        i_str = str(i + 1).zfill(3)
+        i_str = str(i + 1).zfill(2)
         preset_name = f"{preset_name_base}-{i_str}"
         generate_preset_from_template_file(
             args.get("template_file"),
