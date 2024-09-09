@@ -243,6 +243,24 @@ def find_unused_default_dsp_cab_slots(preset):
     return unused_dsp_cab_slots
 
 
+def count_blocks_on_each_dsp(preset):
+    blocks_on_dsp0 = 0
+    blocks_on_dsp1 = 0
+    for dsp in util.get_available_default_dsps(preset):
+        for slot in util.get_default_dsp(preset, dsp):
+            if slot.startswith("block"):
+                blocks_on_dsp0 += 1 if dsp == "dsp0" else 0
+                blocks_on_dsp1 += 1 if dsp == "dsp1" else 0
+    return blocks_on_dsp0, blocks_on_dsp1
+
+
+def which_dsp_to_move_to(preset):
+    blocks_on_dsp0, blocks_on_dsp1 = count_blocks_on_each_dsp(preset)
+    print("blocks_on_dsp0, blocks_on_dsp1", blocks_on_dsp0, blocks_on_dsp1)
+    choice_list = ["dsp0"] * blocks_on_dsp1 + ["dsp1"] * blocks_on_dsp0  # note reversed probability
+    return random.choice(choice_list)
+
+
 def rearrange_blocks(preset, fraction_move):
     print("Rearranging blocks")
     used_block_slots = find_used_default_block_slots(preset)
@@ -256,7 +274,13 @@ def rearrange_blocks(preset, fraction_move):
         if random.uniform(0, 1) < fraction_move:
             model_name = util.get_model_name(preset, dsp, slot)
             # update slot arrays
-            to_dsp, to_slot = unused_block_slots.pop()
+            # to_dsp, to_slot = unused_block_slots.pop()
+            to_dsp = which_dsp_to_move_to(preset)
+            for to_dsp_slot in unused_block_slots:
+                if to_dsp_slot[0] == to_dsp:
+                    to_slot = to_dsp_slot[1]
+                    unused_block_slots.remove([to_dsp, to_slot])
+                    break
 
             # wastes unused slot this turn if there is already an amp in to_dsp
             if model_name.startswith("HD2_Amp"):
