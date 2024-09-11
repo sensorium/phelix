@@ -7,7 +7,7 @@ Generates random presets for Helix processors, and enables you to mutate your ow
 
 __*WARNING!*__  I can't guarantee it won't brick your Helix.  But it hasn't wrecked mine yet.
 
-__*WARNING!*__  Levels can vary a LOT!  I use a limiter on the output when listening with phones.  
+__*WARNING!*__  Levels can vary a LOT!  I use an external limiter on the output when listening with phones.  
 
 __*BE CAREFUL, PROTECT YOUR HEARING.*__
 
