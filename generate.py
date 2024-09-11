@@ -54,16 +54,18 @@ def load_random_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amp
             return block_dict, num_amps
 
 
-def populate_preset_with_random_blocks(preset):
+def swap_all_blocks_and_splits_from_random_files(preset):
     for dsp in ["dsp0", "dsp1"]:
         print("\nPopulating " + dsp + "...")
         num_amps = 0
         for slot in util.get_default_dsp(preset, dsp):
-            # if not slot.startswith(("block", "split")):
-            #     continue
             if slot.startswith("block"):
+                path = util.get_default_dsp_slot(preset, dsp, slot)["@path"]
+                pos = util.get_default_dsp_slot(preset, dsp, slot)["@position"]
                 new_dict, num_amps = load_random_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amps)
                 util.add_raw_block_to_preset(preset, dsp, slot, new_dict)
+                util.get_default_dsp_slot(preset, dsp, slot)["@path"] = path
+                util.get_default_dsp_slot(preset, dsp, slot)["@position"] = pos
             elif slot.startswith("split"):
                 new_dict = file.load_block_dictionary(choose.random_block_file_in_category("Split"))
                 util.add_raw_block_to_preset(preset, dsp, slot, new_dict)
@@ -75,26 +77,13 @@ def swap_some_snapshot_controls_to_pedal(preset, pedal_control_num):
         choose.random_controlled_parameter_and_ranges(preset, pedal_control_num)
 
 
-# def test(template_name, preset_name):
-#     with open(template_name, "r") as f:
-#         preset = json.load(f)
-#         print("\nGenerating preset from template " + template_name + "...")
-#         util.set_preset_name(preset, preset_name)
-#         util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
-#         populate_preset_with_random_blocks(preset)
-#         add_cabs(preset)
-#         choose.move_splits_and_joins(preset)
-#         mutate.mutate_parameter_values_for_all_snapshots(preset, 1.0)
-#         mutate.mutate_values_in_all_default_blocks(preset, 1.0)
-
-
 def generate_preset_from_template_file(template_name, save_name, preset_name):
     with open(template_name, "r") as f:
         preset = json.load(f)
         print("\nGenerating preset from template " + template_name + "...")
         util.set_preset_name(preset, preset_name)
         util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
-        populate_preset_with_random_blocks(preset)
+        swap_all_blocks_and_splits_from_random_files(preset)
         print()
         add_cabs(preset)
         choose.move_splits_and_joins(preset)

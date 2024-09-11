@@ -321,6 +321,12 @@ def set_topologies_to_SABJ(preset):
     preset["data"]["tone"]["global"]["@topology0"] = "SABJ"  # dsp0
     preset["data"]["tone"]["global"]["@topology1"] = "SABJ"  # dsp1
     # some options: "ABJ" (pathA, pathB, Join), "SABJ", (split, pathA, pathB, join)
+    
+def check_and_set_topologies(preset):
+    for dsp in get_available_default_dsps(preset):
+        
+        # check if path has any blocks
+    
 
 
 def add_dsp_controller_and_snapshot_keys_if_missing(preset):
