@@ -5,7 +5,12 @@ Line6 Helix preset generator
 
 Generates random presets for Helix processors, and enables you to mutate your own presets to search for unusual sounds.
 
-__*Warning!*__  I can't guarantee it won't brick your Helix.  But it hasn't wrecked mine yet.
+__*WARNING!*__  I can't guarantee it won't brick your Helix.  But it hasn't wrecked mine yet.
+
+__*WARNING!*__  Levels can vary a LOT!  I use a limiter on the output when listening with phones.  
+
+__*BE CAREFUL, PROTECT YOUR HEARING.*__
+
 
 ## Prerequisites
 
