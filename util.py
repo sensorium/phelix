@@ -321,12 +321,25 @@ def set_topologies_to_SABJ(preset):
     preset["data"]["tone"]["global"]["@topology0"] = "SABJ"  # dsp0
     preset["data"]["tone"]["global"]["@topology1"] = "SABJ"  # dsp1
     # some options: "ABJ" (pathA, pathB, Join), "SABJ", (split, pathA, pathB, join)
-    
-def check_and_set_topologies(preset):
-    for dsp in get_available_default_dsps(preset):
-        
-        # check if path has any blocks
-    
+
+
+# def count_blocks_on_each_dsp_path(preset, dsp):
+#     blocks_on_path0 = 0
+#     blocks_on_path1 = 0
+#     for slot in util.get_default_dsp(preset, dsp):
+#         if slot.startswith("block"):
+#             blocks_on_path0 += 1 if dsp == "dsp0" else 0
+#             blocks_on_path1 += 1 if dsp == "dsp1" else 0
+#     return blocks_on_path0, blocks_on_path1
+
+# def check_and_set_topologies(preset):
+#     for dsp in get_available_default_dsps(preset):
+#         blocks_on_path0, blocks_on_path1 = count_blocks_on_each_dsp_path(preset, dsp)
+#         if blocks_on_path0 == 0:
+#             preset["data"]["tone"]["global"]["@topology0"] = "A"  # dsp0
+#         if blocks_on_path1 == 0:
+#             preset["data"]["tone"]["global"]["@topology1"] = "B"  # dsp1
+#         # remove split from default, controllers and snapshots
 
 
 def add_dsp_controller_and_snapshot_keys_if_missing(preset):
