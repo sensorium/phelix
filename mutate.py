@@ -269,6 +269,7 @@ def rearrange_blocks(preset, fraction_move):
     unused_dsp_path_positions = find_unused_dsp_path_positions(preset)
     used_dsp_cab_slots = find_used_default_dsp_cab_slots(preset)
     unused_dsp_cab_slots = find_unused_default_dsp_cab_slots(preset)
+    unused_block_slots.reverse()  # so we find low slots first
     # print(used_slots, unused_slots)
     for dsp, slot in used_block_slots:
         if random.uniform(0, 1) < fraction_move:
