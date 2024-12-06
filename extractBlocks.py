@@ -48,4 +48,4 @@ def extractControls(preset_path, category, preset_name):
         extractBlocksFromPath(preset_dict, "dsp1", full_path)
 
 
-extractControls("../phelix-out/sources", "VolPan", "volpan.hlx")
+extractControls("../phelix-out/sources", "Cab", "Cabs3.80.hlx")

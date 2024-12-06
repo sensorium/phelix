@@ -1,0 +1,91 @@
+{
+    "SnapshotParams": {
+        "LowCut": {
+            "@fs_enabled": false,
+            "@value": 45
+        },
+        "Mic": {
+            "@fs_enabled": false,
+            "@value": 6
+        },
+        "Angle": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "Position": {
+            "@fs_enabled": false,
+            "@value": 0.15999996662139893
+        },
+        "Distance": {
+            "@fs_enabled": false,
+            "@value": 3
+        },
+        "Level": {
+            "@fs_enabled": false,
+            "@value": 0
+        },
+        "HighCut": {
+            "@fs_enabled": false,
+            "@value": 10000
+        }
+    },
+    "Controller_Dict": {
+        "LowCut": {
+            "@min": 19.899999618530273,
+            "@max": 500,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Mic": {
+            "@min": 0,
+            "@max": 11,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Angle": {
+            "@min": 0,
+            "@max": 45,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Position": {
+            "@min": 0,
+            "@max": 1,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Distance": {
+            "@min": 1,
+            "@max": 12,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "Level": {
+            "@min": -60,
+            "@max": 6,
+            "@controller": 19,
+            "@snapshot_disable": false
+        },
+        "HighCut": {
+            "@min": 500,
+            "@max": 20100,
+            "@controller": 19,
+            "@snapshot_disable": false
+        }
+    },
+    "Defaults": {
+        "Position": 0.15999996662139893,
+        "@model": "HD2_CabMicIr_4x12CartogGuv",
+        "@position": 0,
+        "@no_snapshot_bypass": false,
+        "LowCut": 45,
+        "Mic": 6,
+        "@enabled": true,
+        "@path": 0,
+        "@type": 2,
+        "Angle": 0,
+        "Distance": 3,
+        "Level": 0,
+        "HighCut": 10000
+    }
+}

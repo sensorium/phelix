@@ -284,10 +284,8 @@ def rearrange_blocks(preset, fraction_move):
                     break
 
             # wastes unused slot this turn if there is already an amp in to_dsp
-            if model_name.startswith("HD2_Amp"):
-                if dsp != to_dsp:
-                    if util.count_amps(preset, to_dsp) > 0:
-                        return
+            if model_name.startswith("HD2_Amp") and dsp != to_dsp and util.count_amps(preset, to_dsp) > 0:
+                return
 
             unused_block_slots.append([dsp, slot])
             # get new unused path and position on to_dsp

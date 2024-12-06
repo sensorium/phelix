@@ -77,6 +77,17 @@ def swap_some_snapshot_controls_to_pedal(preset, pedal_control_num):
         choose.random_controlled_parameter_and_ranges(preset, pedal_control_num)
 
 
+def test(template_name, preset_name):
+    with open(template_name, "r") as f:
+        preset = json.load(f)
+        print("\nGenerating preset from template " + template_name + "...")
+        util.set_preset_name(preset, preset_name)
+        util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
+        swap_all_blocks_and_splits_from_random_files(preset)
+        print()
+        add_cabs(preset)
+
+
 def generate_preset_from_template_file(template_name, save_name, preset_name):
     with open(template_name, "r") as f:
         preset = json.load(f)
