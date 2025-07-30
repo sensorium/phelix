@@ -10,39 +10,34 @@ generate.py
 
 # this module takes a preset file and modifies it to be a valid preset for the pedalboard
 # it loads and modifies the json, and then saves it back as a new file
-from datetime import datetime
-import json
-import sys
-
 import variables
 import file
 import util
 import mutate
 import choose
+import process_preset
 
 
 def add_cabs(preset):
     for dsp in ["dsp0", "dsp1"]:
-
         amp_blocks_list = []
-        for slot in util.get_default_dsp(preset, dsp):
-            if util.get_model_name(preset, dsp, slot).startswith("HD2_Amp"):
-                amp_blocks_list.append(slot)
-
-        cabs_used = 0
-        for amp_slot in amp_blocks_list:
+        amp_blocks_list.extend(
+            slot
+            for slot in util.get_default_dsp(preset, dsp)
+            if util.get_model_name(preset, dsp, slot).startswith("HD2_Amp")
+        )
+        for cabs_used, amp_slot in enumerate(amp_blocks_list):
             print("Adding cab...")
-            cab_slot = "cab" + str(cabs_used)
-            cabs_used += 1
+            cab_slot = f"cab{str(cabs_used)}"
             util.get_default_dsp_slot(preset, dsp, amp_slot)["@cab"] = cab_slot
             # load a random cab
             raw_cab_dict = file.load_block_dictionary(choose.random_block_file_in_category("Cab"))
             util.add_raw_block_to_preset(preset, dsp, cab_slot, raw_cab_dict)
 
 
-def load_random_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amps):
+def load_probabilities_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amps):
     while True:
-        block_dict = file.load_block_dictionary(choose.random_block_file_excluding_cab_or_split())
+        block_dict = file.load_block_dictionary(choose.probabilities_block_file_excluding_cab_or_split())
         # Only return an amp block if num_amps is 0
         if num_amps == 0 and block_dict["Defaults"]["@model"].startswith("HD2_Amp"):
             num_amps += 1
@@ -54,7 +49,7 @@ def load_random_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amp
             return block_dict, num_amps
 
 
-def swap_all_blocks_and_splits_from_random_files(preset):
+def swap_all_blocks_and_splits_from_files_using_probabilities(preset):
     for dsp in ["dsp0", "dsp1"]:
         print("\nPopulating " + dsp + "...")
         num_amps = 0
@@ -62,7 +57,7 @@ def swap_all_blocks_and_splits_from_random_files(preset):
             if slot.startswith("block"):
                 path = util.get_default_dsp_slot(preset, dsp, slot)["@path"]
                 pos = util.get_default_dsp_slot(preset, dsp, slot)["@position"]
-                new_dict, num_amps = load_random_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amps)
+                new_dict, num_amps = load_probabilities_block_dictionary_excluding_cabs_and_splits_checking_amps(num_amps)
                 util.add_raw_block_to_preset(preset, dsp, slot, new_dict)
                 util.get_default_dsp_slot(preset, dsp, slot)["@path"] = path
                 util.get_default_dsp_slot(preset, dsp, slot)["@position"] = pos
@@ -71,70 +66,23 @@ def swap_all_blocks_and_splits_from_random_files(preset):
                 util.add_raw_block_to_preset(preset, dsp, slot, new_dict)
 
 
-def swap_some_snapshot_controls_to_pedal(preset, pedal_control_num):
-    print("\nSwapping some snapshot controls to pedal...")
-    for _ in range(variables.NUM_PEDAL_PARAMS):
-        choose.random_controlled_parameter_and_ranges(preset, pedal_control_num)
-
-
-def test(template_name, preset_name):
-    with open(template_name, "r") as f:
-        preset = json.load(f)
-        print("\nGenerating preset from template " + template_name + "...")
-        util.set_preset_name(preset, preset_name)
-        util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
-        swap_all_blocks_and_splits_from_random_files(preset)
-        print()
-        add_cabs(preset)
-
-
-def generate_preset_from_template_file(template_name, save_name, preset_name):
-    with open(template_name, "r") as f:
-        preset = json.load(f)
-        print("\nGenerating preset from template " + template_name + "...")
-        util.set_preset_name(preset, preset_name)
-        util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
-        swap_all_blocks_and_splits_from_random_files(preset)
-        print()
-        add_cabs(preset)
-        choose.move_splits_and_joins(preset)
-        print()
-        mutate.mutate_parameter_values_for_all_snapshots(preset, 1.0)
-        print()
-        mutate.mutate_values_in_all_default_blocks(preset, 1.0)
-        print()
-        mutate.rearrange_blocks(preset, 1.0)
-        choose.random_series_or_parallel_dsp_configuration(preset)
-        choose.prune_controllers(preset)
-        util.remove_empty_controller_dsp_slots(preset)
-        swap_some_snapshot_controls_to_pedal(preset, variables.PEDAL_2)
-        mutate.toggle_some_block_states(preset, 0.5)
-        util.set_led_colours(preset)
-        with open(save_name, "w") as json_file:
-            json.dump(preset, json_file, indent=4)
-
-
-def generate_multiple_presets_from_template(args):
-    if args.get("preset_name") == "":
-        now = datetime.now()
-        preset_name_base = now.strftime("%y%m%d-%H%M")
-    else:
-        preset_name_base = args.get("preset_name")
-    for i in range(args.get("num_presets")):
-        i_str = str(i + 1).zfill(2)
-        preset_name = f"{preset_name_base}-{i_str}"
-        generate_preset_from_template_file(
-            args.get("template_file"),
-            args.get("output_file")[:-4] + str(i + 1) + ".hlx",
-            preset_name,
-        )
+def generate_preset_processor(preset, args, postfix_num):
+    util.set_preset_name_for_generate(preset, args, postfix_num)
+    util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
+    util.set_led_colours(preset)
+    swap_all_blocks_and_splits_from_files_using_probabilities(preset)
+    add_cabs(preset)
+    mutate.change_topology(preset)
+    choose.prune_controllers(preset)  # Ensure controllers are pruned
+    util.remove_empty_controller_dsp_slots(preset)  # Ensure empty slots are removed
+    mutate.swap_some_controls_to_pedal(preset)  # Ensure pedal controls are swapped
+    mutate.swap_some_controls_to_cc(preset)  # Ensure cc controls are swapped
+    mutate.mutate_values_ranges_and_states(preset, 1.0, 1.0, 0.5)
+    return preset  # Ensure the modified preset is returned
 
 
 def main():
-    # Parse the JSON string argument
-    args = json.loads(sys.argv[1])
-
-    generate_multiple_presets_from_template(args)
+    process_preset.main(generate_preset_processor)
 
 
 if __name__ == "__main__":

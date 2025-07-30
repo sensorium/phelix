@@ -1,19 +1,117 @@
-""" 
+"""
 variables.py
- 
+
  This file is part of phelix.
- 
+
  Copyright 2024 Tim Barrass
- 
- phelix is licensed under the GNU General Public Licence (GPL) Version 3 or later. 
+
+ phelix is licensed under the GNU General Public Licence (GPL) Version 3 or later.
 """
 
 # These can change
 NUM_PEDAL_PARAMS = 16
+NUM_CC_PARAMS = 16
 BLOCKS_PATH = "blocks/"
-MUTATION_RATE = 0.1
-FRACTION_MOVE = 0.1
+MUTATION_RATE = 0.2
+FRACTION_MOVE = 0.2
 TOGGLE_RATE = 0.2
+
+
+
+useable_cc_numbers = [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    # skip 32
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    # 48, I've used it for fs12 for some reason
+    # skip some
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127,
+]
 
 
 # Change these in the GUI, not here
@@ -34,7 +132,7 @@ block_probabilities = {
 }
 
 # Don't change these, they're builtin to helix
-PEDAL_2 = 2
+PEDAL_CONTROL_2 = 2
 SNAPSHOT_CONTROL = 19
 MIDI_CC_CONTROL = 18
 NUM_SNAPSHOTS = 8

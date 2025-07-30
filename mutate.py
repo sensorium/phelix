@@ -8,15 +8,16 @@ mutate.py
  phelix is licensed under the GNU General Public Licence (GPL) Version 3 or later. 
 """
 
-import argparse
-import json
+
+
+import itertools
 import random
+import process_preset
 import variables
-from debug import save_debug_hlx
 import file
 import util
 import choose
-
+# from debug import save_debug_hlx
 
 def is_block_or_cab_slot(slot):
     return slot.startswith("block") or slot.startswith("cab")
@@ -33,10 +34,7 @@ def is_reverb(preset, dsp, slot):
 def random_triangle(pmin, pmax, mode_fraction, lowest_fraction):
     lowest = ((pmax - pmin) * lowest_fraction) + pmin
     mode = ((pmax - pmin) * mode_fraction) + pmin
-    result = random.triangular(lowest, pmax, mode)
-    # print("  random_triangle", lowest, pmax, mode, result)
-    # print("  random_triangle", pmin, pmax, mode, result)
-    return result
+    return random.triangular(lowest, pmax, mode)
 
 
 def get_mutated_level(pmin, pmax, slot):
@@ -145,12 +143,26 @@ def mutate_parameter_value(mean, p_min, p_max):
     return p
 
 
-def swap_some_control_destinations(preset, control_num, max_changes):
+def swap_some_controls_to_snapshot(preset, control_num, max_changes):
     print("Swapping some control destinations")
     num_changes = random.randint(0, max_changes)
     choose.random_remove_controls(preset, control_num, num_changes)
     for _ in range(num_changes):
-        choose.random_controlled_parameter_and_ranges(preset, control_num)
+        choose.random_snapshot_parameter(preset)
+
+
+def swap_some_controls_to_pedal(preset):
+    print("\nSwapping some snapshot controls to pedal...")
+    for _ in range(variables.NUM_PEDAL_PARAMS):
+        choose.random_pedal_parameter(preset)
+
+
+def swap_some_controls_to_cc(preset):
+    util.reinit_cc_being_used()
+    print("\nSwapping some snapshot controls to cc...")
+    for _ in range(variables.NUM_CC_PARAMS):
+        print(f"  {len(util.cc_being_used)} CCs left")
+        choose.random_cc_parameter(preset)
 
 
 def toggle_block_state(preset, dsp, slot):
@@ -213,10 +225,9 @@ def find_unused_dsp_path_positions(preset):
     unused_dsp_path_positions = {}
     for dsp in util.get_available_default_dsps(preset):
         unused_dsp_path_positions[dsp] = []
-        for path in range(variables.NUM_PATHS_PER_DSP):
-            for pos in range(variables.NUM_POSITIONS_PER_PATH):
-                if (path, pos) not in used_dsp_path_positions[dsp]:
-                    unused_dsp_path_positions[dsp].append((path, pos))
+        for path, pos in itertools.product(range(variables.NUM_PATHS_PER_DSP), range(variables.NUM_POSITIONS_PER_PATH)):
+            if (path, pos) not in used_dsp_path_positions[dsp]:
+                unused_dsp_path_positions[dsp].append((path, pos))
     return unused_dsp_path_positions
 
 
@@ -332,16 +343,16 @@ def swap_some_blocks_and_splits_from_file(preset, change_fraction):
     for dsp in util.get_available_default_dsps(preset):
         for slot in util.get_default_dsp(preset, dsp):
             if slot.startswith("block") and random.uniform(0, 1) < change_fraction:
-                swap_with_random_block_from_file(preset, dsp, slot)
+                swap_block_from_file_using_probabilities(preset, dsp, slot)
             if slot.startswith("split") and random.uniform(0, 1) < change_fraction:
                 swap_with_random_split_from_file(preset, dsp, slot)
 
 
-def swap_with_random_block_from_file(preset, dsp, slot):
+def swap_block_from_file_using_probabilities(preset, dsp, slot):
     print("Swapping block from file")
     path = util.get_default_dsp_slot(preset, dsp, slot)["@path"]
     pos = util.get_default_dsp_slot(preset, dsp, slot)["@position"]
-    raw_block_dict = file.load_block_dictionary(choose.random_block_file_excluding_cab_or_split())
+    raw_block_dict = file.load_block_dictionary(choose.probabilities_block_file_excluding_cab_or_split())
     util.add_raw_block_to_preset(preset, dsp, slot, raw_block_dict)
     util.get_default_dsp_slot(preset, dsp, slot)["@path"] = path
     util.get_default_dsp_slot(preset, dsp, slot)["@position"] = pos
@@ -358,14 +369,6 @@ def swap_with_random_split_from_file(preset, dsp, slot):
     # mutate_parameter_values_for_all_snapshots(preset, 1.0)
 
 
-def set_preset_name(preset, preset_name, postfix_num):
-    name = preset["data"]["meta"]["name"] if preset_name == "" else preset_name
-    postfix_num_str = str(postfix_num).zfill(3)
-    name = f"{name}-{postfix_num_str}"
-    preset["data"]["meta"]["name"] = name
-    print(f"Preset name: {name}")
-
-
 def mutate_all_pedal_ranges(preset):
     for dsp in util.get_controller(preset):
         for slot in util.get_controller_dsp(preset, dsp):
@@ -376,9 +379,6 @@ def mutate_all_pedal_ranges(preset):
                         mutate_one_set_of_pedal_ranges(preset, dsp, slot, parameter)
                 break
 
-
-def set_dsp1_input_to_multi(preset):
-    preset["data"]["tone"]["dsp1"]["inputA"]["@input"] = 1
 
 
 def mutate_one_set_of_pedal_ranges(preset, dsp, slot, parameter):
@@ -403,80 +403,53 @@ def snapshot(snapshot_num):
     return f"snapshot{snapshot_num}"
 
 
-def mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num, args_from_gui):
-    set_preset_name(preset, preset_name, postfix_num)
-    set_dsp1_input_to_multi(preset)
-    util.set_topologies_to_SABJ(preset)
-    util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
-    util.add_splits(preset)
-    util.populate_all_controller_slots_from_raw_file(preset)
-    print()
-    if snapshot_src_num_str.isdigit():
-        snapshot_src_num = int(snapshot_src_num_str) - 1  # 0-indexed
-        if 0 <= snapshot_src_num <= 7:
-            print(f"Mutating from Source Snapshot {snapshot_src_num_str}")  # str is not 0-indexed
-            util.copy_snapshot_values_to_default(preset, snapshot_src_num)  # 0-indexed
-    else:
-        print("Mutating Default to produce 8 Snapshots")
-    util.populate_all_snapshots_with_controllers_from_file(preset)
-    util.copy_all_default_values_to_all_snapshots(preset)
 
-    if args_from_gui.get("change_topology") is True:
-        swap_some_blocks_and_splits_from_file(preset, variables.MUTATION_RATE)
-        choose.prune_controllers(preset)
-        util.remove_empty_controller_dsp_slots(preset)
-        print()
-        rearrange_blocks(preset, variables.FRACTION_MOVE)
-        choose.move_splits_and_joins(preset)
-        toggle_series_or_parallel_dsps(preset, variables.TOGGLE_RATE)
+def change_topology(preset):
+    rearrange_blocks(preset, variables.FRACTION_MOVE)
+    choose.move_splits_and_joins(preset)
+    toggle_series_or_parallel_dsps(preset, variables.TOGGLE_RATE)
 
-    if args_from_gui.get("change_controllers") is True:
-        choose.random_new_params_for_snapshot_control(preset)
-        print()
-        swap_some_control_destinations(preset, variables.PEDAL_2, 10)
 
-    print()
-    mutate_parameter_values_for_all_snapshots(preset, variables.MUTATION_RATE)
-    print()
-    mutate_values_in_all_default_blocks(preset, variables.MUTATION_RATE)
+
+def mutate_values_ranges_and_states(preset, mutation_rate, block_rearrange_rate, block_toggle_rate):
+    mutate_parameter_values_for_all_snapshots(preset, mutation_rate)
     mutate_all_pedal_ranges(preset)
-
-    toggle_some_block_states(preset, variables.MUTATION_RATE)
-
-    util.set_led_colours(preset)
-    print()
+    mutate_values_in_all_default_blocks(preset, mutation_rate)
+    toggle_some_block_states(preset, block_toggle_rate)
+    
 
 
-def mutate_preset_from_source_snapshot(
-    template_file, snapshot_src_num_str, output_file, preset_name, postfix_num, args_from_gui
-):
-    with open(template_file, "r") as f:
-        preset = json.load(f)
-        mutate_dictionary(preset, snapshot_src_num_str, preset_name, postfix_num, args_from_gui)
-        with open(output_file, "w") as f:
-            json.dump(preset, f, indent=4)
-
-
-def generate_multiple_mutations_from_template(args_from_gui):
-    if args_from_gui.get("snapshot_src_num") == "":
+def mutate_preset_processor(preset, args, postfix_num):
+    snapshot_src_num_str = args.get("snapshot_src_num")
+    if snapshot_src_num_str == "":
         snapshot_src_num_str = "default"
-    else:
-        snapshot_src_num_str = args_from_gui.get("snapshot_src_num")  # not 0 indexed
-    for i in range(args_from_gui.get("num_presets")):
-        mutate_preset_from_source_snapshot(
-            args_from_gui.get("template_file"),
-            snapshot_src_num_str,  # not 0 indexed
-            args_from_gui.get("output_file")[:-4] + str(i + 1) + ".hlx",
-            args_from_gui.get("preset_name"),
-            i + 1,
-            args_from_gui,
-        )
+ 
+    util.set_preset_name_for_mutate(preset, args, postfix_num)
+    util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
+    util.set_led_colours(preset)
+    util.add_splits(preset)
+    if args.get("change_topology") is True:
+        util.set_topologies_to_SABJ(preset)
+        util.set_dsp1_input_to_multi(preset)
+        change_topology(preset)
+    swap_some_blocks_and_splits_from_file(preset, variables.MUTATION_RATE)
+    if args.get("change_controllers") is True:
+        choose.random_new_params_for_snapshot_control(preset)
+        swap_some_controls_to_snapshot(preset, variables.PEDAL_CONTROL_2, 10)
+    util.populate_all_controller_slots_from_raw_file(preset)
+    util.copy_snapshot_values_to_default(preset, snapshot_src_num_str)
+    util.populate_all_snapshots_with_controllers_from_file(preset)
+    choose.prune_controllers(preset)
+    util.remove_empty_controller_dsp_slots(preset)  
+    util.copy_all_default_values_to_all_snapshots(preset)
+    mutate_values_ranges_and_states(preset, variables.MUTATION_RATE, variables.MUTATION_RATE, variables.MUTATION_RATE)
+    return preset
+
+#TODO mutate cc ranges
+
+def main():
+    process_preset.main(mutate_preset_processor)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("args_json", type=str, help="JSON string containing arguments")
-    args = parser.parse_args()
-
-    args_dict = json.loads(args.args_json)
-    generate_multiple_mutations_from_template(args_dict)
+    main()

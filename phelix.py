@@ -32,7 +32,7 @@ BUTTON_WIDTH = 15
 
 
 def load_recent_config_from_file():
-    config_files = glob.glob("*.json")
+    config_files = glob.glob("config/*.json")
     config_files.sort(key=os.path.getmtime)
     if config_files:
         config_file = config_files[-1]
@@ -43,10 +43,11 @@ def load_recent_config_from_file():
 
 
 def load_config_from_file():
-    config_file = filedialog.askopenfilename(
-        initialdir="./", title="Select Config File", filetypes=(("json files", "*.json"), ("All files", "*.*"))
-    )
-    if config_file:
+    if config_file := filedialog.askopenfilename(
+        initialdir="./",
+        title="Select Config File",
+        filetypes=(("json files", "*.json"), ("All files", "*.*")),
+    ):
         with open(config_file, "r") as f:
             global config
             config = json.load(f)
@@ -57,43 +58,44 @@ def save_config_to_file(event=None):
     config["template_file"] = gen_tab.template_entry.get()
     config["output_file"] = gen_tab.output_entry.get()
     config["preset_name"] = gen_tab.name_entry.get()
-    config["num_presets"] = int(gen_tab.num_presets_entry.get())
+    config["num_presets"] = int(gen_tab.num_presets_entry.get() or "0")
 
     config["mutate_template_file"] = mutate_tab.template_entry.get()
     config["mutate_output_file"] = mutate_tab.output_entry.get()
     config["mutate_preset_name"] = mutate_tab.name_entry.get()
-    config["mutate_num_presets"] = int(mutate_tab.num_presets_entry.get())
-    config["mutate_snapshot_src_num"] = int(mutate_tab.snapshot_src_num_entry.get())
+    config["mutate_num_presets"] = int(mutate_tab.num_presets_entry.get() or "0")
+    config["mutate_snapshot_src_num"] = mutate_tab.snapshot_src_num_entry.get()
     config["change_topology"] = mutate_tab.change_topology_var.get()
     config["change_controllers"] = mutate_tab.change_controllers_var.get()
 
     config["block_probabilities"] = variables.block_probabilities
 
-    config_file = filedialog.asksaveasfilename(
-        initialdir="./", title="Save Config File", filetypes=(("json files", "*.json"), ("All files", "*.*"))
-    )
-    if config_file:
+    if config_file := filedialog.asksaveasfilename(
+        initialdir="./",
+        title="Save Config File",
+        filetypes=(("json files", "*.json"), ("All files", "*.*")),
+    ):
         with open(config_file, "w") as f:
             json.dump(config, f, indent=4)
 
 
 def browse_open_hlx_file(hlx_entry, field_title):
     hlx_entry.delete(0, "end")
-    hlx_file = filedialog.askopenfilename(
-        initialdir="./", title=field_title, filetypes=(("HLX files", "*.hlx"), ("All files", "*.*"))
-    )
-    if hlx_file:
+    if hlx_file := filedialog.askopenfilename(
+        initialdir="./",
+        title=field_title,
+        filetypes=(("HLX files", "*.hlx"), ("All files", "*.*")),
+    ):
         hlx_entry.insert(0, os.path.relpath(hlx_file))
 
 
 def browse_save_hlx_file(hlx_entry, field_title):
     hlx_entry.delete(0, "end")
-    output_file = filedialog.asksaveasfilename(
+    if output_file := filedialog.asksaveasfilename(
         initialdir="./",
         title=field_title,
         filetypes=(("HLX files", "*.hlx"), ("All files", "*.*")),
-    )
-    if output_file:
+    ):
         hlx_entry.insert(0, os.path.relpath(output_file))
 
 
@@ -119,22 +121,19 @@ def update_ui_from_config():
     mutate_tab.snapshot_src_num_entry.insert(0, config["mutate_snapshot_src_num"])
     mutate_tab.change_topology_var.set(config["change_topology"])
     mutate_tab.change_controllers_var.set(config["change_controllers"])
+    
+    if "block_probabilities" in config:
+        variables.block_probabilities.update(config["block_probabilities"])
 
-    for idx, (category, value) in enumerate(variables.block_probabilities.items()):
-        label = tk.Label(probabilities_tab, text=f"{category}:")
-        label.grid(row=idx, column=0, padx=5, pady=5, sticky="w")
-
-        entry = tk.Entry(probabilities_tab)
+    for category, entry in entries_dict.items():
         entry.delete(0, END)
-        entry.insert(0, value)
-        entry.grid(row=idx, column=1, padx=5, pady=5)
-        entries_dict[category] = entry
+        entry.insert(0, variables.block_probabilities.get(category, ""))
 
 
 def copyEntriesToBlockProbabilities():
     for category, entry in entries_dict.items():
-        print(f"{category}: {entry.get()}")
-        variables.block_probabilities[category] = entry.get()
+        # Probabilities must be integers for random.choices
+        variables.block_probabilities[category] = int(entry.get() or "0")
 
 
 ########### generate_tab #######################################################
@@ -155,7 +154,8 @@ class Generate:
             "template_file": self.template_entry.get(),
             "output_file": self.output_entry.get(),
             "preset_name": self.name_entry.get(),
-            "num_presets": int(self.num_presets_entry.get()),
+            "num_presets": int(self.num_presets_entry.get() or "0"),
+            "block_probabilities": variables.block_probabilities,
         }
         args_json = json.dumps(args)
         command = ["python3", "generate.py", args_json]
@@ -239,9 +239,10 @@ class Mutate:
             "output_file": self.output_entry.get(),
             "snapshot_src_num": self.snapshot_src_num_entry.get(),
             "preset_name": self.name_entry.get(),
-            "num_presets": int(self.num_presets_entry.get()),
+            "num_presets": int(self.num_presets_entry.get() or "0"),
             "change_topology": self.change_topology_var.get(),
             "change_controllers": self.change_controllers_var.get(),
+            "block_probabilities": variables.block_probabilities,
         }
 
         args_json = json.dumps(args)
@@ -269,12 +270,9 @@ class Mutate:
         )
         template_button.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
-        # Source Snapshot
-        snapshot_src_num_label = tk.Label(self.frame, text="Source Snapshot:")
-        snapshot_src_num_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
-        self.snapshot_src_num_entry = tk.Entry(self.frame, width=NUMBER_FIELD_WIDTH)
-        self.snapshot_src_num_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")
-
+        self.snapshot_src_num_entry = self._extracted_from_create_widgets_17(
+            "Source Snapshot:", 1, NUMBER_FIELD_WIDTH
+        )
         # Output Preset File
         self.output_entry = tk.Entry(self.frame)
         self.output_entry.config(width=TEXT_FIELD_WIDTH)
@@ -287,18 +285,12 @@ class Mutate:
         )
         output_button.grid(row=2, column=0, padx=5, pady=5, sticky="w")
 
-        # Preset Name
-        name_label = tk.Label(self.frame, text="Preset Name (optional):")
-        name_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
-        self.name_entry = tk.Entry(self.frame, width=TEXT_FIELD_WIDTH)
-        self.name_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
-
-        # Number of Presets
-        num_presets_label = tk.Label(self.frame, text="Number of Presets:")
-        num_presets_label.grid(row=4, column=0, padx=5, pady=5, sticky="w")
-        self.num_presets_entry = tk.Entry(self.frame, width=NUMBER_FIELD_WIDTH)
-        self.num_presets_entry.grid(row=4, column=1, padx=5, pady=5, sticky="w")
-
+        self.name_entry = self._extracted_from_create_widgets_17(
+            "Preset Name (optional):", 3, TEXT_FIELD_WIDTH
+        )
+        self.num_presets_entry = self._extracted_from_create_widgets_17(
+            "Number of Presets:", 4, NUMBER_FIELD_WIDTH
+        )
         # Change Topology Checkbox
         change_topology_label = tk.Label(self.frame, text="Change Topology")
         change_topology_label.grid(row=5, column=0, padx=5, pady=5, sticky="w")
@@ -319,6 +311,16 @@ class Mutate:
         self.output_area = tk.Text(self.frame, width=OUTPUT_FIELD_WIDTH)
         self.output_area.grid(row=8, column=0, columnspan=3, padx=5, pady=5, sticky="w")
 
+    # TODO Rename this here and in `create_widgets`
+    def _extracted_from_create_widgets_17(self, text, row, width):
+        # Source Snapshot
+        snapshot_src_num_label = tk.Label(self.frame, text=text)
+        snapshot_src_num_label.grid(row=row, column=0, padx=5, pady=5, sticky="w")
+        result = tk.Entry(self.frame, width=width)
+        result.grid(row=row, column=1, padx=5, pady=5, sticky="w")
+
+        return result
+
 
 window = tk.Tk()
 # Set the theme to 'clam' or any other theme name
@@ -331,14 +333,15 @@ mutate_tab = Mutate(tabs)
 
 probabilities_tab = ttk.Frame(window)
 # Assuming constants.block_probabilities is a list of tuples [(category, value), ...]
-for idx, label_text in enumerate(variables.block_probabilities):
-    label = tk.Label(probabilities_tab, text=label_text)
+for idx, (category, value) in enumerate(variables.block_probabilities.items()):
+    label = tk.Label(probabilities_tab, text=f"{category}:")
     label.grid(row=idx, column=0, padx=5, pady=5, sticky="w")
 
     entry = tk.Entry(probabilities_tab, width=NUMBER_FIELD_WIDTH)
+    entry.insert(0, value)
     entry.grid(row=idx, column=1, padx=5, pady=5)
 
-    entries_dict[label_text] = entry
+    entries_dict[category] = entry
 
 copy_button = tk.Button(probabilities_tab, text="Update Probabilities", command=copyEntriesToBlockProbabilities)
 copy_button.grid(row=len(variables.block_probabilities), column=0, columnspan=2, padx=5, pady=5, sticky="ew")
