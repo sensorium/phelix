@@ -17,10 +17,6 @@ import variables
 import file
 import util
 import choose
-# from debug import save_debug_hlx
-
-def is_block_or_cab_slot(slot):
-    return slot.startswith("block") or slot.startswith("cab")
 
 
 def is_specific_model_type(preset, dsp, slot):
@@ -38,7 +34,7 @@ def random_triangle(pmin, pmax, mode_fraction, lowest_fraction):
 
 
 def get_mutated_level(pmin, pmax, slot):
-    if is_block_or_cab_slot(slot):
+    if util.is_block_or_cab_slot(slot):
         return random_triangle(pmin, pmax, 0.8, 0.0)
     else:
         return random.uniform(pmin, pmax)
@@ -143,26 +139,26 @@ def mutate_parameter_value(mean, p_min, p_max):
     return p
 
 
-def swap_some_controls_to_snapshot(preset, control_num, max_changes):
-    print("Swapping some control destinations")
+def remove_some_controllers_and_assign_new_ones_to_snapshot(preset, from_control_type, max_changes):
+    print("\nremove_some_controllers_and_assign_new_ones_to_snapshot...")
     num_changes = random.randint(0, max_changes)
-    choose.random_remove_controls(preset, control_num, num_changes)
+    choose.remove_random_controls_of_type(preset, from_control_type, num_changes)
     for _ in range(num_changes):
-        choose.random_snapshot_parameter(preset)
+        choose.assign_random_parameter_controller_to_snapshot_and_randomise_range(preset)
 
 
-def swap_some_controls_to_pedal(preset):
-    print("\nSwapping some snapshot controls to pedal...")
-    for _ in range(variables.NUM_PEDAL_PARAMS):
-        choose.random_pedal_parameter(preset)
+def change_some_controller_types(preset, controller_type, number_of_changes):
+    print("\nchange_some_controller_types to controller "+str(controller_type))
+    for _ in range(number_of_changes):
+        choose.assign_random_parameter_to_controller_type_and_randomise_range(preset, controller_type)
 
 
-def swap_some_controls_to_cc(preset):
-    util.reinit_cc_being_used()
-    print("\nSwapping some snapshot controls to cc...")
-    for _ in range(variables.NUM_CC_PARAMS):
-        print(f"  {len(util.cc_being_used)} CCs left")
-        choose.random_cc_parameter(preset)
+# def change_some_controls_to_cc(preset):
+#     util.reinit_cc_being_used()
+#     print("\nChangingsome controls to cc...")
+#     for _ in range(variables.NUM_CC_PARAMS):
+#         print(f"  {len(util.cc_being_used)} CCs left")
+#         choose.random_cc_parameter(preset)
 
 
 def toggle_block_state(preset, dsp, slot):
@@ -272,6 +268,20 @@ def which_dsp_to_move_to(preset):
     return random.choice(choice_list)
 
 
+def get_unused_block_slot(unused_block_slots, to_dsp):
+    """Finds and returns an unused block slot in the specified DSP."""
+    for to_dsp_slot in unused_block_slots:
+        if to_dsp_slot[0] == to_dsp:
+            to_slot = to_dsp_slot[1]
+            unused_block_slots.remove([to_dsp, to_slot])
+            return to_dsp, to_slot
+    return None, None  # No unused slot found in the specified DSP
+
+
+def is_amp_slot(preset, to_dsp, model_name):
+    return model_name.startswith("HD2_Amp") and util.count_amps(preset, to_dsp) > 0
+
+
 def rearrange_blocks(preset, fraction_move):
     print("Rearranging blocks")
     used_block_slots = find_used_default_block_slots(preset)
@@ -369,19 +379,19 @@ def swap_with_random_split_from_file(preset, dsp, slot):
     # mutate_parameter_values_for_all_snapshots(preset, 1.0)
 
 
-def mutate_all_pedal_ranges(preset):
+def mutate_all_control_ranges(preset, controller):
     for dsp in util.get_controller(preset):
         for slot in util.get_controller_dsp(preset, dsp):
             block = util.get_controller_dsp(preset, dsp)[slot]
-            if any(block[param]["@controller"] == 2 for param in block):
+            if any(block[param]["@controller"] == controller for param in block):
                 for parameter in block:
-                    if block[parameter]["@controller"] == 2:
-                        mutate_one_set_of_pedal_ranges(preset, dsp, slot, parameter)
+                    if block[parameter]["@controller"] == controller:
+                        mutate_one_set_of_control_ranges(preset, dsp, slot, parameter)
                 break
 
 
 
-def mutate_one_set_of_pedal_ranges(preset, dsp, slot, parameter):
+def mutate_one_set_of_control_ranges(preset, dsp, slot, parameter):
     param = util.get_controller_dsp(preset, dsp)[slot][parameter]
     if not isinstance(param["@min"], bool):  # don't want to pedal bools
         # get original ranges from file
@@ -399,10 +409,6 @@ def mutate_one_set_of_pedal_ranges(preset, dsp, slot, parameter):
         param["@max"] = new_max
 
 
-def snapshot(snapshot_num):
-    return f"snapshot{snapshot_num}"
-
-
 
 def change_topology(preset):
     rearrange_blocks(preset, variables.FRACTION_MOVE)
@@ -411,9 +417,10 @@ def change_topology(preset):
 
 
 
-def mutate_values_ranges_and_states(preset, mutation_rate, block_rearrange_rate, block_toggle_rate):
+def mutate_values_ranges_and_states(preset, mutation_rate, block_toggle_rate):
     mutate_parameter_values_for_all_snapshots(preset, mutation_rate)
-    mutate_all_pedal_ranges(preset)
+    mutate_all_control_ranges(preset, variables.CONTROLLER_PEDAL2)
+    mutate_all_control_ranges(preset, variables.CONTROLLER_MIDICC)    
     mutate_values_in_all_default_blocks(preset, mutation_rate)
     toggle_some_block_states(preset, block_toggle_rate)
     
@@ -435,20 +442,21 @@ def mutate_preset_processor(preset, args, postfix_num):
     swap_some_blocks_and_splits_from_file(preset, variables.MUTATION_RATE)
     if args.get("change_controllers") is True:
         choose.random_new_params_for_snapshot_control(preset)
-        swap_some_controls_to_snapshot(preset, variables.PEDAL_CONTROL_2, 10)
+        remove_some_controllers_and_assign_new_ones_to_snapshot(preset, variables.CONTROLLER_PEDAL2, 10)
     util.populate_all_controller_slots_from_raw_file(preset)
     util.copy_snapshot_values_to_default(preset, snapshot_src_num_str)
     util.populate_all_snapshots_with_controllers_from_file(preset)
     choose.prune_controllers(preset)
     util.remove_empty_controller_dsp_slots(preset)  
     util.copy_all_default_values_to_all_snapshots(preset)
-    mutate_values_ranges_and_states(preset, variables.MUTATION_RATE, variables.MUTATION_RATE, variables.MUTATION_RATE)
+    mutate_values_ranges_and_states(preset, variables.MUTATION_RATE, variables.MUTATION_RATE)
     return preset
 
 #TODO mutate cc ranges
 
 def main():
     process_preset.main(mutate_preset_processor)
+
 
 
 if __name__ == "__main__":

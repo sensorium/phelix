@@ -73,13 +73,13 @@ def generate_preset_processor(preset, args, postfix_num):
     swap_all_blocks_and_splits_from_files_using_probabilities(preset)
     add_cabs(preset)
     mutate.change_topology(preset)
-    choose.prune_controllers(preset)  # Ensure controllers are pruned
-    util.remove_empty_controller_dsp_slots(preset)  # Ensure empty slots are removed
-    mutate.swap_some_controls_to_pedal(preset)  # Ensure pedal controls are swapped
-    mutate.swap_some_controls_to_cc(preset)  # Ensure cc controls are swapped
-    mutate.mutate_values_ranges_and_states(preset, 1.0, 1.0, 0.5)
-    return preset  # Ensure the modified preset is returned
-
+    choose.prune_controllers(preset)
+    util.remove_empty_controller_dsp_slots(preset)
+    mutate.change_some_controller_types(preset, variables.PEDAL_CONTROL, variables.NUM_PEDAL2_PARAMS)
+    util.reinit_available_ccs()
+    mutate.change_some_controller_types(preset, variables.CONTROLLER_MIDICC, variables.NUM_CC_PARAMS)
+    mutate.mutate_values_ranges_and_states(preset, 1.0, 0.5)
+    return preset
 
 def main():
     process_preset.main(generate_preset_processor)

@@ -66,6 +66,32 @@ def add_controller_block_parameter_and_control_type(preset, dsp, slot, parameter
     
 def remove_controller_block_parameter_cc(preset, dsp, slot, parameter):
     del get_controller_dsp_slot_parameter(preset, dsp, slot, parameter)["@cc"]
+    
+    
+def remove_SNAPSHOT_controller(preset, dsp, slot, param):
+    remove_parameter_from_controller(preset, dsp, slot, param)
+    remove_parameter_from_all_snapshots(preset, dsp, slot, param)
+        
+def remove_MIDICC_controller(preset, dsp, slot, param):       
+    returnCC(get_controller_dsp_slot_parameter(preset, dsp, slot, param)["@cc"])
+    remove_parameter_from_controller(preset, dsp, slot, param)
+  
+def remove_PEDAL2_controller(preset, dsp, slot, param):       
+    remove_parameter_from_controller(preset, dsp, slot, param)  
+    
+        
+def remove_existing_controller(preset, dsp, slot, param):
+    if param in get_controller_dsp_slot(preset, dsp, slot):
+        # check controller type
+        if get_controller_dsp_slot_parameter(preset, dsp, slot, param)["@controller"] == variables.CONTROLLER_SNAPSHOT:
+            remove_SNAPSHOT_controller(preset, dsp, slot, param)
+        elif get_controller_dsp_slot_parameter(preset, dsp, slot, param)["@controller"] == variables.CONTROLLER_PEDAL2:
+            remove_PEDAL2_controller(preset, dsp, slot, param)
+        else:
+            remove_MIDICC_controller(preset, dsp, slot, param)
+            
+
+
 
 
 def get_available_default_dsps(preset):
@@ -131,7 +157,8 @@ def get_snapshot_controllers_dsp_slot_parameter_value(preset, snapshot_num, dsp,
     # print("get_snapshot_controllers_dsp_slot_parameter_value", snapshot_num, dsp, slot, parameter)
     return preset["data"]["tone"][f"snapshot{snapshot_num}"]["controllers"][dsp][slot][parameter]["@value"]
 
-
+    
+                    
 def add_raw_block_to_snapshots(preset, dsp, slot, raw_block_dict):
     # print("Adding raw block to snapshots")
     for snapshot_num in range(variables.NUM_SNAPSHOTS):
@@ -139,6 +166,8 @@ def add_raw_block_to_snapshots(preset, dsp, slot, raw_block_dict):
         snapshot_slot[slot] = deepcopy(raw_block_dict["SnapshotParams"])
 
 
+ 
+    
 # splits can only move on their own dsp
 # cabs can only move to the dsp where their amp is
 # blocks can move to any dsp
@@ -182,15 +211,15 @@ def move_snapshot_slot(preset, from_dsp, from_slot, to_dsp, to_slot, slot_type):
 
 def list_controls_of_type(preset, controller_type):
     # get a list of params with control (eg. pedal controller number 2)
-    params_with_control_set_to_pedal = []
+    params_of_controller_type = []
     for dsp in get_controller(preset):
         for slot in get_controller_dsp(preset, dsp):
-            params_with_control_set_to_pedal.extend(
+            params_of_controller_type.extend(
                 [dsp, slot, parameter]
                 for parameter in get_controller_dsp_slot(preset, dsp, slot)
                 if get_controller_dsp_slot_parameter(preset, dsp, slot, parameter)["@controller"] == controller_type
             )
-    return params_with_control_set_to_pedal
+    return params_of_controller_type
 
 
 def count_parameters_in_controller(preset):
@@ -235,6 +264,9 @@ def remove_all_snapshots(preset):
     for _ in range(variables.NUM_SNAPSHOTS):
         get_snapshot(preset, _).clear()
 
+
+def is_block_or_cab_slot(slot):
+    return slot.startswith(("block", "cab"))
 
 
 def get_controller(preset):
@@ -447,19 +479,22 @@ def set_dsp1_input_to_multi(preset):
     preset["data"]["tone"]["dsp1"]["inputA"]["@input"] = 1
     
     
-cc_being_used = variables.useable_cc_numbers[: variables.NUM_CC_PARAMS]
+available_ccs = variables.useable_cc_numbers[: variables.NUM_CC_PARAMS]
 
-def reinit_cc_being_used():
-    global cc_being_used
-    cc_being_used = variables.useable_cc_numbers[: variables.NUM_CC_PARAMS]
+def reinit_available_ccs():
+    global available_ccs
+    available_ccs = variables.useable_cc_numbers[: variables.NUM_CC_PARAMS]
 
 
-def num_ccs_spare():
-    return len(cc_being_used)
+def num_available_ccs():
+    return len(available_ccs)
 
 
 def nextCC():
-    return cc_being_used.pop(0)
+    return available_ccs.pop(0)
+
+def returnCC(cc):
+    available_ccs.insert(0, cc)
 
 
 def add_splits(preset):
