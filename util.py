@@ -10,7 +10,7 @@ util.py
 
 from copy import deepcopy
 from datetime import datetime
-import variables
+import var
 import file
 # from debug import save_debug_hlx
 
@@ -44,57 +44,58 @@ def set_raw_max_and_min_for_controlled_param(preset, dsp, slot, param):
     controlled_param["@max"] = raw_block_dict[param]["@max"]
     
     
-def set_controller_type(preset, dsp, slot, parameter, control_type):
-    get_controller_dsp_slot_parameter(preset, dsp, slot, parameter)["@controller"] = control_type
-    # print("  set_controller_type ", str(control_type), "for", dsp, slot, parameter)
-    
-    
-def add_controller_block_parameter_cc(preset, dsp, slot, parameter, cc):
-    print("  add_controller_block_parameter_cc", dsp, slot, parameter, "cc", cc)
-    get_controller_dsp_slot_parameter(preset, dsp, slot, parameter).setdefault("@cc", {})
-    get_controller_dsp_slot_parameter(preset, dsp, slot, parameter)["@cc"] = cc
+# def set_controller_type(preset, dsp, slot, parameter, control_type):
+#     # print("  set_controller_type ", str(control_type), "for", dsp, slot, parameter)
+#     # copy param to controller
+#     raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
+#     add_controller_block_parameter_and_control_type(preset, dsp, slot, parameter, raw_block_dict, control_type)
 
-
-def add_controller_block_parameter_and_control_type(preset, dsp, slot, parameter, raw_block_dict, control_type):
+def add_controller_block_param_and_control_type(preset, dsp, slot, parameter, raw_block_dict, control_type):
+    print("add_controller_block_param_and_control_type", dsp, slot, get_model_name(preset, dsp, slot), parameter, num_to_control_type(control_type))
     if slot not in get_controller_dsp(preset, dsp):
         get_controller_dsp(preset, dsp)[slot] = {}
     # save_debug_hlx(preset)
     get_controller_dsp_slot(preset, dsp, slot)[parameter] = deepcopy(raw_block_dict["Controller_Dict"][parameter])
-    get_controller_dsp_slot_parameter(preset, dsp, slot, parameter)["@controller"] = control_type
-    print("  add_parameter_to_controller ", get_model_name(preset, dsp, slot), ",", dsp, slot, parameter, control_type)
-    
+    get_controller_dsp_slot_param(preset, dsp, slot, parameter)["@controller"] = control_type
+
+def add_controller_block_parameter_cc(preset, dsp, slot, parameter, cc):
+    print("add_controller_block_parameter_cc", dsp, slot, parameter, "cc", cc)
+    get_controller_dsp_slot_param(preset, dsp, slot, parameter).setdefault("@cc", {})
+    get_controller_dsp_slot_param(preset, dsp, slot, parameter)["@cc"] = cc
+     
     
 def remove_controller_block_parameter_cc(preset, dsp, slot, parameter):
-    del get_controller_dsp_slot_parameter(preset, dsp, slot, parameter)["@cc"]
-    
-    
+    del get_controller_dsp_slot_param(preset, dsp, slot, parameter)["@cc"]
+
+        
 def remove_SNAPSHOT_controller(preset, dsp, slot, param):
-    remove_parameter_from_controller(preset, dsp, slot, param)
-    remove_parameter_from_all_snapshots(preset, dsp, slot, param)
+    if param in get_controller_dsp_slot(preset, dsp, slot):
+        remove_parameter_from_controller(preset, dsp, slot, param)
+        remove_parameter_from_all_snapshots(preset, dsp, slot, param)
+
         
-def remove_MIDICC_controller(preset, dsp, slot, param):       
-    returnCC(get_controller_dsp_slot_parameter(preset, dsp, slot, param)["@cc"])
-    remove_parameter_from_controller(preset, dsp, slot, param)
+def remove_MIDICC_controller(preset, dsp, slot, param):   
+    if param in get_controller_dsp_slot(preset, dsp, slot):   
+        returnCC(get_controller_dsp_slot_param(preset, dsp, slot, param)["@cc"])
+        remove_parameter_from_controller(preset, dsp, slot, param)
   
-def remove_PEDAL2_controller(preset, dsp, slot, param):       
-    remove_parameter_from_controller(preset, dsp, slot, param)  
+def remove_PEDAL2_controller(preset, dsp, slot, param): 
+    if param in get_controller_dsp_slot(preset, dsp, slot):    
+        remove_parameter_from_controller(preset, dsp, slot, param)  
     
         
-def remove_existing_controller(preset, dsp, slot, param):
+def remove_controller_if_present(preset, dsp, slot, param):
     if param in get_controller_dsp_slot(preset, dsp, slot):
         # check controller type
-        if get_controller_dsp_slot_parameter(preset, dsp, slot, param)["@controller"] == variables.CONTROLLER_SNAPSHOT:
+        if get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] == var.CONTROLLER_SNAPSHOT:
             remove_SNAPSHOT_controller(preset, dsp, slot, param)
-        elif get_controller_dsp_slot_parameter(preset, dsp, slot, param)["@controller"] == variables.CONTROLLER_PEDAL2:
+        elif get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] == var.CONTROLLER_PEDAL2:
             remove_PEDAL2_controller(preset, dsp, slot, param)
-        else:
+        elif get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] == var.CONTROLLER_MIDICC:
             remove_MIDICC_controller(preset, dsp, slot, param)
             
 
-
-
-
-def get_available_default_dsps(preset):
+def get_available_default_dsp_names(preset):
     return [key for key in preset["data"]["tone"].keys() if key.startswith("dsp")]
 
 
@@ -110,7 +111,7 @@ def get_default_dsp_slot(preset, dsp, slot):
     return preset["data"]["tone"][dsp][slot]
 
 
-def get_default_dsp_slot_parameter_value(preset, dsp, slot, parameter):
+def get_default_dsp_slot_param_value(preset, dsp, slot, parameter):
     return preset["data"]["tone"][dsp][slot][parameter]
 
 
@@ -149,19 +150,18 @@ def get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot):
     return preset["data"]["tone"][f"snapshot{snapshot_num}"]["controllers"][dsp][slot]
 
 
-def get_snapshot_controllers_dsp_slot_parameter(preset, snapshot_num, dsp, slot, parameter):
+def get_snapshot_controllers_dsp_slot_param(preset, snapshot_num, dsp, slot, parameter):
     return preset["data"]["tone"][f"snapshot{snapshot_num}"]["controllers"][dsp][slot][parameter]
 
 
-def get_snapshot_controllers_dsp_slot_parameter_value(preset, snapshot_num, dsp, slot, parameter):
+def get_snapshot_controllers_dsp_slot_param_value(preset, snapshot_num, dsp, slot, parameter):
     # print("get_snapshot_controllers_dsp_slot_parameter_value", snapshot_num, dsp, slot, parameter)
     return preset["data"]["tone"][f"snapshot{snapshot_num}"]["controllers"][dsp][slot][parameter]["@value"]
 
-    
-                    
+
 def add_raw_block_to_snapshots(preset, dsp, slot, raw_block_dict):
     # print("Adding raw block to snapshots")
-    for snapshot_num in range(variables.NUM_SNAPSHOTS):
+    for snapshot_num in range(var.NUM_SNAPSHOTS):
         snapshot_slot = get_snapshot_controllers_dsp(preset, snapshot_num, dsp)
         snapshot_slot[slot] = deepcopy(raw_block_dict["SnapshotParams"])
 
@@ -192,7 +192,7 @@ def move_controller_slot(preset, from_dsp, from_slot, to_dsp, to_slot):
 
 def move_snapshot_slot(preset, from_dsp, from_slot, to_dsp, to_slot, slot_type):
     if from_slot in get_snapshot_controllers_dsp(preset, 0, from_dsp):
-        for snapshot_num in range(variables.NUM_SNAPSHOTS):
+        for snapshot_num in range(var.NUM_SNAPSHOTS):
             # NOTE: this if may be unnecessary, might not need slot_type at all
             if slot_type in ["block", "cab"]:
                 to_snapshot_controllers = get_snapshot_controllers_dsp(preset, snapshot_num, to_dsp)
@@ -210,33 +210,44 @@ def move_snapshot_slot(preset, from_dsp, from_slot, to_dsp, to_slot, slot_type):
 
 
 def list_controls_of_type(preset, controller_type):
-    # get a list of params with control (eg. pedal controller number 2)
     params_of_controller_type = []
     for dsp in get_controller(preset):
         for slot in get_controller_dsp(preset, dsp):
             params_of_controller_type.extend(
                 [dsp, slot, parameter]
                 for parameter in get_controller_dsp_slot(preset, dsp, slot)
-                if get_controller_dsp_slot_parameter(preset, dsp, slot, parameter)["@controller"] == controller_type
+                if get_controller_dsp_slot_param(preset, dsp, slot, parameter)["@controller"] == controller_type
             )
     return params_of_controller_type
 
 
-def count_parameters_in_controller(preset):
-    return len(
-        [
-            parameter
-            for dsp in get_controller(preset)
-            for slot in get_controller_dsp(preset, dsp)
-            if slot.startswith(("block", "split", "cab"))
-            for parameter in get_controller_dsp_slot(preset, dsp, slot)
-        ]
-    )
+def list_total_params_usable_for_controller_type(preset, controller_type):
+    params = []
+    for dsp in get_available_default_dsp_names(preset):
+        for slot in get_default_dsp(preset, dsp):
+            if slot.startswith(("block", "split", "cab")):
+                params.extend(
+                    [dsp, slot, param]
+                    for param in get_default_dsp_slot(preset, dsp, slot)
+                    if param in get_controller_dsp_slot(preset, dsp, slot)
+                    and get_controller_dsp_slot_param(
+                        preset, dsp, slot, param
+                    )["@controller"]
+                    != controller_type
+                )
+    return params
+
+ 
+def add_param_to_controller(preset, dsp, slot, parameter, raw_block_dict):
+    #print("add_param_to_controller " + parameter + " in " + get_model_name(preset, dsp, slot) + ", " + dsp + " " + slot)
+    if slot not in get_controller_dsp(preset, dsp):
+        get_controller_dsp(preset, dsp)[slot] = {}
+    get_controller_dsp_slot(preset, dsp, slot)[parameter] = deepcopy(raw_block_dict["Controller_Dict"][parameter])
 
 
 def add_parameter_to_all_snapshots(preset, dsp, slot, parameter, raw_block_dict):
 # print("add_parameter_to_all_snapshots " + parameter + " in " + get_model_name(preset, dsp, slot) + ", " + dsp + " " + slot)
-    for snapshot_num in range(variables.NUM_SNAPSHOTS):
+    for snapshot_num in range(var.NUM_SNAPSHOTS):
         snapshot_name = f"snapshot{snapshot_num}"
         if snapshot_name in preset["data"]["tone"]:
             if slot not in get_snapshot_controllers_dsp(preset, snapshot_num, dsp):
@@ -248,7 +259,7 @@ def add_parameter_to_all_snapshots(preset, dsp, slot, parameter, raw_block_dict)
 
 def remove_parameter_from_all_snapshots(preset, dsp, slot, parameter):
     print(f"remove_parameter_from_all_snapshots: {dsp} {slot}, {get_model_name(preset, dsp, slot)} {parameter}")
-    for snapshot_num in range(variables.NUM_SNAPSHOTS):
+    for snapshot_num in range(var.NUM_SNAPSHOTS):
         snapshot = get_snapshot_controllers_dsp(preset, snapshot_num, dsp)
         del snapshot[slot][parameter]
  
@@ -261,7 +272,7 @@ def remove_all_blocks_from_controller(preset):
 
 def remove_all_snapshots(preset):
     print("\nremove_all_snapshots")
-    for _ in range(variables.NUM_SNAPSHOTS):
+    for _ in range(var.NUM_SNAPSHOTS):
         get_snapshot(preset, _).clear()
 
 
@@ -284,7 +295,7 @@ def get_controller_dsp_slot(preset, dsp, slot):
     return preset["data"]["tone"]["controller"][dsp][slot]
 
 
-def get_controller_dsp_slot_parameter(preset, dsp, slot, parameter):
+def get_controller_dsp_slot_param(preset, dsp, slot, parameter):
     return preset["data"]["tone"]["controller"][dsp][slot][parameter]
 
 
@@ -298,8 +309,18 @@ def get_model_name(preset, dsp, slot):
     return preset["data"]["tone"][dsp][slot]["@model"]
 
 
+def num_to_control_type(control_type):
+    if control_type == 2:
+        return "CONTROLLER_PEDAL2"
+    elif control_type == 18:
+        return "CONTROLLER_MIDICC"
+    elif control_type == 19:
+        return "CONTROLLER_SNAPSHOT"
+
+    
+    
 def set_led_colours(preset):
-    for snapshot_num in range(variables.NUM_SNAPSHOTS):
+    for snapshot_num in range(var.NUM_SNAPSHOTS):
         preset["data"]["tone"][f"snapshot{snapshot_num}"]["@ledcolor"] = str(snapshot_num + 1)
 
 
@@ -331,7 +352,7 @@ def populate_controller_dsp_slot_from_raw_file(preset, dsp, slot):
 
 def populate_all_controller_slots_from_raw_file(preset):
     print("\npopulate_all_controller_slots_from_raw_file")
-    for dsp in get_available_default_dsps(preset):
+    for dsp in get_available_default_dsp_names(preset):
         for slot in get_default_dsp(preset, dsp):
             if slot.startswith(("block", "split", "cab")):
                 get_controller_dsp(preset, dsp)[slot] = {}
@@ -339,7 +360,7 @@ def populate_all_controller_slots_from_raw_file(preset):
 
 
 def populate_snapshot_with_controllers_from_file(preset, snapshot_num):
-    for dsp in get_available_default_dsps(preset):
+    for dsp in get_available_default_dsp_names(preset):
         for slot in get_default_dsp(preset, dsp):
             if slot.startswith(("block", "split", "cab")):
                 snapshot_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)["SnapshotParams"]
@@ -348,17 +369,17 @@ def populate_snapshot_with_controllers_from_file(preset, snapshot_num):
 
 
 def populate_all_snapshots_with_controllers_from_file(preset):
-    for snapshot_num in range(variables.NUM_SNAPSHOTS):
+    for snapshot_num in range(var.NUM_SNAPSHOTS):
         populate_snapshot_with_controllers_from_file(preset, snapshot_num)
 
 
 def copy_controlled_default_parameter_values_to_snapshot(preset, snapshot_num):
-    for dsp in get_available_default_dsps(preset):
+    for dsp in get_available_default_dsp_names(preset):
         for slot in get_controller_dsp(preset, dsp):
             for parameter in get_controller_dsp_slot(preset, dsp, slot):
                 # print("copy_controlled_default_parameter_values_to_snapshot", dsp, slot, parameter)
                 # get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot)[parameter] = {}
-                get_snapshot_controllers_dsp_slot_parameter(preset, snapshot_num, dsp, slot, parameter)["@value"] = (
+                get_snapshot_controllers_dsp_slot_param(preset, snapshot_num, dsp, slot, parameter)["@value"] = (
                     deepcopy(get_default_dsp_slot(preset, dsp, slot)[parameter])
                 )
 
@@ -366,7 +387,7 @@ def copy_controlled_default_parameter_values_to_snapshot(preset, snapshot_num):
 def remove_empty_controller_dsp_slots(preset):
     empty_controller_dsp_slots = [
         (dsp, slot)
-        for dsp in get_available_default_dsps(preset)
+        for dsp in get_available_default_dsp_names(preset)
         for slot in get_controller_dsp(preset, dsp)
         if get_controller_dsp_slot(preset, dsp, slot) == {}
     ]
@@ -377,7 +398,7 @@ def remove_empty_controller_dsp_slots(preset):
         print("  removed empty controller ", dsp, slot)
 
     for dsp, slot in empty_controller_dsp_slots:
-        for snapshot_num in range(variables.NUM_SNAPSHOTS):
+        for snapshot_num in range(var.NUM_SNAPSHOTS):
             del get_snapshot_controllers_dsp(preset, snapshot_num, dsp)[slot]
         print("  removed empty snapshot controller ", dsp, slot)
 
@@ -388,7 +409,7 @@ def count_amps(preset, dsp):
 
 def count_controllers(preset):
     count = 0
-    for dsp in get_available_default_dsps(preset):
+    for dsp in get_available_default_dsp_names(preset):
         for slot in get_default_dsp(preset, dsp):
             if slot in get_controller_dsp(preset, dsp):
                 count += 1
@@ -400,11 +421,11 @@ def copy_snapshot_values_to_default(preset, snapshot_src_num_str):
     if snapshot_src_num_str.isdigit():
         snapshot_src_num = int(snapshot_src_num_str) - 1  # 0-indexed
         if 0 <= snapshot_src_num <= 7:
-            for dsp in get_available_default_dsps(preset):
+            for dsp in get_available_default_dsp_names(preset):
                 for slot in get_snapshot_controllers_dsp(preset, snapshot_src_num, dsp):
                     for parameter in get_snapshot_controllers_dsp_slot(preset, snapshot_src_num, dsp, slot):
                         get_default_dsp_slot(preset, dsp, slot)[parameter] = deepcopy(
-                            get_snapshot_controllers_dsp_slot_parameter_value(preset, snapshot_src_num, dsp, slot, parameter)
+                            get_snapshot_controllers_dsp_slot_param_value(preset, snapshot_src_num, dsp, slot, parameter)
                         )
 
 
@@ -414,34 +435,11 @@ def set_topologies_to_SABJ(preset):
     # some options: "ABJ" (pathA, pathB, Join), "SABJ", (split, pathA, pathB, join)
 
 
-# def count_blocks_on_each_dsp_path(preset, dsp):
-#     blocks_on_path0 = 0
-#     blocks_on_path1 = 0
-#     for slot in util.get_default_dsp(preset, dsp):
-#         if slot.startswith("block"):
-#             blocks_on_path0 += 1 if dsp == "dsp0" else 0
-#             blocks_on_path1 += 1 if dsp == "dsp1" else 0
-#     return blocks_on_path0, blocks_on_path1
-
-# def check_and_set_topologies(preset):
-#     for dsp in get_available_default_dsps(preset):
-#         blocks_on_path0, blocks_on_path1 = count_blocks_on_each_dsp_path(preset, dsp)
-#         if blocks_on_path0 == 0:
-#             preset["data"]["tone"]["global"]["@topology0"] = "A"  # dsp0
-#         if blocks_on_path1 == 0:
-#             preset["data"]["tone"]["global"]["@topology1"] = "B"  # dsp1
-#         # remove split from default, controllers and snapshots
-
-
-def add_dsp_controller_and_snapshot_keys_if_missing(preset):
-    for dsp in ["dsp0", "dsp1"]:
-        preset["data"]["tone"].setdefault(dsp, {})
-        preset["data"]["tone"].setdefault("controller", {}).setdefault(dsp, {})
-        for snapshot_num in range(variables.NUM_SNAPSHOTS):
-            snapshot_name = f"snapshot{snapshot_num}"
-            preset["data"]["tone"].setdefault(snapshot_name, {}).setdefault("controllers", {}).setdefault(dsp, {})
-            get_snapshot(preset, snapshot_num).setdefault("controllers", {}).setdefault(dsp, {})
-            get_snapshot(preset, snapshot_num).setdefault("blocks", {}).setdefault(dsp, {})
+def add_dsp_controller_splits_and_snapshot_keys_if_missing(preset):
+    add_default_dsp_keys_if_missing(preset)
+    add_default_controller_dsp_keys_if_missing(preset)
+    add_splits_if_missing(preset)
+    add_snapshot_controller_dsp_keys_if_missing(preset)
 
 
 
@@ -455,9 +453,9 @@ def add_default_controller_dsp_keys_if_missing(preset):
         preset["data"]["tone"].setdefault("controller", {}).setdefault(dsp, {})
 
 
-def add_splits(preset):
-    for dsp in get_available_default_dsps(preset):
-        for snapshot_num in range(variables.NUM_SNAPSHOTS):
+def add_splits_if_missing(preset):
+    for dsp in get_available_default_dsp_names(preset):
+        for snapshot_num in range(var.NUM_SNAPSHOTS):
             get_snapshot_blocks_dsp(preset, snapshot_num, dsp).setdefault("split", "false")  # bypass not controlled?
 
 
@@ -468,7 +466,7 @@ def duplicate_snapshot(preset, snapshot_src, snapshot_dst):
 
 def add_snapshot_controller_dsp_keys_if_missing(preset):
     for dsp in ["dsp0", "dsp1"]:
-        for snapshot_num in range(variables.NUM_SNAPSHOTS):
+        for snapshot_num in range(var.NUM_SNAPSHOTS):
             snapshot_name = f"snapshot{snapshot_num}"
             preset["data"]["tone"].setdefault(snapshot_name, {}).setdefault("controllers", {}).setdefault(dsp, {})
             get_snapshot(preset, snapshot_num).setdefault("controllers", {}).setdefault(dsp, {})
@@ -479,11 +477,11 @@ def set_dsp1_input_to_multi(preset):
     preset["data"]["tone"]["dsp1"]["inputA"]["@input"] = 1
     
     
-available_ccs = variables.useable_cc_numbers[: variables.NUM_CC_PARAMS]
+available_ccs = var.useable_cc_numbers[: var.NUM_MIDICC_PARAMS]
 
-def reinit_available_ccs():
+def init_available_ccs():
     global available_ccs
-    available_ccs = variables.useable_cc_numbers[: variables.NUM_CC_PARAMS]
+    available_ccs = var.useable_cc_numbers[: var.NUM_MIDICC_PARAMS]
 
 
 def num_available_ccs():
@@ -497,9 +495,9 @@ def returnCC(cc):
     available_ccs.insert(0, cc)
 
 
-def add_splits(preset):
-    for dsp in get_available_default_dsps(preset):
-        for snapshot_num in range(variables.NUM_SNAPSHOTS):
+def add_splits_if_missing(preset):
+    for dsp in get_available_default_dsp_names(preset):
+        for snapshot_num in range(var.NUM_SNAPSHOTS):
             get_snapshot_blocks_dsp(preset, snapshot_num, dsp).setdefault("split", "false")  # bypass not controlled?
 
 
@@ -528,21 +526,21 @@ def duplicate_snapshot(preset, snapshot_src, snapshot_dst):
                 
                 
 def copy_all_default_values_to_snapshot(preset, snapshot_num):
-    for dsp in get_available_default_dsps(preset):
+    for dsp in get_available_default_dsp_names(preset):
         for slot in get_snapshot_controllers_dsp(preset, snapshot_num, dsp):
             for parameter in get_snapshot_controllers_dsp_slot(preset, snapshot_num, dsp, slot):
-                get_snapshot_controllers_dsp_slot_parameter(preset, snapshot_num, dsp, slot, parameter)["@value"] = (
-                    deepcopy(get_default_dsp_slot_parameter_value(preset, dsp, slot, parameter))
+                get_snapshot_controllers_dsp_slot_param(preset, snapshot_num, dsp, slot, parameter)["@value"] = (
+                    deepcopy(get_default_dsp_slot_param_value(preset, dsp, slot, parameter))
                 )
 
 
 def copy_all_default_values_to_all_snapshots(preset):
-    for snapshot_num in range(variables.NUM_SNAPSHOTS):
+    for snapshot_num in range(var.NUM_SNAPSHOTS):
         copy_all_default_values_to_snapshot(preset, snapshot_num)
 
 
 def duplicate_src_snapshot_to_all(preset, snapshot_src):
-    for snapshot_num in range(variables.NUM_SNAPSHOTS):
+    for snapshot_num in range(var.NUM_SNAPSHOTS):
         snapshot_dst = f"snapshot{snapshot_num}"
         if snapshot_dst != snapshot_src:
             duplicate_snapshot(preset, snapshot_src, snapshot_dst)
@@ -550,7 +548,7 @@ def duplicate_src_snapshot_to_all(preset, snapshot_src):
 
 def count_controllable_parameters_in_preset(preset):
     count = 0
-    for dsp in get_available_default_dsps(preset):
+    for dsp in get_available_default_dsp_names(preset):
         for slot in get_default_dsp(preset, dsp):
             if slot.startswith(("block", "split", "cab")):
                 count += len(file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"].keys())

@@ -15,7 +15,7 @@ import json
 import tkinter as tk
 from tkinter import ttk, filedialog, END
 from tkinter import BooleanVar
-import variables
+import var
 
 # config dictionary
 config = {}
@@ -68,7 +68,7 @@ def save_config_to_file(event=None):
     config["change_topology"] = mutate_tab.change_topology_var.get()
     config["change_controllers"] = mutate_tab.change_controllers_var.get()
 
-    config["block_probabilities"] = variables.block_probabilities
+    config["block_probabilities"] = var.block_probabilities
 
     if config_file := filedialog.asksaveasfilename(
         initialdir="./",
@@ -123,17 +123,17 @@ def update_ui_from_config():
     mutate_tab.change_controllers_var.set(config["change_controllers"])
     
     if "block_probabilities" in config:
-        variables.block_probabilities.update(config["block_probabilities"])
+        var.block_probabilities.update(config["block_probabilities"])
 
     for category, entry in entries_dict.items():
         entry.delete(0, END)
-        entry.insert(0, variables.block_probabilities.get(category, ""))
+        entry.insert(0, var.block_probabilities.get(category, ""))
 
 
 def copyEntriesToBlockProbabilities():
     for category, entry in entries_dict.items():
         # Probabilities must be integers for random.choices
-        variables.block_probabilities[category] = int(entry.get() or "0")
+        var.block_probabilities[category] = int(entry.get() or "0")
 
 
 ########### generate_tab #######################################################
@@ -155,7 +155,7 @@ class Generate:
             "output_file": self.output_entry.get(),
             "preset_name": self.name_entry.get(),
             "num_presets": int(self.num_presets_entry.get() or "0"),
-            "block_probabilities": variables.block_probabilities,
+            "block_probabilities": var.block_probabilities,
         }
         args_json = json.dumps(args)
         command = ["python3", "generate.py", args_json]
@@ -242,7 +242,7 @@ class Mutate:
             "num_presets": int(self.num_presets_entry.get() or "0"),
             "change_topology": self.change_topology_var.get(),
             "change_controllers": self.change_controllers_var.get(),
-            "block_probabilities": variables.block_probabilities,
+            "block_probabilities": var.block_probabilities,
         }
 
         args_json = json.dumps(args)
@@ -333,7 +333,7 @@ mutate_tab = Mutate(tabs)
 
 probabilities_tab = ttk.Frame(window)
 # Assuming constants.block_probabilities is a list of tuples [(category, value), ...]
-for idx, (category, value) in enumerate(variables.block_probabilities.items()):
+for idx, (category, value) in enumerate(var.block_probabilities.items()):
     label = tk.Label(probabilities_tab, text=f"{category}:")
     label.grid(row=idx, column=0, padx=5, pady=5, sticky="w")
 
@@ -344,7 +344,7 @@ for idx, (category, value) in enumerate(variables.block_probabilities.items()):
     entries_dict[category] = entry
 
 copy_button = tk.Button(probabilities_tab, text="Update Probabilities", command=copyEntriesToBlockProbabilities)
-copy_button.grid(row=len(variables.block_probabilities), column=0, columnspan=2, padx=5, pady=5, sticky="ew")
+copy_button.grid(row=len(var.block_probabilities), column=0, columnspan=2, padx=5, pady=5, sticky="ew")
 
 tabs.add(gen_tab.frame, text="Generate")
 tabs.add(mutate_tab.frame, text="Mutate")

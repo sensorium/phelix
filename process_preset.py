@@ -11,7 +11,7 @@ process_preset.py
 import json
 import sys
 from datetime import datetime
-import variables
+import var
 
 
 def process_multiple_presets(args, processor_func):
@@ -38,5 +38,5 @@ def process_multiple_presets(args, processor_func):
 def main(processor_func):
     args = json.loads(sys.argv[1])
     if "block_probabilities" in args:
-       variables.block_probabilities.update(args["block_probabilities"])
+       var.block_probabilities.update(args["block_probabilities"])
     process_multiple_presets(args, processor_func)

@@ -10,7 +10,7 @@ generate.py
 
 # this module takes a preset file and modifies it to be a valid preset for the pedalboard
 # it loads and modifies the json, and then saves it back as a new file
-import variables
+import var
 import file
 import util
 import mutate
@@ -68,17 +68,21 @@ def swap_all_blocks_and_splits_from_files_using_probabilities(preset):
 
 def generate_preset_processor(preset, args, postfix_num):
     util.set_preset_name_for_generate(preset, args, postfix_num)
-    util.add_dsp_controller_and_snapshot_keys_if_missing(preset)
+    util.add_dsp_controller_splits_and_snapshot_keys_if_missing(preset)
     util.set_led_colours(preset)
     swap_all_blocks_and_splits_from_files_using_probabilities(preset)
     add_cabs(preset)
     mutate.change_topology(preset)
-    choose.prune_controllers(preset)
-    util.remove_empty_controller_dsp_slots(preset)
-    mutate.change_some_controller_types(preset, variables.PEDAL_CONTROL, variables.NUM_PEDAL2_PARAMS)
-    util.reinit_available_ccs()
-    mutate.change_some_controller_types(preset, variables.CONTROLLER_MIDICC, variables.NUM_CC_PARAMS)
-    mutate.mutate_values_ranges_and_states(preset, 1.0, 0.5)
+    util.populate_all_snapshots_with_controllers_from_file(preset)
+    print()
+    util.init_available_ccs()
+    choose.grow_SNAPSHOT_controllers(preset)
+    choose.grow_PEDAL2_controllers(preset)
+    choose.grow_MIDICC_controllers(preset)
+    print()
+    mutate.mutate_values_in_all_default_blocks(preset, 1.0)
+    mutate.mutate_param_values_for_all_snapshots(preset, 1.0)
+    mutate.toggle_some_block_states(preset, 0.5)
     return preset
 
 def main():
