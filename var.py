@@ -64,7 +64,7 @@ useable_cc_numbers = [
     45,
     46,
     47,
-    # 48, I've used it for fs12 for some reason
+    # 48, I've used it for fs12 for communicating with Pd
     # skip some
     82,
     83,

@@ -59,8 +59,8 @@ def add_controller_block_param_and_control_type(preset, dsp, slot, parameter, ra
     get_controller_dsp_slot_param(preset, dsp, slot, parameter)["@controller"] = control_type
 
 def add_controller_block_parameter_cc(preset, dsp, slot, parameter, cc):
-    print("add_controller_block_parameter_cc", dsp, slot, parameter, "cc", cc)
-    get_controller_dsp_slot_param(preset, dsp, slot, parameter).setdefault("@cc", {})
+    print("add_controller_block_parameter_cc", dsp, slot, get_model_name(preset, dsp, slot), parameter, "cc", cc)
+    # get_controller_dsp_slot_param(preset, dsp, slot, parameter).setdefault("@cc", {})
     get_controller_dsp_slot_param(preset, dsp, slot, parameter)["@cc"] = cc
      
     
@@ -477,12 +477,26 @@ def set_dsp1_input_to_multi(preset):
     preset["data"]["tone"]["dsp1"]["inputA"]["@input"] = 1
     
     
-available_ccs = var.useable_cc_numbers[: var.NUM_MIDICC_PARAMS]
+first_16_ccs = var.useable_cc_numbers[: var.NUM_MIDICC_PARAMS]
+available_ccs = []
 
-def init_available_ccs():
+def list_used_ccs(preset):
+    used_ccs = []
+    for dsp in get_available_default_dsp_names(preset):
+        for slot in get_default_dsp(preset, dsp):
+            if slot in get_controller_dsp(preset, dsp):
+                for parameter in get_controller_dsp_slot(preset, dsp, slot):
+                    if "@cc" in get_controller_dsp_slot_param(preset, dsp, slot, parameter):
+                        used_ccs.append(get_controller_dsp_slot_param(preset, dsp, slot, parameter)["@cc"])
+    return used_ccs
+
+def init_available_ccs(preset):
+    global first_16_ccs
     global available_ccs
-    available_ccs = var.useable_cc_numbers[: var.NUM_MIDICC_PARAMS]
-
+    used_ccs = list_used_ccs(preset)
+    # print("\nlist_used_ccs ", used_ccs)
+    first_16_ccs = var.useable_cc_numbers[: var.NUM_MIDICC_PARAMS]
+    available_ccs = [cc for cc in var.useable_cc_numbers if cc not in list_used_ccs(preset)]
 
 def num_available_ccs():
     return len(available_ccs)

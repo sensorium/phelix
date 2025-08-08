@@ -438,6 +438,7 @@ def mutate_preset_processor(preset, args, postfix_num):
         util.remove_empty_controller_dsp_slots(preset)      # maybe not needed 
         choose.grow_SNAPSHOT_controllers(preset)
         choose.grow_PEDAL2_controllers(preset)
+        util.init_available_ccs(preset)
         choose.grow_MIDICC_controllers(preset)
             
     util.populate_all_controller_slots_from_raw_file(preset)

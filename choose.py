@@ -149,7 +149,7 @@ def assign_random_parameter_to_controller_PEDAL2_and_randomise_range(preset):
 
 
 def random_max_and_min_for_controlled_param(preset, dsp, slot, parameter):
-    print("random_max_and_min_for_controlled_param", dsp, slot, parameter)
+    print("random_max_and_min_for_controlled_param", dsp, slot, util.get_model_name(preset, dsp, slot), parameter)
     controlled_param = util.get_controller_dsp_slot_param(preset, dsp, slot, parameter)
     block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
     pmin = block_dict[parameter]["@min"]
@@ -188,10 +188,10 @@ def assign_random_series_or_parallel_dsp_configuration(preset):
     preset["data"]["tone"]["dsp0"]["outputA"]["@output"] = random.choice([1, 2])
 
 def remove_some_random_controllers(preset):
-    print("remove_some_random_controllers")
-    remove_some_random_SNAPSHOT_controllers(preset, var.MUTATION_RATE * var.NUM_SNAPSHOT_PARAMS)
-    remove_some_random_PEDAL2_controllers(preset, var.MUTATION_RATE * var.NUM_PEDAL2_PARAMS)
-    remove_some_random_MIDICC_controllers(preset, var.MUTATION_RATE * var.NUM_MIDICC_PARAMS)
+    print("\nremove_some_random_controllers")
+    remove_some_random_SNAPSHOT_controllers(preset)
+    remove_some_random_PEDAL2_controllers(preset)
+    remove_some_random_MIDICC_controllers(preset)
 
 
 def remove_some_random_PEDAL2_controllers(preset):
@@ -199,8 +199,8 @@ def remove_some_random_PEDAL2_controllers(preset):
     max_to_remove = num_removable * var.MUTATION_RATE
     num_to_remove = random.randint(0, int(max_to_remove))
     print("remove_some_random_PEDAL2_controllers ", num_to_remove)
-    list_of_PEDAL2_controllers = util.list_controls_of_type(preset, var.CONTROLLER_PEDAL2)
     for _ in range(num_to_remove):
+        list_of_PEDAL2_controllers = util.list_controls_of_type(preset, var.CONTROLLER_PEDAL2)
         dsp, slot, param = random.choice(list_of_PEDAL2_controllers)
         # list_of_PEDAL2_controllers.remove((dsp, slot, param))
         util.remove_PEDAL2_controller(preset, dsp, slot, param)
@@ -211,21 +211,21 @@ def remove_some_random_MIDICC_controllers(preset):
     max_to_remove = num_removable * var.MUTATION_RATE
     num_to_remove = random.randint(0, int(max_to_remove))
     print("remove_some_random_MIDICC_controllers ", num_to_remove)
-    list_of_MIDICC_controllers = util.list_controls_of_type(preset, var.CONTROLLER_MIDICC)
     for _ in range(num_to_remove):
+        list_of_MIDICC_controllers = util.list_controls_of_type(preset, var.CONTROLLER_MIDICC)
         dsp, slot, param  = random.choice(list_of_MIDICC_controllers)
         # TODO fix problem removing from list
         # list_of_MIDICC_controllers.remove((dsp, slot, param))
         util.remove_MIDICC_controller(preset, dsp, slot, param)
         
          
-def remove_some_random_SNAPSHOT_controllers(preset, max_to_remove):
+def remove_some_random_SNAPSHOT_controllers(preset):
     num_removable = len(util.list_controls_of_type(preset, var.CONTROLLER_SNAPSHOT))
     max_to_remove = num_removable * var.MUTATION_RATE
     num_to_remove = random.randint(0, int(max_to_remove))
     print("remove_some_random_SNAPSHOT_controllers ", num_to_remove)
-    list_of_SNAPSHOT_controllers = util.list_controls_of_type(preset, var.CONTROLLER_SNAPSHOT)
     for _ in range(num_to_remove):
+        list_of_SNAPSHOT_controllers = util.list_controls_of_type(preset, var.CONTROLLER_SNAPSHOT)
         dsp, slot, param = random.choice(list_of_SNAPSHOT_controllers)
         # list_of_SNAPSHOT_controllers.remove((dsp, slot, param))
         util.remove_SNAPSHOT_controller(preset, dsp, slot, param)
@@ -234,21 +234,28 @@ def remove_some_random_SNAPSHOT_controllers(preset, max_to_remove):
         
  
 def grow_SNAPSHOT_controllers(preset):
-    num_to_grow = min(len(util.list_total_params_usable_for_controller_type(preset, var.CONTROLLER_SNAPSHOT)), var.NUM_SNAPSHOT_PARAMS)
-    print("\ngrow_SNAPSHOT_controllers by ", num_to_grow)
+    num_existing = len(util.list_controls_of_type(preset, var.CONTROLLER_SNAPSHOT))
+    num_to_reach = min(len(util.list_total_params_usable_for_controller_type(preset, var.CONTROLLER_SNAPSHOT)), var.NUM_SNAPSHOT_PARAMS)
+    num_to_grow = num_to_reach - num_existing
+    print("\ngrow_SNAPSHOT_controllers by", num_to_grow)
     for _ in range(num_to_grow):
         assign_random_parameter_to_controller_SNAPSHOT_and_randomise_range(preset)
 
 def grow_PEDAL2_controllers(preset):
-    num_to_grow = min(len(util.list_total_params_usable_for_controller_type(preset, var.CONTROLLER_PEDAL2)), var.NUM_PEDAL2_PARAMS)
-    print("\ngrow_PEDAL2_controllers by ", num_to_grow)
+    num_existing = len(util.list_controls_of_type(preset, var.CONTROLLER_PEDAL2))
+    num_to_reach = min(len(util.list_total_params_usable_for_controller_type(preset, var.CONTROLLER_PEDAL2)), var.NUM_PEDAL2_PARAMS)
+    num_to_grow = num_to_reach - num_existing
+    print("\ngrow_PEDAL2_controllers by", num_to_grow)
     for _ in range(num_to_grow):
         assign_random_parameter_to_controller_PEDAL2_and_randomise_range(preset)
         
         
 def grow_MIDICC_controllers(preset):
-    num_to_grow = min(len(util.list_total_params_usable_for_controller_type(preset, var.CONTROLLER_MIDICC)), var.NUM_MIDICC_PARAMS)
-    print("\ngrow_MIDICC_controllers by ", num_to_grow)
+    num_existing = len(util.list_controls_of_type(preset, var.CONTROLLER_MIDICC))
+    num_to_reach = min(len(util.list_total_params_usable_for_controller_type(preset, var.CONTROLLER_MIDICC)), var.NUM_MIDICC_PARAMS)
+    num_to_grow = num_to_reach - num_existing
+    print("\ngrow_MIDICC_controllers by", num_to_grow)
+    print("num_existing", num_existing)
     for _ in range(num_to_grow):
         assign_random_parameter_to_controller_MIDICC_and_randomise_range(preset)     
 
