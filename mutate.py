@@ -356,7 +356,7 @@ def swap_block_from_file_using_probabilities(preset, dsp, slot):
     path = util.get_default_dsp_slot(preset, dsp, slot)["@path"]
     pos = util.get_default_dsp_slot(preset, dsp, slot)["@position"]
     raw_block_dict = file.load_block_dictionary(choose.probabilities_block_file_excluding_cab_or_split())
-    util.add_raw_block_to_preset(preset, dsp, slot, raw_block_dict)
+    util.add_raw_block_to_default_and_controller_and_snapshots(preset, dsp, slot, raw_block_dict)
     util.get_default_dsp_slot(preset, dsp, slot)["@path"] = path
     util.get_default_dsp_slot(preset, dsp, slot)["@position"] = pos
     for snapshot_num in range(var.NUM_SNAPSHOTS):
@@ -367,7 +367,7 @@ def swap_with_random_split_from_file(preset, dsp, slot):
     print("swap_with_random_split_from_file")
     keep_position = util.get_default_dsp_slot(preset, dsp, slot)["@position"]
     split_dict = file.load_block_dictionary(choose.random_block_file_in_category("Split"))
-    util.add_raw_block_to_preset(preset, dsp, slot, split_dict)
+    util.add_raw_block_to_default_and_controller_and_snapshots(preset, dsp, slot, split_dict)
     util.get_default_dsp_slot(preset, dsp, slot)["@position"] = keep_position
     
     

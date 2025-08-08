@@ -10,6 +10,7 @@ util.py
 
 from copy import deepcopy
 from datetime import datetime
+from os import remove
 import var
 import file
 # from debug import save_debug_hlx
@@ -20,8 +21,8 @@ def set_preset_name(preset, preset_name):
     preset["data"]["meta"]["name"] = preset_name
 
 
-def add_raw_block_to_preset(preset, dsp, slot, raw_block_dict):
-    print("  adding raw block to preset", raw_block_dict["Defaults"]["@model"], dsp, slot)
+def add_raw_block_to_default_and_controller_and_snapshots(preset, dsp, slot, raw_block_dict):
+    print("add_raw_block_to_default_and_controller_and_snapshots", raw_block_dict["Defaults"]["@model"], dsp, slot)
     add_raw_block_default_to_dsp(preset, dsp, slot, raw_block_dict)
     add_raw_block_to_controller(preset, dsp, slot, raw_block_dict)
     add_raw_block_to_snapshots(preset, dsp, slot, raw_block_dict)
@@ -95,6 +96,12 @@ def remove_controller_if_present(preset, dsp, slot, param):
             remove_MIDICC_controller(preset, dsp, slot, param)
             
 
+def remove_all_SNAPSHOT_controllers(preset):
+    snapshots = list_controls_of_type(preset, var.CONTROLLER_SNAPSHOT)
+    for dsp, slot, param in snapshots:
+        remove_SNAPSHOT_controller(preset, dsp, slot, param)
+                    
+    
 def get_available_default_dsp_names(preset):
     return [key for key in preset["data"]["tone"].keys() if key.startswith("dsp")]
 
@@ -229,14 +236,10 @@ def list_total_params_usable_for_controller_type(preset, controller_type):
                 params.extend(
                     [dsp, slot, param]
                     for param in get_default_dsp_slot(preset, dsp, slot)
-                    if param in get_controller_dsp_slot(preset, dsp, slot)
-                    and get_controller_dsp_slot_param(
-                        preset, dsp, slot, param
-                    )["@controller"]
-                    != controller_type
+                    if param not in get_controller_dsp_slot(preset, dsp, slot)
+                    or param in get_controller_dsp_slot(preset, dsp, slot) and get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] != controller_type
                 )
     return params
-
  
 def add_param_to_controller(preset, dsp, slot, parameter, raw_block_dict):
     #print("add_param_to_controller " + parameter + " in " + get_model_name(preset, dsp, slot) + ", " + dsp + " " + slot)
@@ -331,7 +334,7 @@ def set_preset_name_for_generate(preset, args, postfix_num):
         name = now.strftime("%y%m%d-%H%M")
     name = f"{name}-{str(postfix_num).zfill(2)}"
     preset["data"]["meta"]["name"] = name
-    print(f"Preset name: {name}")
+    print(f"\n\nPreset name: {name}")
     
     
 def set_preset_name_for_mutate(preset, args, postfix_num):
