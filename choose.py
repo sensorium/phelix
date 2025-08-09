@@ -10,7 +10,6 @@ choose.py
 
 import os
 import random
-
 from numpy import delete
 import var
 import util
