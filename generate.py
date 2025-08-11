@@ -77,7 +77,6 @@ def generate_preset_processor(preset, args, postfix_num):
     print()
     choose.grow_SNAPSHOT_controllers(preset)
     choose.grow_PEDAL2_controllers(preset)
-    util.init_available_ccs(preset)
     choose.grow_MIDICC_controllers(preset)
     print()
     mutate.mutate_values_in_all_default_blocks(preset, 1.0)

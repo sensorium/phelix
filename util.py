@@ -86,14 +86,15 @@ def remove_PEDAL2_controller(preset, dsp, slot, param):
     
         
 def remove_controller_if_present(preset, dsp, slot, param):
-    if param in get_controller_dsp_slot(preset, dsp, slot):
-        # check controller type
-        if get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] == var.CONTROLLER_SNAPSHOT:
-            remove_SNAPSHOT_controller(preset, dsp, slot, param)
-        elif get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] == var.CONTROLLER_PEDAL2:
-            remove_PEDAL2_controller(preset, dsp, slot, param)
-        elif get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] == var.CONTROLLER_MIDICC:
-            remove_MIDICC_controller(preset, dsp, slot, param)
+    if slot in get_controller_dsp(preset, dsp):
+        if param in get_controller_dsp_slot(preset, dsp, slot):
+            # check controller type
+            if get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] == var.CONTROLLER_SNAPSHOT:
+                remove_SNAPSHOT_controller(preset, dsp, slot, param)
+            elif get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] == var.CONTROLLER_PEDAL2:
+                remove_PEDAL2_controller(preset, dsp, slot, param)
+            elif get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] == var.CONTROLLER_MIDICC:
+                remove_MIDICC_controller(preset, dsp, slot, param)
             
 
 def remove_all_SNAPSHOT_controllers(preset):
@@ -233,13 +234,15 @@ def list_total_params_usable_for_controller_type(preset, controller_type):
     for dsp in get_available_default_dsp_names(preset):
         for slot in get_default_dsp(preset, dsp):
             if slot.startswith(("block", "split", "cab")):
-                params.extend(
-                    [dsp, slot, param]
-                    for param in get_default_dsp_slot(preset, dsp, slot)
-                    if param not in get_controller_dsp_slot(preset, dsp, slot)
-                    or param in get_controller_dsp_slot(preset, dsp, slot) and get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] != controller_type
-                )
+                if slot in get_controller_dsp(preset, dsp):
+                    params.extend(
+                        [dsp, slot, param]
+                        for param in get_default_dsp_slot(preset, dsp, slot)
+                        if param not in get_controller_dsp_slot(preset, dsp, slot)
+                        or get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] != controller_type
+                    )
     return params
+ 
  
 def add_param_to_controller(preset, dsp, slot, parameter, raw_block_dict):
     #print("add_param_to_controller " + parameter + " in " + get_model_name(preset, dsp, slot) + ", " + dsp + " " + slot)
@@ -386,7 +389,16 @@ def copy_controlled_default_parameter_values_to_snapshot(preset, snapshot_num):
                     deepcopy(get_default_dsp_slot(preset, dsp, slot)[parameter])
                 )
 
-
+def remove_controller_dsp_slot_if_present(preset, dsp, slot):
+    if slot in get_controller_dsp(preset, dsp):
+        del get_controller_dsp(preset, dsp)[slot]
+        
+def remove_snapshots_controllers_dsp_slot_if_present(preset, dsp, slot):
+    for snapshot_num in range(var.NUM_SNAPSHOTS):
+        if slot in get_snapshot_controllers_dsp(preset, snapshot_num, dsp):
+            del get_snapshot_controllers_dsp(preset, snapshot_num, dsp)[slot]
+        
+        
 def remove_empty_controller_dsp_slots(preset):
     empty_controller_dsp_slots = [
         (dsp, slot)

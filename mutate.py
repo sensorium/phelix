@@ -342,13 +342,17 @@ def swap_some_blocks_and_splits_from_file(preset, change_fraction):
     print("Swapping some blocks and splits from file")
     for dsp in util.get_available_default_dsp_names(preset):
         for slot in util.get_default_dsp(preset, dsp):
-            if slot.startswith("block") and random.uniform(0, 1) < change_fraction:
-                swap_block_from_file_using_probabilities(preset, dsp, slot)
-            if slot.startswith("split") and random.uniform(0, 1) < change_fraction:
-                swap_with_random_split_from_file(preset, dsp, slot)
+            if random.uniform(0, 1) < change_fraction:
+                util.remove_controller_dsp_slot_if_present(preset, dsp, slot)
+                util.remove_snapshots_controllers_dsp_slot_if_present(preset, dsp, slot)
+                if slot.startswith("block"):
+                    swap_block_from_file_using_probabilities(preset, dsp, slot)
+                if slot.startswith("split") and random.uniform(0, 1) < change_fraction:
+                    swap_with_random_split_from_file(preset, dsp, slot)
+                
                 # TODO : fix swap_with_random_cab_from_file
-            # if slot.startswith("cab") and random.uniform(0, 1) < change_fraction:
-            #     swap_with_random_cab_from_file(preset, dsp, slot)
+                # if slot.startswith("cab") and random.uniform(0, 1) < change_fraction:
+                #     swap_with_random_cab_from_file(preset, dsp, slot)
                 
 
 def swap_block_from_file_using_probabilities(preset, dsp, slot):
@@ -439,7 +443,6 @@ def mutate_preset_processor(preset, args, postfix_num):
         util.remove_empty_controller_dsp_slots(preset) 
         choose.grow_SNAPSHOT_controllers(preset)
         choose.grow_PEDAL2_controllers(preset)
-        util.init_available_ccs(preset)
         choose.grow_MIDICC_controllers(preset)
     mutate_values_ranges_and_states(preset, var.MUTATION_RATE, var.MUTATION_RATE)
     return preset

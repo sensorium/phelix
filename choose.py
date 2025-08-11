@@ -250,6 +250,7 @@ def grow_PEDAL2_controllers(preset):
         
         
 def grow_MIDICC_controllers(preset):
+    util.init_available_ccs(preset)
     num_existing = len(util.list_controls_of_type(preset, var.CONTROLLER_MIDICC))
     num_to_reach = min(len(util.list_total_params_usable_for_controller_type(preset, var.CONTROLLER_MIDICC)), var.NUM_MIDICC_PARAMS)
     num_to_grow = num_to_reach - num_existing
