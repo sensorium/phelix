@@ -402,7 +402,8 @@ def remove_empty_controller_dsp_slots(preset):
 
     for dsp, slot in empty_controller_dsp_slots:
         for snapshot_num in range(var.NUM_SNAPSHOTS):
-            del get_snapshot_controllers_dsp(preset, snapshot_num, dsp)[slot]
+            if slot in get_snapshot_controllers_dsp(preset, snapshot_num, dsp):
+                del get_snapshot_controllers_dsp(preset, snapshot_num, dsp)[slot]
         print("  removed empty snapshot controller ", dsp, slot)
 
 

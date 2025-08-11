@@ -425,6 +425,7 @@ def mutate_preset_processor(preset, args, postfix_num):
  
     util.set_preset_name_for_mutate(preset, args, postfix_num)
     util.copy_snapshot_values_to_default(preset, snapshot_src_num_str)
+    util.copy_all_default_values_to_all_snapshots(preset)
     # util.add_dsp_controller_splits_and_snapshot_keys_if_missing(preset)
     util.set_led_colours(preset)
     util.add_splits_if_missing(preset)
@@ -435,16 +436,11 @@ def mutate_preset_processor(preset, args, postfix_num):
     swap_some_blocks_and_splits_from_file(preset, var.MUTATION_RATE)
     if args.get("change_controllers") is True:
         choose.remove_some_random_controllers(preset) 
-        util.remove_empty_controller_dsp_slots(preset)      # maybe not needed 
+        util.remove_empty_controller_dsp_slots(preset) 
         choose.grow_SNAPSHOT_controllers(preset)
         choose.grow_PEDAL2_controllers(preset)
         util.init_available_ccs(preset)
         choose.grow_MIDICC_controllers(preset)
-            
-    util.populate_all_controller_slots_from_raw_file(preset)
-    util.populate_all_snapshots_with_controllers_from_file(preset)
- 
-    util.copy_all_default_values_to_all_snapshots(preset)
     mutate_values_ranges_and_states(preset, var.MUTATION_RATE, var.MUTATION_RATE)
     return preset
 
