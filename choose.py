@@ -10,7 +10,6 @@ choose.py
 
 import os
 import random
-from numpy import delete
 import var
 import util
 import file
@@ -121,12 +120,16 @@ def assign_random_parameter_to_controller_MIDICC_and_randomise_range(preset):
     dsp, slot = random_block_split_or_cab_in_default_dsps(preset)
     if slot != "none":
         if params := dsp_slot_list_params_usable_for_MIDICC(preset, dsp, slot):
+            cc = util.nextCC()
+            if cc is None:
+                print(f"  skipping MIDICC assignment for {dsp} {slot} - no CCs available")
+                return
             param = random.choice(params)
             params.remove(param)
             util.remove_controller_if_present(preset, dsp, slot, param)
             raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
             util.add_controller_block_param_and_control_type(preset, dsp, slot, param, raw_block_dict, var.CONTROLLER_MIDICC)
-            util.add_controller_block_parameter_cc(preset, dsp, slot, param, util.nextCC())
+            util.add_controller_block_parameter_cc(preset, dsp, slot, param, cc)
             random_max_and_min_for_controlled_param(preset, dsp, slot, param)
 
 
@@ -261,7 +264,7 @@ def grow_MIDICC_controllers(preset):
 
 
 def move_split_and_join(preset, dsp):
-    join_position = random.randint(var.NUM_POSITIONS_PER_PATH - 4, var.NUM_POSITIONS_PER_PATH)
+    join_position = random.randint(var.NUM_POSITIONS_PER_PATH - 4, var.NUM_POSITIONS_PER_PATH - 1)
     split_position = random.randint(0, join_position - 3)
     preset["data"]["tone"][dsp]["join"]["@position"] = join_position
     preset["data"]["tone"][dsp]["split"]["@position"] = split_position

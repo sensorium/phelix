@@ -288,11 +288,16 @@ def rearrange_blocks(preset, fraction_move):
             # update slot arrays
             # to_dsp, to_slot = unused_block_slots.pop()
             to_dsp = which_dsp_to_move_to(preset)
+            to_slot = None
             for to_dsp_slot in unused_block_slots:
                 if to_dsp_slot[0] == to_dsp:
                     to_slot = to_dsp_slot[1]
                     unused_block_slots.remove([to_dsp, to_slot])
                     break
+
+            # skip if no unused slot available in the target dsp
+            if to_slot is None:
+                continue
 
             # wastes unused slot this turn if there is already an amp in to_dsp
             if model_name.startswith("HD2_Amp") and dsp != to_dsp and util.count_amps(preset, to_dsp) > 0:
@@ -323,7 +328,13 @@ def rearrange_blocks(preset, fraction_move):
 
 def rearrange_cab(preset, used_dsp_cab_slots, unused_dsp_cab_slots, dsp, amp_dsp, amp_slot):
     if dsp != amp_dsp:
-        old_cab_slot = util.get_default_dsp_slot(preset, amp_dsp, amp_slot)["@cab"]
+        old_cab_slot = util.get_default_dsp_slot(preset, amp_dsp, amp_slot).get("@cab")
+        if old_cab_slot is None:
+            print(f"  WARNING: amp {amp_slot} has no @cab field, skipping cab rearrangement")
+            return
+        if old_cab_slot not in used_dsp_cab_slots[dsp]:
+            print(f"  WARNING: cab {old_cab_slot} not found in used slots, skipping cab rearrangement")
+            return
         # print("rearrange_cab old_cab_slot", dsp, old_cab_slot)
         # Move cab_from_slot from used to unused list
         used_dsp_cab_slots[dsp].remove(old_cab_slot)
@@ -359,10 +370,35 @@ def swap_block_from_file_using_probabilities(preset, dsp, slot):
     print("swap_block_from_file_using_probabilities")
     path = util.get_default_dsp_slot(preset, dsp, slot)["@path"]
     pos = util.get_default_dsp_slot(preset, dsp, slot)["@position"]
+    
+    # Check if the old block was an amp - if so, remove its cab
+    old_model = util.get_model_name(preset, dsp, slot)
+    if old_model.startswith("HD2_Amp"):
+        old_cab_slot = util.get_default_dsp_slot(preset, dsp, slot).get("@cab")
+        if old_cab_slot and old_cab_slot in util.get_default_dsp(preset, dsp):
+            print(f"  removing orphaned cab {old_cab_slot} from old amp")
+            del preset["data"]["tone"][dsp][old_cab_slot]
+            util.remove_controller_dsp_slot_if_present(preset, dsp, old_cab_slot)
+            util.remove_snapshots_controllers_dsp_slot_if_present(preset, dsp, old_cab_slot)
+    
     raw_block_dict = file.load_block_dictionary(choose.probabilities_block_file_excluding_cab_or_split())
     util.add_raw_block_to_default_and_controller_and_snapshots(preset, dsp, slot, raw_block_dict)
     util.get_default_dsp_slot(preset, dsp, slot)["@path"] = path
     util.get_default_dsp_slot(preset, dsp, slot)["@position"] = pos
+    
+    # Check if the new block is an amp - if so, add a cab for it
+    new_model = raw_block_dict["Defaults"]["@model"]
+    if new_model.startswith("HD2_Amp"):
+        unused_cab_slots = find_unused_default_dsp_cab_slots(preset)
+        if unused_cab_slots[dsp]:
+            cab_slot = unused_cab_slots[dsp].pop()
+            print(f"  adding cab {cab_slot} for new amp {new_model}")
+            util.get_default_dsp_slot(preset, dsp, slot)["@cab"] = cab_slot
+            raw_cab_dict = file.load_block_dictionary(choose.random_block_file_in_category("Cab"))
+            util.add_raw_block_to_default_and_controller_and_snapshots(preset, dsp, cab_slot, raw_cab_dict)
+        else:
+            print(f"  WARNING: no cab slot available for new amp {new_model}")
+    
     for snapshot_num in range(var.NUM_SNAPSHOTS):
         mutate_param_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slot, 1.0)
 

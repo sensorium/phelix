@@ -1,4 +1,5 @@
 # phelix
+
 Line6 Helix preset generator
 
 ## Description
@@ -11,19 +12,43 @@ __WARNING!__  Levels can vary a LOT!  I use an external limiter on the output wh
 
 _BE CAREFUL, PROTECT YOUR HEARING._
 
-
 ## Prerequisites
 
-Install Python.  Python 3 works for me.  You might need to install a few extras, if phelix fails... hopefully the output will let you know what's missing.
-Phelix works with Helix firmware 3.71, tested with a Helix LT.
+- Python 3.11+ with working tkinter (see setup below)
+- numpy package
+- Tested with Helix firmware 3.71 on a Helix LT
 
+### Setup (first time)
+
+**macOS:** The system Python's tkinter may not work on older macOS versions. Install Python from [python.org](https://www.python.org/downloads/) which bundles a compatible Tcl/Tk:
+
+```bash
+# Download and install Python 3.11+ from python.org, then:
+cd phelix
+/Library/Frameworks/Python.framework/Versions/3.11/bin/python3 -m venv .venv
+source .venv/bin/activate
+pip install numpy
+```
+
+**Linux/Windows:** System Python should work fine:
+
+```bash
+cd phelix
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install numpy
+```
 
 --------------------------------
 
-
 ## Usage
 
-In a terminal, go to the phelix folder and run `python3 phelix.py`.
+```bash
+cd phelix
+source .venv/bin/activate
+python3 phelix.py
+```
+
 You'll see 3 tabs: Generate, Mutate and Probabilities.  There will be some basic settings already loaded.  
 
 ### Generate
@@ -56,7 +81,6 @@ Contains the blocks that have been exported from a Helix which phelix loads to c
 The blocks are made using HXedit by snapshotting all parameters (except bypass) and exporting as presets.  These are then processed with extractBlocks.py to generate the block files.  
 So far, IR blocks, legacy Amp/Cab, Preamps and seperate Amp and Cab blocks aren't included.
 
-
 ### presets/generated/
 
 Holds generated presets.
@@ -64,7 +88,6 @@ Holds generated presets.
 ### presets/templates/
 
 Has template presets which phelix modifies by swapping blocks from the blocks folder. The one called LessOccSplit.hlx has 5 blocks on each dsp, and uses all the paths.  This seems a fairly reliable number of blocks before the presets fail to load, since phelix doesn't account for more and less dsp intensive effects.  That said, phelix limits Amp/Cab combos to one per dsp (though they may mutate beyond that... I have to check)
-
 
 --------------------------------
 

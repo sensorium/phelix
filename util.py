@@ -10,7 +10,6 @@ util.py
 
 from copy import deepcopy
 from datetime import datetime
-from os import remove
 import var
 import file
 # from debug import save_debug_hlx
@@ -86,15 +85,13 @@ def remove_PEDAL2_controller(preset, dsp, slot, param):
     
         
 def remove_controller_if_present(preset, dsp, slot, param):
-    if slot in get_controller_dsp(preset, dsp):
-        if param in get_controller_dsp_slot(preset, dsp, slot):
-            # check controller type
-            if get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] == var.CONTROLLER_SNAPSHOT:
-                remove_SNAPSHOT_controller(preset, dsp, slot, param)
-            elif get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] == var.CONTROLLER_PEDAL2:
-                remove_PEDAL2_controller(preset, dsp, slot, param)
-            elif get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] == var.CONTROLLER_MIDICC:
-                remove_MIDICC_controller(preset, dsp, slot, param)
+    if slot in get_controller_dsp(preset, dsp) and param in get_controller_dsp_slot(preset, dsp, slot):
+        if get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] == var.CONTROLLER_SNAPSHOT:
+            remove_SNAPSHOT_controller(preset, dsp, slot, param)
+        elif get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] == var.CONTROLLER_PEDAL2:
+            remove_PEDAL2_controller(preset, dsp, slot, param)
+        elif get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] == var.CONTROLLER_MIDICC:
+            remove_MIDICC_controller(preset, dsp, slot, param)
             
 
 def remove_all_SNAPSHOT_controllers(preset):
@@ -233,14 +230,13 @@ def list_total_params_usable_for_controller_type(preset, controller_type):
     params = []
     for dsp in get_available_default_dsp_names(preset):
         for slot in get_default_dsp(preset, dsp):
-            if slot.startswith(("block", "split", "cab")):
-                if slot in get_controller_dsp(preset, dsp):
-                    params.extend(
-                        [dsp, slot, param]
-                        for param in get_default_dsp_slot(preset, dsp, slot)
-                        if param not in get_controller_dsp_slot(preset, dsp, slot)
-                        or get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] != controller_type
-                    )
+            if slot.startswith(("block", "split", "cab")) and slot in get_controller_dsp(preset, dsp):
+                params.extend(
+                    [dsp, slot, param]
+                    for param in get_default_dsp_slot(preset, dsp, slot)
+                    if param not in get_controller_dsp_slot(preset, dsp, slot)
+                    or get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] != controller_type
+                )
     return params
  
  
@@ -439,7 +435,14 @@ def copy_snapshot_values_to_default(preset, snapshot_src_num_str):
         if 0 <= snapshot_src_num <= 7:
             for dsp in get_available_default_dsp_names(preset):
                 for slot in get_snapshot_controllers_dsp(preset, snapshot_src_num, dsp):
+                    # Skip if slot doesn't exist in default dsp
+                    if slot not in get_default_dsp(preset, dsp):
+                        print(f"  WARNING: slot {slot} in snapshot but not in default {dsp}, skipping")
+                        continue
                     for parameter in get_snapshot_controllers_dsp_slot(preset, snapshot_src_num, dsp, slot):
+                        # Skip if parameter doesn't exist in default slot
+                        if parameter not in get_default_dsp_slot(preset, dsp, slot):
+                            continue
                         get_default_dsp_slot(preset, dsp, slot)[parameter] = deepcopy(
                             get_snapshot_controllers_dsp_slot_param_value(preset, snapshot_src_num, dsp, slot, parameter)
                         )
@@ -501,9 +504,16 @@ def list_used_ccs(preset):
     for dsp in get_available_default_dsp_names(preset):
         for slot in get_default_dsp(preset, dsp):
             if slot in get_controller_dsp(preset, dsp):
-                for parameter in get_controller_dsp_slot(preset, dsp, slot):
-                    if "@cc" in get_controller_dsp_slot_param(preset, dsp, slot, parameter):
-                        used_ccs.append(get_controller_dsp_slot_param(preset, dsp, slot, parameter)["@cc"])
+                used_ccs.extend(
+                    get_controller_dsp_slot_param(
+                        preset, dsp, slot, parameter
+                    )["@cc"]
+                    for parameter in get_controller_dsp_slot(preset, dsp, slot)
+                    if "@cc"
+                    in get_controller_dsp_slot_param(
+                        preset, dsp, slot, parameter
+                    )
+                )
     return used_ccs
 
 def init_available_ccs(preset):
@@ -519,21 +529,16 @@ def num_available_ccs():
 
 
 def nextCC():
+    if not available_ccs:
+        print("  WARNING: no available CCs left, returning None")
+        return None
     return available_ccs.pop(0)
 
 def returnCC(cc):
-    available_ccs.insert(0, cc)
+    if cc is not None:
+        available_ccs.insert(0, cc)
 
 
-def add_splits_if_missing(preset):
-    for dsp in get_available_default_dsp_names(preset):
-        for snapshot_num in range(var.NUM_SNAPSHOTS):
-            get_snapshot_blocks_dsp(preset, snapshot_num, dsp).setdefault("split", "false")  # bypass not controlled?
-
-
-def duplicate_snapshot(preset, snapshot_src, snapshot_dst):
-    preset["data"]["tone"][snapshot_dst] = deepcopy(preset["data"]["tone"][snapshot_src])
-    preset["data"]["tone"][snapshot_dst]["@name"] = snapshot_dst
 
 
 # def add_footswitch_dsp_blocks_cc_control_if_missing(preset):
