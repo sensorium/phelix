@@ -16,7 +16,7 @@ _BE CAREFUL, PROTECT YOUR HEARING._
 
 - Python 3.11+ with working tkinter (see setup below)
 - numpy package
-- Tested with Helix firmware 3.71 on a Helix LT
+- Tested with Helix firmware 3.80 on a Helix LT
 
 ### Setup (first time)
 
