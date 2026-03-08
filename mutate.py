@@ -435,6 +435,9 @@ def mutate_all_control_ranges(preset, controller):
         if not dsp.startswith("dsp"):
             continue
         for slot in util.get_controller_dsp(preset, dsp):
+            # Skip if slot doesn't exist in default DSP
+            if slot not in util.get_default_dsp(preset, dsp):
+                continue
             block = util.get_controller_dsp(preset, dsp)[slot]
             if any(block[param]["@controller"] == controller for param in block):
                 for parameter in block:

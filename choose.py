@@ -30,7 +30,11 @@ def random_block_file_in_category(category_folder):
 
 def random_block_split_or_cab_in_default_dsps(preset):
     found_blocks_splits_cabs = []
+    controller = util.get_controller(preset)
     for dsp in util.get_available_default_dsp_names(preset):
+        # Only pick from DSPs that exist in controller
+        if dsp not in controller:
+            continue
         found_blocks_splits_cabs.extend(
             (dsp, slot)
             for slot in util.get_default_dsp(preset, dsp)
