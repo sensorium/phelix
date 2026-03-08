@@ -78,6 +78,12 @@ def get_mutated_param_value(preset, dsp, slot, param, pmin, pmax):
 
 
 def mutate_param_values_for_one_snapshot_slot(preset, snap_num, dsp, slot, fraction_new):
+    # Skip if DSP doesn't exist in controller
+    controller = util.get_controller(preset)
+    if dsp not in controller:
+        return
+    if slot not in util.get_controller_dsp(preset, dsp):
+        return
     raw_controllers = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
     # print("mutate_param_values_for_one_snapshot_slot", dsp, slot, util.get_default_dsp_slot(preset, dsp, slot)["@model"])
     for param in util.get_controller_dsp_slot(preset, dsp, slot):
@@ -96,7 +102,19 @@ def mutate_param_values_for_all_snapshots(preset, fraction_new):
     # debug.save_debug_hlx(preset)
     for snapshot_num in range(var.NUM_SNAPSHOTS):
         for dsp in util.get_snapshot_controllers(preset, snapshot_num):
+            # Skip non-dsp entries
+            if not dsp.startswith("dsp"):
+                continue
             for slot in util.get_snapshot_controllers_dsp(preset, snapshot_num, dsp):
+                # Skip if slot doesn't exist in defaults or isn't a block/split/cab
+                if slot not in util.get_default_dsp(preset, dsp):
+                    continue
+                if not slot.startswith(("block", "split", "cab")):
+                    continue
+                # Skip if slot has no controller data
+                controller = util.get_controller(preset)
+                if dsp not in controller or slot not in util.get_controller_dsp(preset, dsp):
+                    continue
                 mutate_param_values_for_one_snapshot_slot(preset, snapshot_num, dsp, slot, fraction_new)
                 
                 
@@ -188,7 +206,7 @@ def find_used_default_block_slots(preset):
 def find_unused_default_block_slots(preset):
     dsp_slot = []
     for dsp in util.get_available_default_dsp_names(preset):
-        for block_num in range(var.NUM_SLOTS_PER_DSP):
+        for block_num in range(var.NUM_BLOCKS_PER_DSP):
             slot = f"block{block_num}"
             if slot not in util.get_default_dsp(preset, dsp):
                 dsp_slot.append([dsp, slot])
@@ -232,7 +250,7 @@ def find_unused_default_dsp_cab_slots(preset):
     unused_dsp_cab_slots = {}
     for dsp in util.get_available_default_dsp_names(preset):
         unused_dsp_cab_slots[dsp] = []
-        for cab_num in range(var.NUM_SLOTS_PER_DSP):
+        for cab_num in range(var.NUM_CABS_PER_DSP):
             slot = f"cab{cab_num}"
             if slot not in used_dsp_cab_slots[dsp]:
                 unused_dsp_cab_slots[dsp].append(slot)
@@ -352,7 +370,7 @@ def rearrange_cab(preset, used_dsp_cab_slots, unused_dsp_cab_slots, dsp, amp_dsp
 def swap_some_blocks_and_splits_from_file(preset, change_fraction):
     print("Swapping some blocks and splits from file")
     for dsp in util.get_available_default_dsp_names(preset):
-        for slot in util.get_default_dsp(preset, dsp):
+        for slot in list(util.get_default_dsp(preset, dsp)):  # Copy keys to avoid mutation during iteration
             if random.uniform(0, 1) < change_fraction:
                 util.remove_controller_dsp_slot_if_present(preset, dsp, slot)
                 util.remove_snapshots_controllers_dsp_slot_if_present(preset, dsp, slot)
@@ -413,6 +431,9 @@ def swap_with_random_split_from_file(preset, dsp, slot):
     
 def mutate_all_control_ranges(preset, controller):
     for dsp in util.get_controller(preset):
+        # Skip non-dsp entries like 'variax'
+        if not dsp.startswith("dsp"):
+            continue
         for slot in util.get_controller_dsp(preset, dsp):
             block = util.get_controller_dsp(preset, dsp)[slot]
             if any(block[param]["@controller"] == controller for param in block):

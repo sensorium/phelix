@@ -43,6 +43,9 @@ def random_controller_dsp_and_slot(preset):
     # returns a random block, or "none" if there are no blocks
     found_blocks = []
     for dsp in util.get_controller(preset):
+        # Skip non-dsp entries like 'variax'
+        if not dsp.startswith("dsp"):
+            continue
         found_blocks.extend((dsp, slot) for slot in util.get_controller_dsp(preset, dsp))
     return random.choice(found_blocks) if found_blocks else ["none", "none"]
 
@@ -103,6 +106,10 @@ def assign_random_parameter_to_controller_SNAPSHOT_and_randomise_range(preset):
     print()
     dsp, slot = random_block_split_or_cab_in_default_dsps(preset)
     if slot != "none":
+        # Skip if DSP doesn't exist in controller
+        controller = util.get_controller(preset)
+        if dsp not in controller:
+            return
         if params := dsp_slot_list_params_usable_for_SNAPSHOT(preset, dsp, slot):
             param = random.choice(params)
             params.remove(param)
@@ -119,6 +126,10 @@ def assign_random_parameter_to_controller_MIDICC_and_randomise_range(preset):
     print()
     dsp, slot = random_block_split_or_cab_in_default_dsps(preset)
     if slot != "none":
+        # Skip if DSP doesn't exist in controller
+        controller = util.get_controller(preset)
+        if dsp not in controller:
+            return
         if params := dsp_slot_list_params_usable_for_MIDICC(preset, dsp, slot):
             cc = util.nextCC()
             if cc is None:
@@ -137,6 +148,10 @@ def assign_random_parameter_to_controller_PEDAL2_and_randomise_range(preset):
     print()
     dsp, slot = random_block_split_or_cab_in_default_dsps(preset)
     if slot != "none":
+        # Skip if DSP doesn't exist in controller
+        controller = util.get_controller(preset)
+        if dsp not in controller:
+            return
         if params := dsp_slot_list_params_usable_for_PEDAL2(preset, dsp, slot):
             param = random.choice(params)
             params.remove(param)
@@ -152,6 +167,14 @@ def assign_random_parameter_to_controller_PEDAL2_and_randomise_range(preset):
 
 def random_max_and_min_for_controlled_param(preset, dsp, slot, parameter):
     print("random_max_and_min_for_controlled_param", dsp, slot, util.get_model_name(preset, dsp, slot), parameter)
+    # Skip if DSP doesn't exist in controller
+    controller = util.get_controller(preset)
+    if dsp not in controller:
+        return
+    if slot not in util.get_controller_dsp(preset, dsp):
+        return
+    if parameter not in util.get_controller_dsp_slot(preset, dsp, slot):
+        return
     controlled_param = util.get_controller_dsp_slot_param(preset, dsp, slot, parameter)
     block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
     pmin = block_dict[parameter]["@min"]
