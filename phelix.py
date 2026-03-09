@@ -20,6 +20,7 @@ import var
 # config dictionary
 config = {}
 entries_dict = {}  # Dictionary to store block probabilities entries
+settings_entries_dict = {}  # Dictionary to store runtime settings entries
 
 # Initialize global variables
 gen_tab = None
@@ -55,6 +56,9 @@ def load_config_from_file():
 
 
 def save_config_to_file(event=None):
+    copyEntriesToBlockProbabilities()
+    copyEntriesToRuntimeSettings()
+
     config["template_file"] = gen_tab.template_entry.get()
     config["output_file"] = gen_tab.output_entry.get()
     config["preset_name"] = gen_tab.name_entry.get()
@@ -69,6 +73,7 @@ def save_config_to_file(event=None):
     config["change_controllers"] = mutate_tab.change_controllers_var.get()
 
     config["block_probabilities"] = var.block_probabilities
+    config["runtime_settings"] = get_runtime_settings_dict()
 
     if config_file := filedialog.asksaveasfilename(
         initialdir="./",
@@ -125,15 +130,51 @@ def update_ui_from_config():
     if "block_probabilities" in config:
         var.block_probabilities.update(config["block_probabilities"])
 
+    if "runtime_settings" in config:
+        apply_runtime_settings(config["runtime_settings"])
+
     for category, entry in entries_dict.items():
         entry.delete(0, END)
         entry.insert(0, var.block_probabilities.get(category, ""))
+
+    for setting_name, entry in settings_entries_dict.items():
+        entry.delete(0, END)
+        entry.insert(0, getattr(var, setting_name, ""))
 
 
 def copyEntriesToBlockProbabilities():
     for category, entry in entries_dict.items():
         # Probabilities must be integers for random.choices
         var.block_probabilities[category] = int(entry.get() or "0")
+
+
+def get_runtime_settings_dict():
+    return {
+        "NUM_PEDAL2_PARAMS": var.NUM_PEDAL2_PARAMS,
+        "NUM_MIDICC_PARAMS": var.NUM_MIDICC_PARAMS,
+        "NUM_SNAPSHOT_PARAMS": var.NUM_SNAPSHOT_PARAMS,
+        "BLOCKS_PATH": var.BLOCKS_PATH,
+        "MUTATION_RATE": var.MUTATION_RATE,
+        "FRACTION_MOVE": var.FRACTION_MOVE,
+        "TOGGLE_RATE": var.TOGGLE_RATE,
+    }
+
+
+def apply_runtime_settings(settings):
+    var.NUM_PEDAL2_PARAMS = int(settings.get("NUM_PEDAL2_PARAMS", var.NUM_PEDAL2_PARAMS))
+    var.NUM_MIDICC_PARAMS = int(settings.get("NUM_MIDICC_PARAMS", var.NUM_MIDICC_PARAMS))
+    var.NUM_SNAPSHOT_PARAMS = int(settings.get("NUM_SNAPSHOT_PARAMS", var.NUM_SNAPSHOT_PARAMS))
+    var.BLOCKS_PATH = str(settings.get("BLOCKS_PATH", var.BLOCKS_PATH))
+    var.MUTATION_RATE = float(settings.get("MUTATION_RATE", var.MUTATION_RATE))
+    var.FRACTION_MOVE = float(settings.get("FRACTION_MOVE", var.FRACTION_MOVE))
+    var.TOGGLE_RATE = float(settings.get("TOGGLE_RATE", var.TOGGLE_RATE))
+
+
+def copyEntriesToRuntimeSettings():
+    settings = {
+        key: entry.get().strip() for key, entry in settings_entries_dict.items()
+    }
+    apply_runtime_settings(settings)
 
 
 ########### generate_tab #######################################################
@@ -150,12 +191,16 @@ class Generate:
         self.create_widgets()
 
     def generate_presets(self):
+        copyEntriesToBlockProbabilities()
+        copyEntriesToRuntimeSettings()
+
         args = {
             "template_file": self.template_entry.get(),
             "output_file": self.output_entry.get(),
             "preset_name": self.name_entry.get(),
             "num_presets": int(self.num_presets_entry.get() or "0"),
             "block_probabilities": var.block_probabilities,
+            "runtime_settings": get_runtime_settings_dict(),
         }
         args_json = json.dumps(args)
         command = ["python3", "generate.py", args_json]
@@ -234,6 +279,9 @@ class Mutate:
         self.create_widgets()
 
     def mutate_preset(self):
+        copyEntriesToBlockProbabilities()
+        copyEntriesToRuntimeSettings()
+
         args = {
             "template_file": self.template_entry.get(),
             "output_file": self.output_entry.get(),
@@ -243,6 +291,7 @@ class Mutate:
             "change_topology": self.change_topology_var.get(),
             "change_controllers": self.change_controllers_var.get(),
             "block_probabilities": var.block_probabilities,
+            "runtime_settings": get_runtime_settings_dict(),
         }
 
         args_json = json.dumps(args)
@@ -346,9 +395,25 @@ for idx, (category, value) in enumerate(var.block_probabilities.items()):
 copy_button = tk.Button(probabilities_tab, text="Update Probabilities", command=copyEntriesToBlockProbabilities)
 copy_button.grid(row=len(var.block_probabilities), column=0, columnspan=2, padx=5, pady=5, sticky="ew")
 
+settings_tab = ttk.Frame(window)
+runtime_settings = get_runtime_settings_dict()
+for idx, (setting_name, value) in enumerate(runtime_settings.items()):
+    label = tk.Label(settings_tab, text=f"{setting_name}:")
+    label.grid(row=idx, column=0, padx=5, pady=5, sticky="w")
+
+    entry = tk.Entry(settings_tab, width=TEXT_FIELD_WIDTH if setting_name == "BLOCKS_PATH" else NUMBER_FIELD_WIDTH)
+    entry.insert(0, value)
+    entry.grid(row=idx, column=1, padx=5, pady=5, sticky="w")
+
+    settings_entries_dict[setting_name] = entry
+
+runtime_settings_button = tk.Button(settings_tab, text="Update Runtime Settings", command=copyEntriesToRuntimeSettings)
+runtime_settings_button.grid(row=len(runtime_settings), column=0, columnspan=2, padx=5, pady=5, sticky="ew")
+
 tabs.add(gen_tab.frame, text="Generate")
 tabs.add(mutate_tab.frame, text="Mutate")
 tabs.add(probabilities_tab, text="Probabilities")
+tabs.add(settings_tab, text="Runtime Settings")
 tabs.pack(expand=1, fill="both")
 
 # -----------------------------------------------------------------------------
