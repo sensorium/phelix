@@ -84,7 +84,10 @@ def mutate_param_values_for_one_snapshot_slot(preset, snap_num, dsp, slot, fract
         return
     if slot not in util.get_controller_dsp(preset, dsp):
         return
-    raw_controllers = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
+    raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
+    if raw_block_dict is None:
+        return
+    raw_controllers = raw_block_dict["Controller_Dict"]
     # print("mutate_param_values_for_one_snapshot_slot", dsp, slot, util.get_default_dsp_slot(preset, dsp, slot)["@model"])
     for param in util.get_controller_dsp_slot(preset, dsp, slot):
         if util.get_controller_dsp_slot_param(preset, dsp, slot, param)["@controller"] == var.CONTROLLER_SNAPSHOT:
@@ -119,7 +122,10 @@ def mutate_param_values_for_all_snapshots(preset, fraction_new):
                 
                 
 def mutate_values_in_default_block(preset, dsp, slot, fraction_new):
-    raw_controllers = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
+    raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
+    if raw_block_dict is None:
+        return
+    raw_controllers = raw_block_dict["Controller_Dict"]
     print("mutate_values_in_default_block", dsp, slot, util.get_model_name(preset, dsp, slot))
     for param in raw_controllers:  # not all default params can be changed on the helix
         pmin = raw_controllers[param]["@min"]
@@ -452,6 +458,8 @@ def mutate_one_set_of_control_ranges(preset, dsp, slot, parameter):
     if not isinstance(param["@min"], bool):  # don't want to pedal bools
         # get original ranges from file
         raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
+        if raw_block_dict is None:
+            return
         pmin = raw_block_dict["Controller_Dict"][parameter]["@min"]
         pmax = raw_block_dict["Controller_Dict"][parameter]["@max"]
         # print(pedalParam["@min"], pmin, pmax)

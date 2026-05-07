@@ -45,9 +45,11 @@ def set_raw_max_and_min_for_controlled_param(preset, dsp, slot, param):
     if dsp not in controller:
         return
     controlled_param = get_controller_dsp(preset, dsp)[slot][param]
-    raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
-    controlled_param["@min"] = raw_block_dict[param]["@min"]
-    controlled_param["@max"] = raw_block_dict[param]["@max"]
+    raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
+    if raw_block_dict is None:
+        return
+    controlled_param["@min"] = raw_block_dict["Controller_Dict"][param]["@min"]
+    controlled_param["@max"] = raw_block_dict["Controller_Dict"][param]["@max"]
     
     
 # def set_controller_type(preset, dsp, slot, parameter, control_type):
@@ -145,7 +147,10 @@ def get_snapshot_blocks_dsp(preset, snapshot_num, dsp):
 
 
 def get_snapshot_controllers(preset, snapshot_num):
-    return preset["data"]["tone"][f"snapshot{snapshot_num}"]["controllers"]
+    snapshot_controllers = preset["data"]["tone"][f"snapshot{snapshot_num}"]
+    if "controllers" not in snapshot_controllers:
+        snapshot_controllers["controllers"] = {}
+    return snapshot_controllers["controllers"]
 
 
 def get_snapshot_controllers_dsp(preset, snapshot_num, dsp):
@@ -398,7 +403,10 @@ def set_preset_name_for_mutate(preset, args, postfix_num):
     
 
 def populate_controller_dsp_slot_from_raw_file(preset, dsp, slot):
-    controller_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
+    raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
+    if raw_block_dict is None:
+        return
+    controller_block_dict = raw_block_dict["Controller_Dict"]
     get_controller_dsp(preset, dsp)[slot] = deepcopy(controller_block_dict)
     # print("populate_controller_from_defaults " + get_model_name(preset, dsp, slot) + ", " + dsp + " " + slot)
 
@@ -416,7 +424,10 @@ def populate_snapshot_with_controllers_from_file(preset, snapshot_num):
     for dsp in get_available_default_dsp_names(preset):
         for slot in get_default_dsp(preset, dsp):
             if slot.startswith(("block", "split", "cab")):
-                snapshot_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)["SnapshotParams"]
+                raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
+                if raw_block_dict is None:
+                    continue
+                snapshot_block_dict = raw_block_dict["SnapshotParams"]
                 get_snapshot_controllers_dsp(preset, snapshot_num, dsp)[slot] = {}
                 get_snapshot_controllers_dsp(preset, snapshot_num, dsp)[slot] = deepcopy(snapshot_block_dict)
 
@@ -662,5 +673,8 @@ def count_controllable_parameters_in_preset(preset):
     for dsp in get_available_default_dsp_names(preset):
         for slot in get_default_dsp(preset, dsp):
             if slot.startswith(("block", "split", "cab")):
-                count += len(file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"].keys())
+                raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
+                if raw_block_dict is None:
+                    continue
+                count += len(raw_block_dict["Controller_Dict"].keys())
     return count

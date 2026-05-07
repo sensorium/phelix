@@ -25,11 +25,15 @@ def load_block_dictionary(block_filepath):
 
 def reload_raw_block_dictionary(preset, dsp, slot):
     # debug.save_debug_hlx(preset)
-    block_filename = f"{util.get_model_name(preset, dsp, slot)}.json"
+    model_name = util.get_model_name(preset, dsp, slot)
+    block_filename = f"{model_name}.json"
     # print(f"loading {block_filename}")
     block_folder = None
     for root, _, files in os.walk(var.BLOCKS_PATH):
         if block_filename in files:
             block_folder = root
             break
+    if block_folder is None:
+        print(f"  skipping: block definition not found for {model_name} in {dsp} {slot}")
+        return None
     return load_block_dictionary(f"{block_folder}/{block_filename}")

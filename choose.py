@@ -74,6 +74,8 @@ def dsp_slot_list_params_usable_for_MIDICC(preset, dsp, slot):
     # dsp, slot = random_block_split_or_cab_in_default_dsps(preset)
     # if slot != "none":
     raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
+    if raw_block_dict is None:
+        return []
     return [
         param
         for param in raw_block_dict["Controller_Dict"]
@@ -87,6 +89,8 @@ def dsp_slot_list_params_usable_for_PEDAL2(preset, dsp, slot):
     # dsp, slot = random_block_split_or_cab_in_default_dsps(preset)
     # if slot != "none":
     raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
+    if raw_block_dict is None:
+        return []
     return [
             param
             for param in raw_block_dict["Controller_Dict"]
@@ -100,6 +104,8 @@ def dsp_slot_list_params_usable_for_SNAPSHOT(preset,dsp,slot):
     # dsp, slot = random_block_split_or_cab_in_default_dsps(preset)
     # if slot != "none":
     raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
+    if raw_block_dict is None:
+        return []
     return list(raw_block_dict["Controller_Dict"].keys())
     # else:
     #     return []
@@ -119,9 +125,13 @@ def assign_random_parameter_to_controller_SNAPSHOT_and_randomise_range(preset):
             params.remove(param)
             util.remove_controller_if_present(preset, dsp, slot, param)
             raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
+            if raw_block_dict is None:
+                return
             util.add_controller_block_param_and_control_type(preset, dsp, slot, param, raw_block_dict, var.CONTROLLER_SNAPSHOT)
             random_max_and_min_for_controlled_param(preset, dsp, slot, param)
             raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
+            if raw_block_dict is None:
+                return
             util.add_parameter_to_all_snapshots(preset, dsp, slot, param, raw_block_dict)
 
 
@@ -143,6 +153,8 @@ def assign_random_parameter_to_controller_MIDICC_and_randomise_range(preset):
             params.remove(param)
             util.remove_controller_if_present(preset, dsp, slot, param)
             raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
+            if raw_block_dict is None:
+                return
             util.add_controller_block_param_and_control_type(preset, dsp, slot, param, raw_block_dict, var.CONTROLLER_MIDICC)
             util.add_controller_block_parameter_cc(preset, dsp, slot, param, cc)
             random_max_and_min_for_controlled_param(preset, dsp, slot, param)
@@ -161,6 +173,8 @@ def assign_random_parameter_to_controller_PEDAL2_and_randomise_range(preset):
             params.remove(param)
             util.remove_controller_if_present(preset, dsp, slot, param)
             raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
+            if raw_block_dict is None:
+                return
             util.add_controller_block_param_and_control_type(preset, dsp, slot, param, raw_block_dict, var.CONTROLLER_PEDAL2)
             random_max_and_min_for_controlled_param(preset, dsp, slot, param)
         
@@ -180,7 +194,10 @@ def random_max_and_min_for_controlled_param(preset, dsp, slot, parameter):
     if parameter not in util.get_controller_dsp_slot(preset, dsp, slot):
         return
     controlled_param = util.get_controller_dsp_slot_param(preset, dsp, slot, parameter)
-    block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)["Controller_Dict"]
+    raw_block_dict = file.reload_raw_block_dictionary(preset, dsp, slot)
+    if raw_block_dict is None:
+        return
+    block_dict = raw_block_dict["Controller_Dict"]
     pmin = block_dict[parameter]["@min"]
     pmax = block_dict[parameter]["@max"]
     new_max = random.uniform(pmin, pmax)
